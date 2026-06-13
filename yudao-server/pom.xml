@@ -136,6 +136,13 @@
            <version>${revision}</version>
       </dependency>
 
+        <!-- opshub 经销商管理客服 SaaS 模块 -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-module-opshub</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
         <!-- PostgreSQL 驱动 -->
         <dependency>
             <groupId>org.postgresql</groupId>

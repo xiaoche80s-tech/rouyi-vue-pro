@@ -74,8 +74,8 @@
 | 0 | 超级管理员 | `super_admin` | 全部数据，无限制 | 系统配置、用户管理、全局监控（系统内置） |
 | 1 | 品牌管理员 | `brand_admin` | 全部经销商数据（可按产品线限定） | 全局监控、数据导入、策略制定、合同下发、工单催办 |
 | 2 | 品牌销售员 | `brand_sales` | 全部经销商数据（可按产品线限定） | 仅查看数据，无操作权限 |
-| 3 | 服务单执行员 | `service_executor` | 授权产品线内的经销商数据 | 工单处理、咨询回复、操作请求执行 |
-| 4 | 经销商 | `dealer` | 仅自身经销商数据 | 查看自有数据、发起操作请求、验收工单、发起咨询 |
+| 3 | 服务单执行员 | `service_executor` | 授权产品线内的经销商数据 | 负责多条业务线，工单处理、咨询回复、操作请求执行 |
+| 4 | 经销商 | `dealer` | 授权管理的多家经销商数据 | 经销商代理人，查看授权经销商数据、发起操作请求、验收工单、发起咨询 |
 
 ### 2.2 各角色详细权限定义
 
@@ -118,8 +118,9 @@
 #### 2.2.5 经销商 (dealer)
 
 - **角色标识**: `dealer`
+- **实际含义**: 经销商代理人（一个用户管理多家经销商实体）
 - **菜单权限**: 签约进度、政策看板、售后模块、订单模块、基础数据、客户服务（全部 6 个业务模块，但功能受限）
-- **数据权限**: 按 `dealerScope` 限定，仅可见自身经销商数据
+- **数据权限**: 基于 `ops_dealer_user_scope` 扩展表，按代理人用户维度授权，可见授权经销商的数据
 - **操作权限**:
   - ✅ 可操作: 发起操作请求（签署/付款/开票/退货/盖章）、发起咨询、验收工单、关闭咨询
   - ❌ 不可操作: 工单处理、数据导入、合同下发、工单催办
@@ -282,14 +283,14 @@ WHERE (dealer_id IN ({dealerScope}) OR {dealerScope} IS ALL)
 ### 4.2 需要扩展的能力
 
 | 现有能力 | 扩展内容 | 扩展方式 |
-|---------|---------|---------|
-| `RoleCodeEnum` | 新增 4 个业务角色标识 | 在枚举中添加 `BRAND_ADMIN`, `BRAND_SALES`, `SERVICE_EXECUTOR`, `DEALER` |
-| `AdminUserDO` | 新增 `dealerScope` 和 `productLineScope` 字段 | 扩展 DO 类 + DDL 变更 |
+|---------|---------|----------|
+| 角色标识常量 | 新增 4 个业务角色标识 | 新建 `OpsRoleCodeConstants` 接口（字符串常量，不修改 `RoleCodeEnum`） |
+| 用户授权范围 | 经销商/产品线授权 | **不修改 `AdminUserDO`**，通过 5 张 `ops_` 前缀扩展表实现 |
 | `DataPermissionRule` | 需新增经销商/产品线维度的数据过滤规则 | 新建 `DealerDataPermissionRule` 实现 `DataPermissionRule` 接口 |
-| `PermissionService` | 需新增获取经销商/产品线数据权限的方法 | 扩展接口 + 实现 |
-| `LoginUser` | 需携带 dealerScope/productLineScope 信息 | 扩展 info Map 或新增字段 |
-| 前端用户管理 | 需新增授权范围配置 UI | 扩展 UserForm.vue 组件 |
-| 前端角色管理 | 需新增产品线授权 UI | 扩展 RoleDataPermissionForm.vue |
+| `LoginUser` | 需携带 dealerScope/productLineScope 信息 | 通过 `LoginUser.context` (Map) 缓存 `DealerPermissionData`（请求级缓存） |
+| 前端授权管理 | 独立的“授权管理”菜单页面（2 Tabs） | 新建 `views/opshub/scope/index.vue`，管理执行员↔产品线、代理人↔经销商授权 |
+| 前端产品线管理 | 产品线页面增加“管理经销商”功能 | 在产品线页面维护经销商↔产品线关联关系 |
+| 前端用户管理 | 不再包含 OpsHub 授权选择器 | 授权管理统一由新的“授权管理”菜单页面负责 |
 
 ### 4.3 需要新建的能力
 
@@ -417,125 +418,119 @@ dealer（经销商管理 SaaS）                    一级目录
 | 超管身份切换 | 模拟任意已注册用户视角浏览系统 | 依赖审核管理 |
 | 审计日志（审核专用） | 记录登录/退出/审核/切换身份/修改授权等操作 | 依赖审核和身份切换 |
 
-> **本期用户创建方式**：由 super_admin 通过现有的系统管理 → 用户管理页面直接创建用户并分配角色和授权范围。
+> **本期用户创建方式**：由 super_admin 通过“系统管理 → 用户管理”创建用户并分配角色，然后通过“经销商管理 SaaS → 授权管理”菜单页面配置经销商/产品线授权范围。
 
 ---
 
 ## 六、数据模型变更
 
-### 6.1 需要修改的现有表
+### 6.1 设计决策
 
-#### 6.1.1 system_users 表（AdminUserDO）
+**核心原则**: 不修改 `system_users` 表（`AdminUserDO`），通过独立的 `ops_` 前缀扩展表实现用户授权管理。
 
-新增字段：
+| 决策 | 选择 | 理由 |
+|------|------|------|
+| 用户表是否加字段 | **否** | `system_users` 是系统核心表，不应被业务模块侵入 |
+| 角色标识如何定义 | `OpsRoleCodeConstants`（字符串常量接口） | 不修改 `RoleCodeEnum`，在 opshub 模块内通过字符串常量引用 |
+| 授权数据如何存储 | 5 张 `ops_` 前缀扩展表 | 按职责拆分，经销商↔用户、执行员↔产品线、经销商↔产品线 分别维护 |
+| LoginUser 如何携带授权信息 | `LoginUser.context` (Map) 缓存 `DealerPermissionData` | 请求级缓存，避免频繁查库 |
 
-| 字段名 | 类型 | 说明 |
-|--------|------|------|
-| `dealer_scope` | VARCHAR(500) | 经销商授权范围，JSON 数组格式，如 `[1,2,3]`（经销商 ID 列表）。仅 dealer 角色使用 |
-| `product_line_scope` | VARCHAR(500) | 产品线授权范围，JSON 数组格式，如 `[1,2]`（产品线 ID 列表）。brand_admin/brand_sales/service_executor 使用 |
+### 6.2 OpsRoleCodeConstants
 
-**DDL 变更**:
+```java
+public interface OpsRoleCodeConstants {
+    String BRAND_ADMIN = "brand_admin";
+    String BRAND_SALES = "brand_sales";
+    String SERVICE_EXECUTOR = "service_executor";
+    String DEALER = "dealer";
 
-```sql
-ALTER TABLE system_users ADD COLUMN dealer_scope VARCHAR(500) DEFAULT NULL COMMENT '经销商授权范围（JSON数组，经销商ID列表）';
-ALTER TABLE system_users ADD COLUMN product_line_scope VARCHAR(500) DEFAULT NULL COMMENT '产品线授权范围（JSON数组，产品线ID列表）';
+    /** 基于产品线维度的角色集合 */
+    Set<String> PRODUCT_LINE_SCOPE_ROLES = Set.of(BRAND_ADMIN, BRAND_SALES, SERVICE_EXECUTOR);
+
+    /** 基于经销商维度的角色集合 */
+    Set<String> DEALER_SCOPE_ROLES = Set.of(DEALER);
+}
 ```
 
-> **设计决策**: 将 dealerScope/productLineScope 放在 user 表而非 role 表，原因是同一角色下不同用户的授权范围不同（如不同经销商看到的数据不同）。这与现有 `dataScopeDeptIds` 放在 role 表上的设计不同，因为部门权限是按角色统一分配的，而经销商/产品线权限是按用户个体分配的。
+### 6.3 需要新增的 ops_ 扩展表
 
-### 6.2 RoleCodeEnum 枚举扩展
-
-新增枚举值：
-
-| 枚举值 | code | 说明 |
-|--------|------|------|
-| `BRAND_ADMIN` | `brand_admin` | 品牌管理员 |
-| `BRAND_SALES` | `brand_sales` | 品牌销售员 |
-| `SERVICE_EXECUTOR` | `service_executor` | 服务单执行员 |
-| `DEALER` | `dealer` | 经销商 |
-
-### 6.3 需要新增的表
-
-#### 6.3.1 dealer_info（经销商信息表）
+#### 6.3.1 ops_dealer_info（经销商信息表）
 
 | 字段名 | 类型 | 必填 | 说明 |
 |--------|------|:---:|------|
 | `id` | BIGINT | PK | 经销商 ID |
 | `name` | VARCHAR(100) | Y | 经销商名称 |
-| `code` | VARCHAR(50) | Y | 经销商编码 |
+| `code` | VARCHAR(50) | Y | 经销商编码（唯一） |
 | `contact_name` | VARCHAR(50) | N | 联系人 |
 | `contact_phone` | VARCHAR(20) | N | 联系电话 |
 | `address` | VARCHAR(200) | N | 地址 |
 | `status` | TINYINT | Y | 状态（0=正常, 1=停用） |
 | `remark` | VARCHAR(500) | N | 备注 |
-| `creator` | VARCHAR(64) | N | 创建者（BaseDO） |
-| `create_time` | DATETIME | Y | 创建时间（BaseDO） |
-| `updater` | VARCHAR(64) | N | 更新者（BaseDO） |
-| `update_time` | DATETIME | Y | 更新时间（BaseDO） |
-| `deleted` | BIT(1) | Y | 逻辑删除（BaseDO） |
-| `tenant_id` | BIGINT | Y | 租户编号（TenantBaseDO） |
+| `creator/create_time/updater/update_time/deleted/tenant_id` | 标准字段 | | |
 
-**DDL**:
-
-```sql
-CREATE TABLE dealer_info (
-    id          BIGINT       NOT NULL AUTO_INCREMENT COMMENT '经销商ID',
-    name        VARCHAR(100) NOT NULL COMMENT '经销商名称',
-    code        VARCHAR(50)  NOT NULL COMMENT '经销商编码',
-    contact_name VARCHAR(50) DEFAULT NULL COMMENT '联系人',
-    contact_phone VARCHAR(20) DEFAULT NULL COMMENT '联系电话',
-    address     VARCHAR(200) DEFAULT NULL COMMENT '地址',
-    status      TINYINT      NOT NULL DEFAULT 0 COMMENT '状态（0=正常, 1=停用）',
-    remark      VARCHAR(500) DEFAULT NULL COMMENT '备注',
-    creator     VARCHAR(64)  DEFAULT '' COMMENT '创建者',
-    create_time DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    updater     VARCHAR(64)  DEFAULT '' COMMENT '更新者',
-    update_time DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    deleted     BIT(1)       NOT NULL DEFAULT b'0' COMMENT '是否删除',
-    tenant_id   BIGINT       NOT NULL DEFAULT 0 COMMENT '租户编号',
-    PRIMARY KEY (id),
-    UNIQUE KEY uk_code (code)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='经销商信息表';
-```
-
-#### 6.3.2 dealer_product_line（产品线表）
+#### 6.3.2 ops_dealer_product_line（产品线表）
 
 | 字段名 | 类型 | 必填 | 说明 |
 |--------|------|:---:|------|
 | `id` | BIGINT | PK | 产品线 ID |
-| `name` | VARCHAR(100) | Y | 产品线名称（如：骨科、心内科、外科、神经外科） |
-| `code` | VARCHAR(50) | Y | 产品线编码 |
+| `name` | VARCHAR(100) | Y | 产品线名称 |
+| `code` | VARCHAR(50) | Y | 产品线编码（唯一） |
 | `sort` | INT | Y | 排序 |
 | `status` | TINYINT | Y | 状态 |
 | `remark` | VARCHAR(500) | N | 备注 |
-| `creator` / `create_time` / `updater` / `update_time` / `deleted` / `tenant_id` | 标准字段 | | |
+| `creator/create_time/updater/update_time/deleted/tenant_id` | 标准字段 | | |
 
-**DDL**:
+#### 6.3.3 ops_dealer_product_line_relation（经销商↔产品线关联表）
 
-```sql
-CREATE TABLE dealer_product_line (
-    id          BIGINT       NOT NULL AUTO_INCREMENT COMMENT '产品线ID',
-    name        VARCHAR(100) NOT NULL COMMENT '产品线名称',
-    code        VARCHAR(50)  NOT NULL COMMENT '产品线编码',
-    sort        INT          NOT NULL DEFAULT 0 COMMENT '排序',
-    status      TINYINT      NOT NULL DEFAULT 0 COMMENT '状态（0=正常, 1=停用）',
-    remark      VARCHAR(500) DEFAULT NULL COMMENT '备注',
-    creator     VARCHAR(64)  DEFAULT '' COMMENT '创建者',
-    create_time DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    updater     VARCHAR(64)  DEFAULT '' COMMENT '更新者',
-    update_time DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    deleted     BIT(1)       NOT NULL DEFAULT b'0' COMMENT '是否删除',
-    tenant_id   BIGINT       NOT NULL DEFAULT 0 COMMENT '租户编号',
-    PRIMARY KEY (id),
-    UNIQUE KEY uk_code (code)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='产品线表';
-```
+| 字段名 | 类型 | 必填 | 说明 |
+|--------|------|:---:|------|
+| `id` | BIGINT | PK | 主键 |
+| `dealer_id` | BIGINT | Y | 经销商 ID |
+| `product_line_id` | BIGINT | Y | 产品线 ID |
+| `creator/create_time/updater/update_time/deleted/tenant_id` | 标准字段 | | |
 
-### 6.4 六大业务模块核心表结构概要
+> 维护方式：在“产品线管理”页面点击“管理经销商”按钮进行绑定/解绑。
+
+#### 6.3.4 ops_dealer_user_scope（经销商代理人授权表）
+
+| 字段名 | 类型 | 必填 | 说明 |
+|--------|------|:---:|------|
+| `id` | BIGINT | PK | 主键 |
+| `user_id` | BIGINT | Y | 代理人用户 ID |
+| `dealer_id` | BIGINT | Y | 经销商 ID |
+| `creator/create_time/updater/update_time/deleted/tenant_id` | 标准字段 | | |
+
+> 维护方式：在“授权管理”菜单页面的“经销商”Tab 中管理。
+
+#### 6.3.5 ops_executor_product_line_scope（执行员产品线授权表）
+
+| 字段名 | 类型 | 必填 | 说明 |
+|--------|------|:---:|------|
+| `id` | BIGINT | PK | 主键 |
+| `user_id` | BIGINT | Y | 执行员用户 ID |
+| `product_line_id` | BIGINT | Y | 产品线 ID |
+| `creator/create_time/updater/update_time/deleted/tenant_id` | 标准字段 | | |
+
+> 维护方式：在“授权管理”菜单页面的“服务单执行员”Tab 中管理。
+
+### 6.4 授权管理菜单设计
+
+新增独立菜单“授权管理”（位于“经销商管理 SaaS”目录下），包含两个 Tab：
+
+- **服务单执行员**：选择执行员用户 → 管理其授权的产品线
+- **经销商**：选择经销商代理人用户 → 管理其授权的经销商
+
+经销商↔产品线的关联关系不在本页面维护，而是在“产品线管理”页面的“管理经销商”功能中维护。
+
+按钮权限：
+- `dealer:scope:query` — 查看授权
+- `dealer:scope:assign` — 分配授权
+
+### 6.5 六大业务模块核心表结构概要
 
 > 所有业务表均继承 `TenantBaseDO`，包含 `tenant_id` 字段，由框架自动注入租户过滤。业务表中的 `creator/create_time/updater/update_time/deleted` 来自 `BaseDO`，`tenant_id` 来自 `TenantBaseDO`。
 
-#### 6.4.1 dealer_contract（合同表）— 签约进度
+#### 6.5.1 dealer_contract（合同表）— 签约进度
 
 | 核心字段 | 类型 | 说明 |
 |---------|------|------|
@@ -552,7 +547,7 @@ CREATE TABLE dealer_product_line (
 | policy_analysis | TEXT | 政策解析（仅政策合同） |
 | files | JSON | 附件列表 |
 
-#### 6.4.2 dealer_policy（政策表）+ dealer_policy_indicator（政策指标表）— 政策看板
+#### 6.5.2 dealer_policy（政策表）+ dealer_policy_indicator（政策指标表）— 政策看板
 
 **dealer_policy**:
 
@@ -580,7 +575,7 @@ CREATE TABLE dealer_product_line (
 | achieved_value | DECIMAL(12,2) | 达成值 |
 | unit | VARCHAR(20) | 单位 |
 
-#### 6.4.3 dealer_after_sale（售后单表）— 售后模块
+#### 6.5.3 dealer_after_sale（售后单表）— 售后模块
 
 | 核心字段 | 类型 | 说明 |
 |---------|------|------|
@@ -594,7 +589,7 @@ CREATE TABLE dealer_product_line (
 | status | VARCHAR(20) | 状态（completed/in_progress/exchanging/pending） |
 | progress_nodes | JSON | 进度节点列表 |
 
-#### 6.4.4 dealer_order（订单表）+ dealer_order_item（订单明细表）— 订单模块
+#### 6.5.4 dealer_order（订单表）+ dealer_order_item（订单明细表）— 订单模块
 
 **dealer_order**:
 
@@ -623,7 +618,7 @@ CREATE TABLE dealer_product_line (
 | quantity | INT | 数量 |
 | amount | DECIMAL(12,2) | 金额 |
 
-#### 6.4.5 dealer_document（基础数据/文件表）— 基础数据
+#### 6.5.5 dealer_document（基础数据/文件表）— 基础数据
 
 | 核心字段 | 类型 | 说明 |
 |---------|------|------|
@@ -638,7 +633,7 @@ CREATE TABLE dealer_product_line (
 | expire_date | DATE | 有效期至 |
 | status | VARCHAR(20) | 状态（valid/expiring/expired） |
 
-#### 6.4.6 dealer_service_task（工单表）— 客户服务
+#### 6.5.6 dealer_service_task（工单表）— 客户服务
 
 | 核心字段 | 类型 | 说明 |
 |---------|------|------|
@@ -654,7 +649,7 @@ CREATE TABLE dealer_product_line (
 | source_module | VARCHAR(30) | 来源模块 |
 | proof | JSON | 凭证附件 |
 
-#### 6.4.7 dealer_consultation（咨询表）— 客户服务
+#### 6.5.7 dealer_consultation（咨询表）— 客户服务
 
 | 核心字段 | 类型 | 说明 |
 |---------|------|------|
@@ -667,7 +662,7 @@ CREATE TABLE dealer_product_line (
 | messages | JSON | 消息列表 |
 | solution_attachments | JSON | 解决方案附件 |
 
-#### 6.4.8 dealer_operation_request（操作请求表）— 客户服务
+#### 6.5.8 dealer_operation_request（操作请求表）— 客户服务
 
 | 核心字段 | 类型 | 说明 |
 |---------|------|------|
@@ -681,7 +676,7 @@ CREATE TABLE dealer_product_line (
 | handler_id | BIGINT | 处理人 ID |
 | proof | JSON | 凭证附件 |
 
-### 6.5 system_role 初始数据
+### 6.6 system_role 初始数据
 
 | name | code | data_scope | status | type | remark |
 |------|------|-----------|--------|------|--------|
@@ -690,7 +685,7 @@ CREATE TABLE dealer_product_line (
 | 服务单执行员 | service_executor | 1 (ALL) | 0 (正常) | 1 (自定义) | 业务角色 |
 | 经销商 | dealer | 1 (ALL) | 0 (正常) | 1 (自定义) | 业务角色 |
 
-> **注**: `data_scope` 设为 ALL，实际的数据过滤由 `DealerDataPermissionRule` 基于用户的 `dealer_scope` / `product_line_scope` 字段实现，不依赖 `RoleDO.dataScope`。
+> **注**: `data_scope` 设为 ALL，实际的数据过滤由 `DealerDataPermissionRule` 基于 `ops_dealer_user_scope` / `ops_executor_product_line_scope` 扩展表实现，不依赖 `RoleDO.dataScope`。
 
 
 ---
@@ -701,13 +696,14 @@ CREATE TABLE dealer_product_line (
 
 | 功能 | 优先级 | 说明 |
 |------|:------:|------|
-| 经销商基础数据表 (dealer_info, dealer_product_line) | P0 | 其他所有功能的前置依赖 |
-| system_users 表扩展 (dealer_scope, product_line_scope) | P0 | 授权模型的数据基础 |
-| RoleCodeEnum 扩展 + system_role 初始数据 | P0 | 4 个业务角色创建 |
+| 经销商基础数据表 (ops_dealer_info, ops_dealer_product_line, ops_dealer_product_line_relation) | P0 | 其他所有功能的前置依赖 |
+| ops_ 扩展授权表 (ops_dealer_user_scope, ops_executor_product_line_scope) | P0 | 授权模型的数据基础 |
+| OpsRoleCodeConstants + system_role 初始数据 | P0 | 4 个业务角色创建 |
 | DealerDataPermissionRule 实现 | P0 | 核心数据隔离机制 |
-| LoginUser 扩展携带 dealerScope/productLineScope | P0 | 数据权限判断依赖 |
+| LoginUser context 缓存 DealerPermissionData | P0 | 数据权限判断依赖 |
 | 6 大业务模块菜单树 + 按钮权限创建 | P0 | 前端权限控制依赖 |
-| 前端用户管理扩展（授权范围配置 UI） | P1 | 管理员创建用户时配置授权范围 |
+| 授权管理菜单页面（2 Tabs） | P1 | 管理执行员↔产品线、代理人↔经销商授权 |
+| 产品线管理“管理经销商”功能 | P1 | 维护经销商↔产品线关联关系 |
 | 签约进度模块（后端 + 前端） | P1 | 核心业务模块 |
 | 订单模块（后端 + 前端） | P1 | 核心业务模块 |
 | 售后模块（后端 + 前端） | P1 | 核心业务模块 |
@@ -816,4 +812,4 @@ CREATE TABLE dealer_product_line (
 > | 版本 | 日期 | 内容 |
 > |------|------|------|
 > | V1.0 | 2026-06-13 | 初版：角色定义 + 授权模型 + 数据模型 + 实施建议（不含注册审核和角色切换） |
-> | V1.1 | 2026-06-13 | 修正租户模型：使用多租户框架，创建一个租户，业务表继承 TenantBaseDO |
+> | V1.2 | 2026-06-26 | 业务逻辑调整：供应商视角（产品线为主维度）、经销商代理人概念、授权管理独立菜单、扩展表方案替代 system_users 字段扩展 |

@@ -1,6 +1,6 @@
 # Step 1 — 角色、菜单权限、经销商管理、产品线管理
 
-> **版本**: V1.0 | **日期**: 2026-06-13  
+> **版本**: V1.1 | **日期**: 2026-06-26  
 > **文档性质**: 分阶段实施 PRD — Step 1（基础设施层）  
 > **前置文档**: `docs/PRD-用户权限设计.md`（总体权限设计）  
 > **技术约束**: `system_users` 表不可修改，通过扩展表实现授权关联
@@ -32,10 +32,19 @@
 | 0 | 超级管理员 | `super_admin` | 全部数据 | 系统配置、用户管理（系统内置） |
 | 1 | 品牌管理员 | `brand_admin` | 全部经销商（可按产品线限定） | 全局监控、数据导入、合同下发、工单催办 |
 | 2 | 品牌销售员 | `brand_sales` | 全部经销商（可按产品线限定） | 仅查看数据 |
-| 3 | 服务单执行员 | `service_executor` | 授权产品线内的全部经销商 | 工单处理、咨询回复、操作请求执行 |
-| 4 | 经销商 | `dealer` | 仅自身管理的经销商 | 查看自有数据、发起操作请求、验收工单 |
+| 3 | 服务单执行员 | `service_executor` | 授权产品线内的全部经销商 | 负责多条业务线，工单处理、咨询回复、操作请求执行 |
+| 4 | 经销商 | `dealer` | 授权管理的多家经销商 | 经销商代理人，查看授权经销商数据、发起操作请求、验收工单 |
 
-### 2.2 角色与授权维度的关系
+### 2.2 业务说明
+
+**供应商视角**：我们是供应商，先有产品线，再维护经销商。产品线是主维度，经销商从属于产品线。
+
+- **服务单执行员**负责多条业务线（产品线）
+- **经销商角色**实际是“经销商代理人”，一个用户管理多家经销商实体
+- 经销商↔产品线的关联关系在“产品线管理”页面维护（从产品线视角管理经销商）
+- 用户授权管理在独立的“授权管理”菜单中维护，不在经销商管理或用户创建页面中维护
+
+### 2.3 角色与授权维度的关系
 
 ```
 ┌─────────────┐     ┌──────────────────────────┐     ┌─────────────────┐
@@ -118,22 +127,25 @@ dealer（经销商管理 SaaS）                     一级目录
 │   ├── dealer:mgmt:query                      按钮 - 查看经销商列表
 │   ├── dealer:mgmt:create                     按钮 - 新增经销商
 │   ├── dealer:mgmt:update                     按钮 - 编辑经销商
-│   ├── dealer:mgmt:delete                     按钮 - 删除经销商
-│   ├── dealer:mgmt:bindproduct                按钮 - 绑定产品线
-│   └── dealer:mgmt:binduser                   按钮 - 绑定用户
-└── product-line-mgmt（产品线管理）— Step 1 实现  二级菜单
-    ├── dealer:productline:query                按钮 - 查看产品线
-    ├── dealer:productline:create               按钮 - 新增产品线
-    ├── dealer:productline:update               按钮 - 编辑产品线
-    └── dealer:productline:delete               按钮 - 删除产品线
+│   └── dealer:mgmt:delete                     按钮 - 删除经销商
+├── product-line-mgmt（产品线管理）— Step 1 实现  二级菜单
+│   ├── dealer:productline:query                按钮 - 查看产品线
+│   ├── dealer:productline:create               按钮 - 新增产品线
+│   ├── dealer:productline:update               按钮 - 编辑产品线
+│   ├── dealer:productline:delete               按钮 - 删除产品线
+│   └── dealer:productline:binddealer           按钮 - 绑定经销商
+└── scope-mgmt（授权管理）— Step 1 实现       二级菜单
+    ├── dealer:scope:query                     按钮 - 查看授权
+    └── dealer:scope:assign                    按钮 - 分配授权
 ```
 
 ### 3.2 菜单权限矩阵（4 业务角色 × Step 1 模块）
 
 | 模块 | 品牌管理员 | 品牌销售员 | 服务单执行员 | 经销商 |
 |------|:---------:|:---------:|:----------:|:-----:|
-| 经销商管理 | 增删改查 + 绑定 | 只读 | 只读 | 只读（自己管理的） |
-| 产品线管理 | 增删改查 | 只读 | 只读 | 只读 |
+| 经销商管理 | 增删改查 | 只读 | 只读 | 只读（自己管理的） |
+| 产品线管理 | 增删改查 + 绑定经销商 | 只读 + 绑定经销商 | 只读 | 只读 |
+| 授权管理 | 查看 + 分配 | 查看 | 查看 | 查看 |
 | 签约进度 | 读写 | 只读 | 读写 | 读写 |
 | 政策看板 | 读写 | 只读 | 读写 | 只读 |
 | 售后模块 | 读写 | 只读 | 读写 | 读写 |
@@ -151,12 +163,13 @@ dealer（经销商管理 SaaS）                     一级目录
 | `dealer:mgmt:create` | 新增经销商 | ✅ | — | — | — |
 | `dealer:mgmt:update` | 编辑经销商 | ✅ | — | — | — |
 | `dealer:mgmt:delete` | 删除经销商 | ✅ | — | — | — |
-| `dealer:mgmt:bindproduct` | 绑定/解绑产品线 | ✅ | — | — | — |
-| `dealer:mgmt:binduser` | 绑定/解绑用户 | ✅ | — | — | — |
 | `dealer:productline:query` | 查看产品线列表 | ✅ | ✅ | ✅ | ✅ |
 | `dealer:productline:create` | 新增产品线 | ✅ | — | — | — |
 | `dealer:productline:update` | 编辑产品线 | ✅ | — | — | — |
 | `dealer:productline:delete` | 删除产品线 | ✅ | — | — | — |
+| `dealer:productline:binddealer` | 绑定/解绑经销商 | ✅ | ✅ | — | — |
+| `dealer:scope:query` | 查看授权 | ✅ | ✅ | ✅ | ✅ |
+| `dealer:scope:assign` | 分配授权 | ✅ | — | — | — |
 
 ---
 
@@ -166,7 +179,7 @@ dealer（经销商管理 SaaS）                     一级目录
 
 ```
 ┌──────────────┐       ┌────────────────────┐       ┌───────────────────┐
-│ system_users │       │ dealer_user_scope  │       │   dealer_info     │
+│ system_users │       │ops_dealer_user_scope│       │ ops_dealer_info   │
 │  (用户表)     │ 1:N   │ (用户-经销商授权)   │  N:1  │  (经销商实体)      │
 │              │──────▶│                    │◀──────│                   │
 │ id           │       │ user_id            │       │ id                │
@@ -175,23 +188,23 @@ dealer（经销商管理 SaaS）                     一级目录
 └──────────────┘       └────────────────────┘       └───────────────────┘
                                                             │
                                                    N:M      │
-        ┌────────────────────┐       ┌──────────────────────┴──────┐
-        │ executor_product_  │       │ dealer_product_line_relation │
-        │ line_scope         │       │ (经销商-产品线关联)           │
-        │ (执行员-产品线授权)  │       │                              │
-        │                    │       │ dealer_id                    │
-        │ user_id            │       │ product_line_id              │
-        │ product_line_id    │       └──────────────────────────────┘
+        ┌────────────────────┐       ┌──────────────────────┴──────────┐
+        │ops_executor_product│       │ops_dealer_product_line_relation │
+        │_line_scope         │       │ (经销商-产品线关联)              │
+        │ (执行员-产品线授权)  │       │                                 │
+        │                    │       │ dealer_id                       │
+        │ user_id            │       │ product_line_id                 │
+        │ product_line_id    │       └────────────────────────────────┘
         └────────────────────┘                   │
                │                                 │ N:1
                │                                 ▼
-               │                      ┌───────────────────┐
-               └─────────────────────▶│ dealer_product_line│
-                                      │  (产品线实体)       │
-                                      │ id                 │
-                                      │ name               │
-                                      │ code               │
-                                      └───────────────────┘
+               │                      ┌─────────────────────┐
+               └─────────────────────▶│ops_dealer_product_line│
+                                      │  (产品线实体)         │
+                                      │ id                  │
+                                      │ name                │
+                                      │ code                │
+                                      └─────────────────────┘
 ```
 
 ### 4.2 表清单
@@ -378,18 +391,18 @@ VALUES
 
 > `data_scope = 1 (ALL)`：实际的数据过滤由 `DealerDataPermissionRule` 基于扩展表实现，不依赖 `RoleDO.dataScope`。
 
-### 4.5 RoleCodeEnum 枚举扩展
+### 4.5 OpsRoleCodeConstants（角色标识常量）
 
 ```java
-public enum RoleCodeEnum {
-    SUPER_ADMIN("super_admin", "超级管理员"),
-    TENANT_ADMIN("tenant_admin", "租户管理员"),
-    CRM_ADMIN("crm_admin", "CRM 管理员"),
-    // --- 经销商 SaaS 业务角色 ---
-    BRAND_ADMIN("brand_admin", "品牌管理员"),
-    BRAND_SALES("brand_sales", "品牌销售员"),
-    SERVICE_EXECUTOR("service_executor", "服务单执行员"),
-    DEALER("dealer", "经销商");
+// 不修改 RoleCodeEnum，在 opshub 模块内通过字符串常量引用
+public interface OpsRoleCodeConstants {
+    String BRAND_ADMIN = "brand_admin";
+    String BRAND_SALES = "brand_sales";
+    String SERVICE_EXECUTOR = "service_executor";
+    String DEALER = "dealer";
+
+    Set<String> PRODUCT_LINE_SCOPE_ROLES = Set.of(BRAND_ADMIN, BRAND_SALES, SERVICE_EXECUTOR);
+    Set<String> DEALER_SCOPE_ROLES = Set.of(DEALER);
 }
 ```
 
@@ -404,8 +417,8 @@ public enum RoleCodeEnum {
 ```
 1. 获取 LoginUser → 判断角色 (currentRoleCode)
 2. 根据角色查询对应的扩展表：
-   - dealer 角色 → 查 dealer_user_scope WHERE user_id = ? → 获得 dealer_ids
-   - 执行员/管理员/销售员 → 查 executor_product_line_scope WHERE user_id = ? → 获得 product_line_ids
+   - dealer 角色 → 查 ops_dealer_user_scope WHERE user_id = ? → 获得 dealer_ids
+   - 执行员/管理员/销售员 → 查 ops_executor_product_line_scope WHERE user_id = ? → 获得 product_line_ids
 3. 根据表配置生成 WHERE 条件：
    - super_admin → null（不附加条件）
    - brand_admin / brand_sales → 若有 product_line_ids → WHERE product_line_id IN (...)
@@ -465,37 +478,37 @@ cn.iocoder.yudao.module.system
 
 | 方法 | 路径 | 权限 | 说明 |
 |------|------|------|------|
-| POST | `/system/dealer/create` | `dealer:mgmt:create` | 新增经销商 |
-| PUT | `/system/dealer/update` | `dealer:mgmt:update` | 编辑经销商 |
-| DELETE | `/system/dealer/delete?id=` | `dealer:mgmt:delete` | 删除经销商 |
-| GET | `/system/dealer/get?id=` | `dealer:mgmt:query` | 获取单个经销商 |
-| GET | `/system/dealer/page` | `dealer:mgmt:query` | 分页查询经销商 |
-| POST | `/system/dealer/bind-product` | `dealer:mgmt:bindproduct` | 绑定产品线 |
-| DELETE | `/system/dealer/unbind-product` | `dealer:mgmt:bindproduct` | 解绑产品线 |
-| GET | `/system/dealer/product-lines?dealerId=` | `dealer:mgmt:query` | 查看经销商已绑定产品线 |
-| POST | `/system/dealer/bind-user` | `dealer:mgmt:binduser` | 绑定用户 |
-| DELETE | `/system/dealer/unbind-user` | `dealer:mgmt:binduser` | 解绑用户 |
-| GET | `/system/dealer/users?dealerId=` | `dealer:mgmt:query` | 查看经销商关联用户 |
+| POST | `/opshub/dealer/create` | `dealer:mgmt:create` | 新增经销商 |
+| PUT | `/opshub/dealer/update` | `dealer:mgmt:update` | 编辑经销商 |
+| DELETE | `/opshub/dealer/delete?id=` | `dealer:mgmt:delete` | 删除经销商 |
+| GET | `/opshub/dealer/get?id=` | `dealer:mgmt:query` | 获取单个经销商 |
+| GET | `/opshub/dealer/page` | `dealer:mgmt:query` | 分页查询经销商 |
+| GET | `/opshub/dealer/simple-list` | `dealer:mgmt:query` | 经销商精简列表（下拉选用） |
 
 #### 产品线管理
 
 | 方法 | 路径 | 权限 | 说明 |
 |------|------|------|------|
-| POST | `/system/product-line/create` | `dealer:productline:create` | 新增产品线 |
-| PUT | `/system/product-line/update` | `dealer:productline:update` | 编辑产品线 |
-| DELETE | `/system/product-line/delete?id=` | `dealer:productline:delete` | 删除产品线 |
-| GET | `/system/product-line/get?id=` | `dealer:productline:query` | 获取单个产品线 |
-| GET | `/system/product-line/page` | `dealer:productline:query` | 分页查询产品线 |
-| GET | `/system/product-line/simple-list` | `dealer:productline:query` | 产品线简单列表（下拉选用） |
+| POST | `/opshub/product-line/create` | `dealer:productline:create` | 新增产品线 |
+| PUT | `/opshub/product-line/update` | `dealer:productline:update` | 编辑产品线 |
+| DELETE | `/opshub/product-line/delete?id=` | `dealer:productline:delete` | 删除产品线 |
+| GET | `/opshub/product-line/get?id=` | `dealer:productline:query` | 获取单个产品线 |
+| GET | `/opshub/product-line/page` | `dealer:productline:query` | 分页查询产品线 |
+| GET | `/opshub/product-line/simple-list` | `dealer:productline:query` | 产品线简单列表（下拉选用） |
+| POST | `/opshub/product-line/bind-dealer` | `dealer:productline:binddealer` | 绑定经销商 |
+| DELETE | `/opshub/product-line/unbind-dealer` | `dealer:productline:binddealer` | 解绑经销商 |
+| GET | `/opshub/product-line/dealers?productLineId=` | `dealer:productline:query` | 查看产品线已绑定经销商 |
 
 #### 用户授权管理
 
 | 方法 | 路径 | 权限 | 说明 |
 |------|------|------|------|
-| GET | `/system/dealer-scope/list?userId=` | `system:user:query` | 查看用户授权的经销商 |
-| POST | `/system/dealer-scope/assign` | `system:user:update` | 分配用户经销商授权 |
-| GET | `/system/product-line-scope/list?userId=` | `system:user:query` | 查看用户授权的产品线 |
-| POST | `/system/product-line-scope/assign` | `system:user:update` | 分配用户产品线授权 |
+| GET | `/opshub/dealer-scope/list?userId=` | `system:user:query` | 查看用户授权的经销商 ID 列表 |
+| POST | `/opshub/dealer-scope/assign` | `system:user:update` | 分配用户经销商授权（全量替换） |
+| GET | `/opshub/dealer-scope/users?dealerId=` | `system:user:query` | 查看经销商关联的所有代理人用户 ID |
+| GET | `/opshub/product-line-scope/list?userId=` | `system:user:query` | 查看用户授权的产品线 ID 列表 |
+| POST | `/opshub/product-line-scope/assign` | `system:user:update` | 分配用户产品线授权（全量替换） |
+| GET | `/opshub/product-line-scope/users?productLineId=` | `system:user:query` | 查看产品线关联的所有执行员用户 ID |
 
 ---
 
@@ -503,35 +516,42 @@ cn.iocoder.yudao.module.system
 
 ### 7.1 经销商管理页面
 
-**路径**: `views/system/dealer/index.vue`
+**路径**: `views/opshub/dealer/index.vue`
 
 **页面结构**:
 - 顶部：搜索栏（名称/编码/状态） + 新增按钮
-- 主体：经销商列表表格（名称/编码/联系人/电话/状态/已绑定产品线/关联用户/操作）
-- 操作列：编辑、删除、管理产品线、管理用户
+- 主体：经销商列表表格（名称/编码/联系人/电话/状态/操作）
+- 操作列：编辑、删除
 
 **弹窗组件**:
 - `DealerForm.vue` — 经销商新增/编辑表单
-- `DealerProductLineBindForm.vue` — 产品线绑定/解绑（穿梭框或多选下拉）
-- `DealerUserBindForm.vue` — 用户绑定/解绑（穿梭框或用户选择器）
 
 ### 7.2 产品线管理页面
 
-**路径**: `views/system/productLine/index.vue`
+**路径**: `views/opshub/productLine/index.vue`
 
 **页面结构**:
 - 顶部：搜索栏（名称/编码/状态） + 新增按钮
 - 主体：产品线列表表格（名称/编码/排序/状态/操作）
-- 操作列：编辑、删除
+- 操作列：管理经销商、编辑、删除
 
 **弹窗组件**:
 - `ProductLineForm.vue` — 产品线新增/编辑表单
+- `ProductLineDealerBindForm.vue` — 经销商绑定/解绑弹窗
 
-### 7.3 用户管理页面扩展
+### 7.3 授权管理页面（新建）
 
-在现有的 `views/system/user/UserForm.vue` 中扩展：
-- 当分配的角色包含 `dealer` 时，显示「授权经销商」多选框
-- 当分配的角色包含 `service_executor` / `brand_admin` / `brand_sales` 时，显示「授权产品线」多选框
+**路径**: `views/opshub/scope/index.vue`
+
+**页面结构**:
+- 两个 Tab：
+  - **服务单执行员**：用户选择器（下拉框） + 已授权产品线列表 + 添加/移除操作
+  - **经销商**：用户选择器（下拉框） + 已授权经销商列表 + 添加/移除操作
+
+### 7.4 用户管理页面
+
+用户管理页面 (`views/system/user/UserForm.vue`) **不包含** OpsHub 授权选择器。
+授权管理统一由新的“授权管理”菜单页面负责。
 
 ---
 
@@ -544,7 +564,7 @@ cn.iocoder.yudao.module.system
 | 菜单创建 | 前端登录后确认菜单树正确渲染，权限按钮按角色显隐 |
 | 经销商 CRUD | 通过 API 或前端页面完成增删改查操作 |
 | 产品线 CRUD | 通过 API 或前端页面完成增删改查操作 |
-| 关联管理 | 经销商绑定/解绑产品线、绑定/解绑用户 |
+| 关联管理 | 产品线绑定/解绑经销商、授权管理页面分配授权 |
 | 数据权限 | 分别用 4 种角色登录，验证查询结果的数据范围是否正确过滤 |
 
 ---
@@ -564,15 +584,16 @@ cn.iocoder.yudao.module.system
 │ 产品线管理│ 基础数据   │           │                       │
 │ 授权扩展表│           │           │                       │
 │ 数据权限  │           │           │                       │
+│ 授权管理  │           │           │                       │
 └──────────┴───────────┴───────────┴───────────────────────┘
 ```
 
 **Step 1 输出物**：
 1. ✅ 5 张数据表 + DDL
-2. ✅ 4 个业务角色 + 菜单树 + 按钮权限
-3. ✅ 经销商管理（CRUD + 绑定产品线 + 绑定用户）
-4. ✅ 产品线管理（CRUD）
-5. ✅ 用户授权管理（经销商授权 + 产品线授权）
+2. ✅ 4 个业务角色 + 菜单树 + 按钮权限（含授权管理菜单）
+3. ✅ 经销商管理（纯 CRUD）
+4. ✅ 产品线管理（CRUD + 管理经销商）
+5. ✅ 授权管理页面（2 Tabs：服务单执行员 / 经销商）
 6. ✅ DealerDataPermissionRule 数据权限基础
-7. ✅ 前端经销商管理页面 + 产品线管理页面
-8. ✅ 用户管理页面扩展（授权范围配置）
+7. ✅ 前端经销商管理页面 + 产品线管理页面 + 授权管理页面
+8. ✅ 用户管理页面不包含 OpsHub 授权选择器
