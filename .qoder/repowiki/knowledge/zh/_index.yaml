@@ -1,0 +1,1937 @@
+# 知识卡导出索引文件
+schema_version: 1
+locale: zh-CN
+branch: main
+exported_at: "2026-06-13T05:38:18Z"
+modules:
+    "":
+        dir_name: 芋道企业级快速开发平台
+        title: 芋道企业级快速开发平台
+        scope:
+            - .flattened-pom.xml
+            - .gitignore
+            - AGENTS.md
+            - LICENSE
+            - README.md
+            - STARTUP.md
+            - lombok.config
+            - pom.xml
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    deployment_scripts:
+        dir_name: 部署与运维脚本
+        title: 部署与运维脚本
+        scope:
+            - script/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: server
+            - path: frontend_admin/app_entry
+            - path: frontend_admin/app_framework
+    framework:
+        dir_name: 芋道框架核心组件与业务增强套件
+        title: 芋道框架核心组件与业务增强套件
+        scope:
+            - yudao-framework/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/system_management/tenant
+            - path: sql_scripts
+            - path: frontend_admin/crm_customer
+            - path: frontend_admin/mall_ecommerce/trade
+            - path: frontend_admin/infra_infrastructure/api_log
+            - path: frontend_admin/app_framework
+            - path: frontend_admin/infra_infrastructure/config
+            - path: frontend_admin/system_management/login_log
+            - path: frontend_admin/infra_infrastructure/redis
+            - path: frontend_admin/erp_enterprise
+            - path: frontend_admin/crm_customer/crm_receivable
+            - path: frontend_admin/erp_enterprise/purchase
+            - path: frontend_admin/mall_ecommerce
+            - path: frontend_admin/system_management/oauth2
+            - path: frontend_admin/mes_manufacturing/pro
+            - path: frontend_admin/mp_wechat
+    frontend_admin:
+        dir_name: 企业级多业务中台管理前端
+        title: 企业级多业务中台管理前端
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/
+        source_files: []
+        children:
+            - frontend_admin/erp_enterprise
+            - frontend_admin/crm_customer
+            - frontend_admin/app_entry
+            - frontend_admin/ui_components
+            - frontend_admin/error_views
+            - frontend_admin/app_framework
+            - frontend_admin/mp_wechat
+            - frontend_admin/iot_platform
+            - frontend_admin/mes_manufacturing
+            - frontend_admin/wms_warehouse
+            - frontend_admin/ui_utilities
+            - frontend_admin/ai_intelligence
+            - frontend_admin/payment
+            - frontend_admin/mall_ecommerce
+            - frontend_admin/im_chat
+            - frontend_admin/app_plugins
+            - frontend_admin/app_types_assets
+            - frontend_admin/system_management
+            - frontend_admin/infra_infrastructure
+            - frontend_admin/member_center
+            - frontend_admin/bpm_workflow
+            - frontend_admin/core_views
+        depends_on: []
+        related_to: []
+    frontend_admin/ai_intelligence:
+        dir_name: AI 智能应用集成中心
+        title: AI 智能应用集成中心
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/ai/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/ai/
+        source_files: []
+        children:
+            - frontend_admin/ai_intelligence/music
+            - frontend_admin/ai_intelligence/knowledge
+            - frontend_admin/ai_intelligence/write
+            - frontend_admin/ai_intelligence/image
+            - frontend_admin/ai_intelligence/workflow
+            - frontend_admin/ai_intelligence/chat
+            - frontend_admin/ai_intelligence/mindmap
+            - frontend_admin/ai_intelligence/model
+        depends_on: []
+        related_to: []
+    frontend_admin/ai_intelligence/chat:
+        dir_name: AI 智能对话交互与管理
+        title: AI 智能对话交互与管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/ai/chat/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/ai/chat/
+        source_files: []
+        children:
+            - frontend_admin/ai_intelligence/chat/chat_interface
+            - frontend_admin/ai_intelligence/chat/chat_manager
+        depends_on: []
+        related_to:
+            - path: frontend_admin/ai_intelligence/model
+            - path: frontend_admin/ai_intelligence/knowledge
+            - path: frontend_admin/ai_intelligence/knowledge/segment
+    frontend_admin/ai_intelligence/chat/chat_interface:
+        dir_name: AI 智能对话交互模块
+        title: AI 智能对话交互模块
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/ai/chat/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/ai/chat/index/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/ai_intelligence/chat/chat_manager
+            - path: frontend_admin/ai_intelligence/workflow
+            - path: frontend_admin/ai_intelligence/image
+            - path: frontend_admin/ai_intelligence/knowledge/document
+            - path: frontend_admin/ai_intelligence/write
+            - path: frontend_admin/ai_intelligence/knowledge/segment
+            - path: frontend_admin/ai_intelligence/model/api_key
+            - path: frontend_admin/ai_intelligence/model/chat_role
+            - path: frontend_admin/ai_intelligence/model/tool
+    frontend_admin/ai_intelligence/chat/chat_manager:
+        dir_name: AI 聊天管理
+        title: AI 聊天管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/views/ai/chat/manager/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/ai_intelligence/chat/chat_interface
+            - path: frontend_admin/ai_intelligence/model/model_config
+            - path: frontend_admin/ai_intelligence/knowledge/knowledge_base
+            - path: frontend_admin/ai_intelligence/model/api_key
+    frontend_admin/ai_intelligence/image:
+        dir_name: AI 图像生成与管理
+        title: AI 图像生成与管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/ai/image/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/ai/image/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/ai_intelligence/model
+            - path: frontend_admin/ai_intelligence/music
+            - path: frontend_admin/ai_intelligence/model/model_config
+            - path: frontend_admin/ai_intelligence/chat/chat_interface
+    frontend_admin/ai_intelligence/knowledge:
+        dir_name: AI知识库管理模块
+        title: AI知识库管理模块
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/ai/knowledge/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/ai/knowledge/
+        source_files: []
+        children:
+            - frontend_admin/ai_intelligence/knowledge/segment
+            - frontend_admin/ai_intelligence/knowledge/knowledge_base
+            - frontend_admin/ai_intelligence/knowledge/document
+        depends_on: []
+        related_to:
+            - path: frontend_admin/ai_intelligence/chat
+            - path: frontend_admin/ai_intelligence/workflow
+    frontend_admin/ai_intelligence/knowledge/document:
+        dir_name: 知识库文档管理
+        title: 知识库文档管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/ai/knowledge/document/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/ai/knowledge/document/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/ai_intelligence/knowledge/segment
+            - path: frontend_admin/ai_intelligence/chat/chat_interface
+            - path: frontend_admin/ai_intelligence/model/model_config
+    frontend_admin/ai_intelligence/knowledge/knowledge_base:
+        dir_name: 知识库管理
+        title: 知识库管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/ai/knowledge/knowledge/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/ai/knowledge/knowledge/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/ai_intelligence/model/model_config
+            - path: frontend_admin/ai_intelligence/chat/chat_manager
+    frontend_admin/ai_intelligence/knowledge/segment:
+        dir_name: 知识库分段管理
+        title: 知识库分段管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/ai/knowledge/segment/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/ai/knowledge/segment/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/ai_intelligence/knowledge/document
+            - path: frontend_admin/ai_intelligence/chat
+            - path: frontend_admin/ai_intelligence/chat/chat_interface
+    frontend_admin/ai_intelligence/mindmap:
+        dir_name: AI思维导图生成与管理
+        title: AI思维导图生成与管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/ai/mindmap/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/ai/mindmap/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/ai_intelligence/write
+    frontend_admin/ai_intelligence/model:
+        dir_name: AI模型基础配置中心
+        title: AI模型基础配置中心
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/ai/model/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/ai/model/
+        source_files: []
+        children:
+            - frontend_admin/ai_intelligence/model/tool
+            - frontend_admin/ai_intelligence/model/model_config
+            - frontend_admin/ai_intelligence/model/api_key
+            - frontend_admin/ai_intelligence/model/chat_role
+        depends_on: []
+        related_to:
+            - path: frontend_admin/ai_intelligence/chat
+            - path: frontend_admin/ai_intelligence/image
+    frontend_admin/ai_intelligence/model/api_key:
+        dir_name: AI API密钥管理
+        title: AI API密钥管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/ai/model/apiKey/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/ai/model/apiKey/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/ai_intelligence/model/model_config
+            - path: frontend_admin/ai_intelligence/model/chat_role
+            - path: frontend_admin/ai_intelligence/chat/chat_interface
+            - path: frontend_admin/ai_intelligence/chat/chat_manager
+    frontend_admin/ai_intelligence/model/chat_role:
+        dir_name: AI 聊天角色管理
+        title: AI 聊天角色管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/ai/model/chatRole/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/ai/model/chatRole/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/ai_intelligence/model/model_config
+            - path: frontend_admin/ai_intelligence/model/api_key
+            - path: frontend_admin/ai_intelligence/chat/chat_interface
+    frontend_admin/ai_intelligence/model/model_config:
+        dir_name: AI模型配置管理
+        title: AI模型配置管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/ai/model/model/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/ai/model/model/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/ai_intelligence/model/api_key
+            - path: frontend_admin/ai_intelligence/model/chat_role
+            - path: frontend_admin/ai_intelligence/image
+            - path: frontend_admin/ai_intelligence/knowledge/knowledge_base
+            - path: frontend_admin/ai_intelligence/write
+            - path: frontend_admin/ai_intelligence/chat/chat_manager
+            - path: frontend_admin/ai_intelligence/music
+            - path: frontend_admin/ai_intelligence/knowledge/document
+    frontend_admin/ai_intelligence/model/tool:
+        dir_name: AI工具管理
+        title: AI工具管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/ai/model/tool/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/ai/model/tool/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/ai_intelligence/workflow
+            - path: frontend_admin/ai_intelligence/chat/chat_interface
+    frontend_admin/ai_intelligence/music:
+        dir_name: AI 音乐创作与管理
+        title: AI 音乐创作与管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/ai/music/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/ai/music/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/ai_intelligence/image
+            - path: frontend_admin/ai_intelligence/model/model_config
+    frontend_admin/ai_intelligence/workflow:
+        dir_name: AI工作流管理
+        title: AI工作流管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/ai/workflow/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/ai/workflow/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/ai_intelligence/knowledge
+            - path: frontend_admin/ai_intelligence/model/tool
+            - path: frontend_admin/ai_intelligence/chat/chat_interface
+    frontend_admin/ai_intelligence/write:
+        dir_name: AI 智能写作助手
+        title: AI 智能写作助手
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/ai/write/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/ai/write/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/ai_intelligence/mindmap
+            - path: frontend_admin/ai_intelligence/model/model_config
+            - path: frontend_admin/ai_intelligence/chat/chat_interface
+    frontend_admin/app_entry:
+        dir_name: 应用入口与路由守卫
+        title: 应用入口与路由守卫
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/main.ts
+            - yudao-ui/yudao-ui-admin-vue3/src/App.vue
+            - yudao-ui/yudao-ui-admin-vue3/src/permission.ts
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/app_framework
+            - path: frontend_admin/error_views
+            - path: deployment_scripts
+            - path: frontend_admin/system_management/menu
+            - path: frontend_admin/ui_components
+            - path: frontend_admin/ui_utilities
+            - path: frontend_admin/app_types_assets
+    frontend_admin/app_framework:
+        dir_name: 前端应用基础框架
+        title: 前端应用基础框架
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/router/
+            - yudao-ui/yudao-ui-admin-vue3/src/store/
+            - yudao-ui/yudao-ui-admin-vue3/src/config/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/crm_customer
+            - path: frontend_admin/app_entry
+            - path: framework
+            - path: deployment_scripts
+            - path: frontend_admin/ui_utilities
+            - path: frontend_admin/error_views
+    frontend_admin/app_plugins:
+        dir_name: 前端应用插件与指令配置
+        title: 前端应用插件与指令配置
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/plugins/
+            - yudao-ui/yudao-ui-admin-vue3/src/directives/
+            - yudao-ui/yudao-ui-admin-vue3/src/locales/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/ui_utilities
+            - path: frontend_admin/core_views
+            - path: frontend_admin/error_views
+            - path: frontend_admin/app_types_assets
+    frontend_admin/app_types_assets:
+        dir_name: 前端基础资源与类型定义
+        title: 前端基础资源与类型定义
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/types/
+            - yudao-ui/yudao-ui-admin-vue3/src/styles/
+            - yudao-ui/yudao-ui-admin-vue3/src/assets/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/ui_components
+            - path: frontend_admin/app_plugins
+            - path: frontend_admin/app_entry
+    frontend_admin/bpm_workflow:
+        dir_name: BPM 工作流管理前端
+        title: BPM 工作流管理前端
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/bpm/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/bpm/
+        source_files: []
+        children:
+            - frontend_admin/bpm_workflow/oa_leave
+            - frontend_admin/bpm_workflow/task_management
+            - frontend_admin/bpm_workflow/process_instance
+            - frontend_admin/bpm_workflow/configuration
+            - frontend_admin/bpm_workflow/model_definition
+            - frontend_admin/bpm_workflow/form_design
+        depends_on: []
+        related_to:
+            - path: module_bpm
+            - path: frontend_admin/ui_components
+    frontend_admin/bpm_workflow/configuration:
+        dir_name: BPM 流程配置管理
+        title: BPM 流程配置管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/bpm/category/
+            - yudao-ui/yudao-ui-admin-vue3/src/api/bpm/userGroup/
+            - yudao-ui/yudao-ui-admin-vue3/src/api/bpm/processListener/
+            - yudao-ui/yudao-ui-admin-vue3/src/api/bpm/processExpression/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/bpm/category/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/bpm/group/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/bpm/processListener/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/bpm/processExpression/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/system_management/user
+            - path: frontend_admin/bpm_workflow/model_definition
+            - path: frontend_admin/bpm_workflow/task_management
+            - path: frontend_admin/bpm_workflow/form_design
+            - path: frontend_admin/bpm_workflow/process_instance
+    frontend_admin/bpm_workflow/form_design:
+        dir_name: BPM 动态表单设计与管理
+        title: BPM 动态表单设计与管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/bpm/form/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/bpm/form/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/bpm_workflow/process_instance
+            - path: frontend_admin/system_management/menu
+            - path: frontend_admin/bpm_workflow/model_definition
+            - path: frontend_admin/bpm_workflow/configuration
+    frontend_admin/bpm_workflow/model_definition:
+        dir_name: BPM流程模型定义与管理
+        title: BPM流程模型定义与管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/bpm/model/
+            - yudao-ui/yudao-ui-admin-vue3/src/api/bpm/definition/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/bpm/model/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/bpm_workflow/task_management
+            - path: frontend_admin/ui_components
+            - path: frontend_admin/bpm_workflow/configuration
+            - path: frontend_admin/bpm_workflow/form_design
+            - path: frontend_admin/bpm_workflow/process_instance
+            - path: frontend_admin/bpm_workflow/oa_leave
+    frontend_admin/bpm_workflow/oa_leave:
+        dir_name: OA请假管理
+        title: OA请假管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/bpm/leave/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/bpm/oa/leave/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/bpm_workflow/process_instance
+            - path: frontend_admin/bpm_workflow/task_management
+            - path: frontend_admin/bpm_workflow/model_definition
+    frontend_admin/bpm_workflow/process_instance:
+        dir_name: 流程实例全生命周期管理
+        title: 流程实例全生命周期管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/bpm/processInstance/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/bpm/processInstance/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/bpm_workflow/form_design
+            - path: frontend_admin/bpm_workflow/oa_leave
+            - path: frontend_admin/infra_infrastructure/file
+            - path: frontend_admin/bpm_workflow/task_management
+            - path: frontend_admin/bpm_workflow/model_definition
+            - path: frontend_admin/bpm_workflow/configuration
+    frontend_admin/bpm_workflow/task_management:
+        dir_name: BPM 任务管理与审批中心
+        title: BPM 任务管理与审批中心
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/bpm/task/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/bpm/task/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/bpm_workflow/model_definition
+            - path: frontend_admin/system_management/notify
+            - path: frontend_admin/bpm_workflow/process_instance
+            - path: frontend_admin/bpm_workflow/oa_leave
+            - path: frontend_admin/bpm_workflow/configuration
+    frontend_admin/core_views:
+        dir_name: 核心视图与认证交互
+        title: 核心视图与认证交互
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/views/Home/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/Login/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/Profile/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/system_management/user
+            - path: frontend_admin/error_views
+            - path: frontend_admin/app_plugins
+    frontend_admin/crm_customer:
+        dir_name: CRM客户全生命周期管理
+        title: CRM客户全生命周期管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/crm/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/crm/
+        source_files: []
+        children:
+            - frontend_admin/crm_customer/crm_permission
+            - frontend_admin/crm_customer/crm_clue
+            - frontend_admin/crm_customer/crm_statistics
+            - frontend_admin/crm_customer/crm_business
+            - frontend_admin/crm_customer/crm_product
+            - frontend_admin/crm_customer/crm_backlog
+            - frontend_admin/crm_customer/crm_receivable
+            - frontend_admin/crm_customer/crm_customer
+            - frontend_admin/crm_customer/crm_contact
+            - frontend_admin/crm_customer/crm_contract
+            - frontend_admin/crm_customer/crm_followup
+        depends_on: []
+        related_to:
+            - path: frontend_admin/app_framework
+            - path: framework
+    frontend_admin/crm_customer/crm_backlog:
+        dir_name: CRM待办事项与跟进管理
+        title: CRM待办事项与跟进管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/views/crm/backlog/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/crm_customer/crm_contract
+            - path: frontend_admin/crm_customer/crm_clue
+            - path: frontend_admin/crm_customer/crm_receivable
+            - path: frontend_admin/crm_customer/crm_statistics
+            - path: frontend_admin/crm_customer/crm_permission
+            - path: frontend_admin/crm_customer/crm_followup
+            - path: frontend_admin/crm_customer/crm_contact
+    frontend_admin/crm_customer/crm_business:
+        dir_name: CRM商机管理
+        title: CRM商机管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/crm/business/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/crm/business/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/crm_customer/crm_contract
+            - path: frontend_admin/crm_customer/crm_contact
+            - path: frontend_admin/crm_customer/crm_statistics
+            - path: frontend_admin/crm_customer/crm_permission
+    frontend_admin/crm_customer/crm_clue:
+        dir_name: CRM线索管理
+        title: CRM线索管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/crm/clue/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/crm/clue/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/crm_customer/crm_customer
+            - path: frontend_admin/crm_customer/crm_followup
+            - path: frontend_admin/crm_customer/crm_backlog
+    frontend_admin/crm_customer/crm_contact:
+        dir_name: CRM联系人管理
+        title: CRM联系人管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/crm/contact/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/crm/contact/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/crm_customer/crm_business
+            - path: frontend_admin/crm_customer/crm_permission
+            - path: frontend_admin/crm_customer/crm_backlog
+    frontend_admin/crm_customer/crm_contract:
+        dir_name: CRM合同管理
+        title: CRM合同管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/crm/contract/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/crm/contract/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/crm_customer/crm_business
+            - path: frontend_admin/crm_customer/crm_receivable
+            - path: frontend_admin/crm_customer/crm_backlog
+    frontend_admin/crm_customer/crm_customer:
+        dir_name: CRM客户管理模块
+        title: CRM客户管理模块
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/crm/customer/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/crm/customer/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/crm_customer/crm_clue
+            - path: frontend_admin/crm_customer/crm_permission
+            - path: frontend_admin/erp_enterprise/sale
+            - path: frontend_admin/system_management/dict
+            - path: frontend_admin/system_management/notify
+            - path: frontend_admin/ui_components
+            - path: frontend_admin/crm_customer/crm_followup
+            - path: frontend_admin/crm_customer/crm_statistics
+    frontend_admin/crm_customer/crm_followup:
+        dir_name: CRM跟进记录管理
+        title: CRM跟进记录管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/crm/followup/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/crm/followup/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/crm_customer/crm_clue
+            - path: frontend_admin/crm_customer/crm_customer
+            - path: frontend_admin/crm_customer/crm_backlog
+    frontend_admin/crm_customer/crm_permission:
+        dir_name: CRM 数据权限与团队管理
+        title: CRM 数据权限与团队管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/crm/permission/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/crm/permission/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/crm_customer/crm_customer
+            - path: frontend_admin/crm_customer/crm_contact
+            - path: frontend_admin/crm_customer/crm_business
+            - path: frontend_admin/crm_customer/crm_backlog
+    frontend_admin/crm_customer/crm_product:
+        dir_name: CRM产品管理
+        title: CRM产品管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/crm/product/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/crm/product/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/erp_enterprise/product
+    frontend_admin/crm_customer/crm_receivable:
+        dir_name: CRM回款与回款计划管理
+        title: CRM回款与回款计划管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/crm/receivable/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/crm/receivable/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/crm_customer/crm_contract
+            - path: frontend_admin/crm_customer/crm_statistics
+            - path: framework
+            - path: frontend_admin/crm_customer/crm_backlog
+    frontend_admin/crm_customer/crm_statistics:
+        dir_name: CRM数据统计与可视化
+        title: CRM数据统计与可视化
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/crm/statistics/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/crm/statistics/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/crm_customer/crm_receivable
+            - path: frontend_admin/crm_customer/crm_business
+            - path: frontend_admin/crm_customer/crm_backlog
+            - path: frontend_admin/crm_customer/crm_customer
+    frontend_admin/erp_enterprise:
+        dir_name: ERP 业务协同与财务结算中心
+        title: ERP 业务协同与财务结算中心
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/erp/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/erp/
+        source_files: []
+        children:
+            - frontend_admin/erp_enterprise/stock
+            - frontend_admin/erp_enterprise/purchase
+            - frontend_admin/erp_enterprise/sale
+            - frontend_admin/erp_enterprise/finance
+            - frontend_admin/erp_enterprise/product
+        depends_on: []
+        related_to:
+            - path: frontend_admin/ui_utilities
+            - path: framework
+    frontend_admin/erp_enterprise/finance:
+        dir_name: ERP财务结算管理
+        title: ERP财务结算管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/erp/finance/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/erp/finance/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/erp_enterprise/sale
+            - path: frontend_admin/erp_enterprise/stock
+            - path: frontend_admin/erp_enterprise/purchase
+            - path: frontend_admin/system_management/tenant
+            - path: frontend_admin/erp_enterprise/product
+            - path: frontend_admin/system_management/tenant_package
+    frontend_admin/erp_enterprise/product:
+        dir_name: ERP 产品基础数据管理
+        title: ERP 产品基础数据管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/erp/product/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/erp/product/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/erp_enterprise/stock
+            - path: frontend_admin/crm_customer/crm_product
+            - path: frontend_admin/erp_enterprise/sale
+            - path: frontend_admin/erp_enterprise/purchase
+            - path: frontend_admin/erp_enterprise/finance
+    frontend_admin/erp_enterprise/purchase:
+        dir_name: ERP采购业务管理
+        title: ERP采购业务管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/erp/purchase/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/erp/purchase/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/erp_enterprise/sale
+            - path: frontend_admin/erp_enterprise/stock
+            - path: frontend_admin/mes_manufacturing/md
+            - path: frontend_admin/erp_enterprise/finance
+            - path: framework
+            - path: frontend_admin/erp_enterprise/product
+    frontend_admin/erp_enterprise/sale:
+        dir_name: ERP销售业务管理
+        title: ERP销售业务管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/erp/sale/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/erp/sale/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/erp_enterprise/purchase
+            - path: frontend_admin/erp_enterprise/finance
+            - path: frontend_admin/crm_customer/crm_customer
+            - path: frontend_admin/erp_enterprise/stock
+            - path: frontend_admin/erp_enterprise/product
+            - path: frontend_admin/ui_components
+            - path: frontend_admin/system_management/tenant
+    frontend_admin/erp_enterprise/stock:
+        dir_name: ERP库存管理
+        title: ERP库存管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/erp/stock/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/erp/stock/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/erp_enterprise/purchase
+            - path: frontend_admin/erp_enterprise/product
+            - path: frontend_admin/erp_enterprise/finance
+            - path: frontend_admin/mes_manufacturing/wm
+            - path: frontend_admin/erp_enterprise/sale
+    frontend_admin/error_views:
+        dir_name: 异常处理与路由桥接视图
+        title: 异常处理与路由桥接视图
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/views/Error/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/Redirect/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/IFrame/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/app_entry
+            - path: frontend_admin/core_views
+            - path: frontend_admin/app_plugins
+            - path: frontend_admin/app_framework
+    frontend_admin/im_chat:
+        dir_name: 即时通讯（IM）核心模块
+        title: 即时通讯（IM）核心模块
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/im/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/im/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/member_center
+            - path: frontend_admin/mp_wechat
+    frontend_admin/infra_infrastructure:
+        dir_name: 基础设施运维与开发支撑中心
+        title: 基础设施运维与开发支撑中心
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/infra/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/infra/
+        source_files: []
+        children:
+            - frontend_admin/infra_infrastructure/job
+            - frontend_admin/infra_infrastructure/data_source
+            - frontend_admin/infra_infrastructure/redis
+            - frontend_admin/infra_infrastructure/codegen
+            - frontend_admin/infra_infrastructure/file
+            - frontend_admin/infra_infrastructure/config
+            - frontend_admin/infra_infrastructure/api_log
+            - frontend_admin/infra_infrastructure/demo
+        depends_on: []
+        related_to: []
+    frontend_admin/infra_infrastructure/api_log:
+        dir_name: API 访问与错误日志管理
+        title: API 访问与错误日志管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/infra/apiAccessLog/
+            - yudao-ui/yudao-ui-admin-vue3/src/api/infra/apiErrorLog/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/infra/apiAccessLog/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/infra/apiErrorLog/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/infra_infrastructure/job
+            - path: framework
+            - path: frontend_admin/infra_infrastructure/codegen
+            - path: frontend_admin/infra_infrastructure/redis
+            - path: frontend_admin/infra_infrastructure/config
+    frontend_admin/infra_infrastructure/codegen:
+        dir_name: 代码生成器管理模块
+        title: 代码生成器管理模块
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/infra/codegen/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/infra/codegen/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: module_infra
+            - path: frontend_admin/infra_infrastructure/job
+            - path: sql_scripts
+            - path: frontend_admin/infra_infrastructure/data_source
+            - path: frontend_admin/mall_ecommerce/product
+            - path: frontend_admin/infra_infrastructure/api_log
+            - path: frontend_admin/infra_infrastructure/file
+    frontend_admin/infra_infrastructure/config:
+        dir_name: 基础设施配置管理
+        title: 基础设施配置管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/infra/config/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/infra/config/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/infra_infrastructure/data_source
+            - path: framework
+            - path: frontend_admin/infra_infrastructure/job
+            - path: frontend_admin/infra_infrastructure/api_log
+    frontend_admin/infra_infrastructure/data_source:
+        dir_name: 数据源配置管理
+        title: 数据源配置管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/infra/dataSourceConfig/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/infra/dataSourceConfig/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: module_report
+            - path: frontend_admin/infra_infrastructure/config
+            - path: frontend_admin/infra_infrastructure/codegen
+            - path: frontend_admin/infra_infrastructure/job
+            - path: frontend_admin/infra_infrastructure/redis
+    frontend_admin/infra_infrastructure/demo:
+        dir_name: 基础设施示例模块
+        title: 基础设施示例模块
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/infra/demo/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/infra/demo/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    frontend_admin/infra_infrastructure/file:
+        dir_name: 文件存储与配置管理
+        title: 文件存储与配置管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/infra/file/
+            - yudao-ui/yudao-ui-admin-vue3/src/api/infra/fileConfig/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/infra/file/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/infra/fileConfig/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/infra_infrastructure/redis
+            - path: frontend_admin/mall_ecommerce/product
+            - path: frontend_admin/bpm_workflow/process_instance
+            - path: frontend_admin/infra_infrastructure/codegen
+            - path: frontend_admin/infra_infrastructure/job
+    frontend_admin/infra_infrastructure/job:
+        dir_name: 定时任务调度管理
+        title: 定时任务调度管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/infra/job/
+            - yudao-ui/yudao-ui-admin-vue3/src/api/infra/jobLog/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/infra/job/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/infra_infrastructure/api_log
+            - path: frontend_admin/infra_infrastructure/codegen
+            - path: frontend_admin/infra_infrastructure/redis
+            - path: frontend_admin/infra_infrastructure/config
+            - path: frontend_admin/infra_infrastructure/data_source
+            - path: frontend_admin/infra_infrastructure/file
+    frontend_admin/infra_infrastructure/redis:
+        dir_name: Redis 监控面板
+        title: Redis 监控面板
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/infra/redis/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/infra/redis/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/infra_infrastructure/file
+            - path: frontend_admin/infra_infrastructure/job
+            - path: framework
+            - path: frontend_admin/infra_infrastructure/api_log
+            - path: frontend_admin/infra_infrastructure/data_source
+    frontend_admin/iot_platform:
+        dir_name: IoT 平台管理前端
+        title: IoT 平台管理前端
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/iot/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/iot/
+        source_files: []
+        children:
+            - frontend_admin/iot_platform/thing_model
+            - frontend_admin/iot_platform/rule_engine
+            - frontend_admin/iot_platform/alert_management
+            - frontend_admin/iot_platform/product_management
+            - frontend_admin/iot_platform/device_management
+            - frontend_admin/iot_platform/ota_management
+            - frontend_admin/iot_platform/dashboard_and_stats
+        depends_on: []
+        related_to: []
+    frontend_admin/iot_platform/alert_management:
+        dir_name: IoT 告警管理
+        title: IoT 告警管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/iot/alert/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/iot/alert/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/iot_platform/dashboard_and_stats
+            - path: frontend_admin/iot_platform/rule_engine
+            - path: frontend_admin/iot_platform/device_management
+            - path: frontend_admin/iot_platform/rule_engine/scene_rules
+            - path: frontend_admin/iot_platform/ota_management
+    frontend_admin/iot_platform/dashboard_and_stats:
+        dir_name: IoT 仪表盘与统计概览
+        title: IoT 仪表盘与统计概览
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/iot/statistics/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/iot/home/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/iot/utils/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/iot_platform/alert_management
+            - path: frontend_admin/iot_platform/rule_engine
+            - path: frontend_admin/iot_platform/device_management
+            - path: frontend_admin/iot_platform/ota_management
+            - path: frontend_admin/iot_platform/rule_engine/data_rules
+            - path: frontend_admin/iot_platform/product_management
+            - path: frontend_admin/iot_platform/rule_engine/scene_rules
+    frontend_admin/iot_platform/device_management:
+        dir_name: IoT设备与分组管理
+        title: IoT设备与分组管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/iot/device/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/iot/device/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/iot_platform/product_management
+            - path: frontend_admin/iot_platform/thing_model
+            - path: frontend_admin/iot_platform/rule_engine
+            - path: frontend_admin/iot_platform/ota_management
+            - path: frontend_admin/iot_platform/dashboard_and_stats
+            - path: frontend_admin/iot_platform/alert_management
+            - path: frontend_admin/ui_components
+            - path: frontend_admin/iot_platform/rule_engine/data_rules
+            - path: frontend_admin/iot_platform/rule_engine/scene_rules
+    frontend_admin/iot_platform/ota_management:
+        dir_name: IoT OTA 固件与升级任务管理
+        title: IoT OTA 固件与升级任务管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/iot/ota/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/iot/ota/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/iot_platform/device_management
+            - path: frontend_admin/iot_platform/rule_engine/data_rules
+            - path: frontend_admin/iot_platform/dashboard_and_stats
+            - path: frontend_admin/iot_platform/alert_management
+    frontend_admin/iot_platform/product_management:
+        dir_name: IoT 产品与品类管理
+        title: IoT 产品与品类管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/iot/product/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/iot/product/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/iot_platform/device_management
+            - path: frontend_admin/iot_platform/thing_model
+            - path: frontend_admin/iot_platform/rule_engine
+            - path: frontend_admin/iot_platform/dashboard_and_stats
+            - path: frontend_admin/iot_platform/rule_engine/scene_rules
+    frontend_admin/iot_platform/rule_engine:
+        dir_name: IoT 规则引擎管理
+        title: IoT 规则引擎管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/iot/rule/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/iot/rule/
+        source_files: []
+        children:
+            - frontend_admin/iot_platform/rule_engine/data_rules
+            - frontend_admin/iot_platform/rule_engine/scene_rules
+        depends_on: []
+        related_to:
+            - path: frontend_admin/iot_platform/device_management
+            - path: frontend_admin/iot_platform/dashboard_and_stats
+            - path: frontend_admin/iot_platform/alert_management
+            - path: frontend_admin/iot_platform/product_management
+            - path: frontend_admin/iot_platform/thing_model
+    frontend_admin/iot_platform/rule_engine/data_rules:
+        dir_name: IoT 数据流转规则管理
+        title: IoT 数据流转规则管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/iot/rule/data/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/iot/rule/data/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/iot_platform/rule_engine/scene_rules
+            - path: frontend_admin/iot_platform/ota_management
+            - path: frontend_admin/iot_platform/dashboard_and_stats
+            - path: frontend_admin/iot_platform/device_management
+    frontend_admin/iot_platform/rule_engine/scene_rules:
+        dir_name: IoT 场景联动规则管理
+        title: IoT 场景联动规则管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/iot/rule/scene/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/iot/rule/scene/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/iot_platform/rule_engine/data_rules
+            - path: frontend_admin/iot_platform/alert_management
+            - path: frontend_admin/iot_platform/dashboard_and_stats
+            - path: frontend_admin/iot_platform/device_management
+            - path: frontend_admin/iot_platform/product_management
+    frontend_admin/iot_platform/thing_model:
+        dir_name: IoT 物模型管理
+        title: IoT 物模型管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/iot/thingmodel/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/iot/thingmodel/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/iot_platform/device_management
+            - path: frontend_admin/iot_platform/product_management
+            - path: frontend_admin/iot_platform/rule_engine
+    frontend_admin/mall_ecommerce:
+        dir_name: 电商业务运营中台
+        title: 电商业务运营中台
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/mall/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/mall/
+        source_files: []
+        children:
+            - frontend_admin/mall_ecommerce/promotion
+            - frontend_admin/mall_ecommerce/trade
+            - frontend_admin/mall_ecommerce/statistics
+            - frontend_admin/mall_ecommerce/product
+        depends_on: []
+        related_to:
+            - path: framework
+    frontend_admin/mall_ecommerce/product:
+        dir_name: 电商商品管理模块
+        title: 电商商品管理模块
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/mall/product/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/mall/product/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/mall_ecommerce/trade
+            - path: frontend_admin/mall_ecommerce/statistics
+            - path: frontend_admin/infra_infrastructure/file
+            - path: frontend_admin/mall_ecommerce/promotion/reward
+            - path: frontend_admin/infra_infrastructure/codegen
+            - path: frontend_admin/mall_ecommerce/promotion/combination
+    frontend_admin/mall_ecommerce/promotion:
+        dir_name: 商城营销与客服运营中心
+        title: 商城营销与客服运营中心
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/mall/promotion/
+            - yudao-ui/yudao-ui-admin-vue3/src/api/mall/market/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/mall/promotion/
+        source_files: []
+        children:
+            - frontend_admin/mall_ecommerce/promotion/point
+            - frontend_admin/mall_ecommerce/promotion/kefu
+            - frontend_admin/mall_ecommerce/promotion/seckill
+            - frontend_admin/mall_ecommerce/promotion/bargain
+            - frontend_admin/mall_ecommerce/promotion/article
+            - frontend_admin/mall_ecommerce/promotion/diy
+            - frontend_admin/mall_ecommerce/promotion/banner
+            - frontend_admin/mall_ecommerce/promotion/discount
+            - frontend_admin/mall_ecommerce/promotion/combination
+            - frontend_admin/mall_ecommerce/promotion/coupon
+            - frontend_admin/mall_ecommerce/promotion/reward
+        depends_on: []
+        related_to:
+            - path: frontend_admin/mall_ecommerce/trade
+            - path: frontend_admin/mp_wechat
+    frontend_admin/mall_ecommerce/promotion/article:
+        dir_name: 营销内容管理
+        title: 营销内容管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/mall/promotion/article/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/mall/promotion/article/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/mall_ecommerce/promotion/banner
+            - path: frontend_admin/mall_ecommerce/promotion/kefu
+    frontend_admin/mall_ecommerce/promotion/banner:
+        dir_name: 营销Banner管理
+        title: 营销Banner管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/mall/market/banner/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/mall/promotion/banner/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/mall_ecommerce/promotion/article
+            - path: frontend_admin/mall_ecommerce/promotion/diy
+            - path: frontend_admin/mall_ecommerce/promotion/discount
+            - path: frontend_admin/mall_ecommerce/trade
+            - path: frontend_admin/member_center
+    frontend_admin/mall_ecommerce/promotion/bargain:
+        dir_name: 砍价营销管理
+        title: 砍价营销管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/mall/promotion/bargain/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/mall/promotion/bargain/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/mall_ecommerce/promotion/combination
+            - path: frontend_admin/member_center
+            - path: frontend_admin/mall_ecommerce/trade
+    frontend_admin/mall_ecommerce/promotion/combination:
+        dir_name: 拼团营销管理
+        title: 拼团营销管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/mall/promotion/combination/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/mall/promotion/combination/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/mall_ecommerce/promotion/bargain
+            - path: frontend_admin/mall_ecommerce/trade
+            - path: frontend_admin/mall_ecommerce/product
+            - path: frontend_admin/member_center
+    frontend_admin/mall_ecommerce/promotion/coupon:
+        dir_name: 营销优惠券管理
+        title: 营销优惠券管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/mall/promotion/coupon/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/mall/promotion/coupon/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/mall_ecommerce/promotion/point
+            - path: frontend_admin/member_center
+            - path: frontend_admin/mall_ecommerce/trade
+    frontend_admin/mall_ecommerce/promotion/discount:
+        dir_name: 限时折扣活动管理
+        title: 限时折扣活动管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/mall/promotion/discount/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/mall/promotion/discountActivity/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/mall_ecommerce/promotion/reward
+            - path: frontend_admin/mall_ecommerce/promotion/banner
+            - path: frontend_admin/mall_ecommerce/trade
+    frontend_admin/mall_ecommerce/promotion/diy:
+        dir_name: 商城DIY装修管理
+        title: 商城DIY装修管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/mall/promotion/diy/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/mall/promotion/diy/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/mall_ecommerce/promotion/kefu
+            - path: frontend_admin/mall_ecommerce/promotion/banner
+    frontend_admin/mall_ecommerce/promotion/kefu:
+        dir_name: 电商客服工作台
+        title: 电商客服工作台
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/mall/promotion/kefu/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/mall/promotion/kefu/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/mall_ecommerce/promotion/diy
+            - path: frontend_admin/mall_ecommerce/promotion/article
+    frontend_admin/mall_ecommerce/promotion/point:
+        dir_name: 积分商城活动管理
+        title: 积分商城活动管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/mall/promotion/point/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/mall/promotion/point/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/mall_ecommerce/promotion/coupon
+            - path: frontend_admin/mall_ecommerce/trade
+            - path: frontend_admin/member_center
+    frontend_admin/mall_ecommerce/promotion/reward:
+        dir_name: 满减送活动管理
+        title: 满减送活动管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/mall/promotion/reward/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/mall/promotion/rewardActivity/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/mall_ecommerce/promotion/discount
+            - path: frontend_admin/mall_ecommerce/product
+            - path: frontend_admin/mall_ecommerce/trade
+    frontend_admin/mall_ecommerce/promotion/seckill:
+        dir_name: 秒杀活动管理
+        title: 秒杀活动管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/mall/promotion/seckill/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/mall/promotion/seckill/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/mall_ecommerce/trade
+            - path: frontend_admin/member_center
+    frontend_admin/mall_ecommerce/statistics:
+        dir_name: 商城数据统计与运营看板
+        title: 商城数据统计与运营看板
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/mall/statistics/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/mall/statistics/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/mall/home/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/mall_ecommerce/product
+    frontend_admin/mall_ecommerce/trade:
+        dir_name: 电商交易与分销管理
+        title: 电商交易与分销管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/mall/trade/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/mall/trade/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/mall_ecommerce/product
+            - path: frontend_admin/mall_ecommerce/promotion
+            - path: frontend_admin/payment
+            - path: framework
+            - path: frontend_admin/member_center
+            - path: frontend_admin/ui_components
+            - path: frontend_admin/mall_ecommerce/promotion/combination
+            - path: frontend_admin/mall_ecommerce/promotion/seckill
+            - path: frontend_admin/mall_ecommerce/promotion/point
+            - path: frontend_admin/mall_ecommerce/promotion/banner
+            - path: frontend_admin/mall_ecommerce/promotion/discount
+            - path: frontend_admin/mall_ecommerce/promotion/bargain
+            - path: frontend_admin/mall_ecommerce/promotion/coupon
+            - path: frontend_admin/mall_ecommerce/promotion/reward
+    frontend_admin/member_center:
+        dir_name: 会员管理中心
+        title: 会员管理中心
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/member/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/member/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/im_chat
+            - path: frontend_admin/payment
+            - path: frontend_admin/mall_ecommerce/trade
+            - path: frontend_admin/mall_ecommerce/promotion/coupon
+            - path: frontend_admin/mall_ecommerce/promotion/bargain
+            - path: frontend_admin/mall_ecommerce/promotion/point
+            - path: frontend_admin/mall_ecommerce/promotion/banner
+            - path: frontend_admin/ui_components
+            - path: frontend_admin/mall_ecommerce/promotion/seckill
+            - path: frontend_admin/mall_ecommerce/promotion/combination
+    frontend_admin/mes_manufacturing:
+        dir_name: MES 制造执行系统前端业务模块
+        title: MES 制造执行系统前端业务模块
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/mes/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/mes/
+        source_files: []
+        children:
+            - frontend_admin/mes_manufacturing/qc
+            - frontend_admin/mes_manufacturing/home_and_utils
+            - frontend_admin/mes_manufacturing/wm
+            - frontend_admin/mes_manufacturing/dv
+            - frontend_admin/mes_manufacturing/tm_tool
+            - frontend_admin/mes_manufacturing/md
+            - frontend_admin/mes_manufacturing/pro
+            - frontend_admin/mes_manufacturing/cal
+        depends_on: []
+        related_to: []
+    frontend_admin/mes_manufacturing/cal:
+        dir_name: MES 排班与日历管理
+        title: MES 排班与日历管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/mes/cal/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/mes/cal/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/mes_manufacturing/pro
+            - path: frontend_admin/mes_manufacturing/dv
+            - path: frontend_admin/mes_manufacturing/home_and_utils
+    frontend_admin/mes_manufacturing/dv:
+        dir_name: 设备点检与保养管理
+        title: 设备点检与保养管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/mes/dv/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/mes/dv/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/mes_manufacturing/pro
+            - path: frontend_admin/mes_manufacturing/tm_tool
+            - path: frontend_admin/mes_manufacturing/cal
+            - path: frontend_admin/mes_manufacturing/home_and_utils
+    frontend_admin/mes_manufacturing/home_and_utils:
+        dir_name: MES 制造执行系统首页仪表盘与通用常量
+        title: MES 制造执行系统首页仪表盘与通用常量
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/mes/home/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/mes/home/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/mes/utils/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/mes_manufacturing/qc
+            - path: frontend_admin/mes_manufacturing/pro
+            - path: frontend_admin/mes_manufacturing/wm
+            - path: frontend_admin/mes_manufacturing/dv
+            - path: frontend_admin/mes_manufacturing/cal
+            - path: frontend_admin/mes_manufacturing/tm_tool
+    frontend_admin/mes_manufacturing/md:
+        dir_name: MES 基础数据管理
+        title: MES 基础数据管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/mes/md/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/mes/md/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/mes_manufacturing/pro
+            - path: frontend_admin/mes_manufacturing/wm
+            - path: frontend_admin/erp_enterprise/purchase
+            - path: frontend_admin/mes_manufacturing/qc
+    frontend_admin/mes_manufacturing/pro:
+        dir_name: MES 生产执行管理
+        title: MES 生产执行管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/mes/pro/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/mes/pro/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/mes_manufacturing/md
+            - path: frontend_admin/mes_manufacturing/qc
+            - path: frontend_admin/mes_manufacturing/wm
+            - path: frontend_admin/mes_manufacturing/dv
+            - path: frontend_admin/mes_manufacturing/cal
+            - path: frontend_admin/mes_manufacturing/tm_tool
+            - path: frontend_admin/mes_manufacturing/home_and_utils
+            - path: frontend_admin/ui_components
+            - path: framework
+    frontend_admin/mes_manufacturing/qc:
+        dir_name: MES 质量管理与检验执行
+        title: MES 质量管理与检验执行
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/mes/qc/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/mes/qc/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/mes_manufacturing/pro
+            - path: frontend_admin/mes_manufacturing/home_and_utils
+            - path: frontend_admin/mes_manufacturing/wm
+            - path: frontend_admin/mes_manufacturing/md
+    frontend_admin/mes_manufacturing/tm_tool:
+        dir_name: MES 工具台账与类型管理
+        title: MES 工具台账与类型管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/mes/tm/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/mes/tm/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/mes_manufacturing/dv
+            - path: frontend_admin/mes_manufacturing/pro
+            - path: frontend_admin/mes_manufacturing/home_and_utils
+    frontend_admin/mes_manufacturing/wm:
+        dir_name: 仓储管理 (WM) 业务模块
+        title: 仓储管理 (WM) 业务模块
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/mes/wm/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/mes/wm/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/mes_manufacturing/pro
+            - path: frontend_admin/mes_manufacturing/md
+            - path: frontend_admin/mes_manufacturing/qc
+            - path: frontend_admin/erp_enterprise/stock
+            - path: frontend_admin/mes_manufacturing/home_and_utils
+    frontend_admin/mp_wechat:
+        dir_name: 微信公众号运营管理
+        title: 微信公众号运营管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/mp/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/mp/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/mall_ecommerce/promotion
+            - path: frontend_admin/im_chat
+            - path: frontend_admin/ui_components
+            - path: framework
+    frontend_admin/payment:
+        dir_name: 支付中心管理模块
+        title: 支付中心管理模块
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/pay/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/pay/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/mall_ecommerce/trade
+            - path: frontend_admin/member_center
+            - path: frontend_admin/ui_components
+    frontend_admin/system_management:
+        dir_name: 系统基础配置与权限中心
+        title: 系统基础配置与权限中心
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/system/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/system/
+        source_files: []
+        children:
+            - frontend_admin/system_management/tenant
+            - frontend_admin/system_management/menu
+            - frontend_admin/system_management/notice
+            - frontend_admin/system_management/dict
+            - frontend_admin/system_management/oauth2
+            - frontend_admin/system_management/tenant_package
+            - frontend_admin/system_management/operate_log
+            - frontend_admin/system_management/login_log
+            - frontend_admin/system_management/role
+            - frontend_admin/system_management/dept
+            - frontend_admin/system_management/social
+            - frontend_admin/system_management/notify
+            - frontend_admin/system_management/area
+            - frontend_admin/system_management/post
+            - frontend_admin/system_management/user
+            - frontend_admin/system_management/sms
+            - frontend_admin/system_management/mail
+        depends_on: []
+        related_to: []
+    frontend_admin/system_management/area:
+        dir_name: 区域管理
+        title: 区域管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/system/area/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/system/area/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/system_management/dept
+            - path: frontend_admin/system_management/tenant
+    frontend_admin/system_management/dept:
+        dir_name: 部门管理模块
+        title: 部门管理模块
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/system/dept/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/system/dept/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/system_management/user
+            - path: frontend_admin/system_management/area
+            - path: frontend_admin/system_management/post
+            - path: frontend_admin/system_management/tenant_package
+            - path: frontend_admin/system_management/menu
+    frontend_admin/system_management/dict:
+        dir_name: 数据字典管理
+        title: 数据字典管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/system/dict/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/system/dict/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/system_management/menu
+            - path: frontend_admin/crm_customer/crm_customer
+            - path: frontend_admin/ui_utilities
+    frontend_admin/system_management/login_log:
+        dir_name: 登录日志管理
+        title: 登录日志管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/system/loginLog/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/system/loginlog/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/system_management/operate_log
+            - path: frontend_admin/system_management/notify
+            - path: framework
+            - path: frontend_admin/system_management/oauth2
+    frontend_admin/system_management/mail:
+        dir_name: 邮件系统管理
+        title: 邮件系统管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/system/mail/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/system/mail/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/system_management/sms
+            - path: frontend_admin/system_management/user
+            - path: frontend_admin/system_management/tenant_package
+    frontend_admin/system_management/menu:
+        dir_name: 系统菜单管理
+        title: 系统菜单管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/system/menu/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/system/menu/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/system_management/role
+            - path: frontend_admin/system_management/dict
+            - path: frontend_admin/app_entry
+            - path: frontend_admin/system_management/tenant_package
+            - path: frontend_admin/bpm_workflow/form_design
+            - path: frontend_admin/system_management/tenant
+            - path: frontend_admin/system_management/dept
+    frontend_admin/system_management/notice:
+        dir_name: 通知公告管理
+        title: 通知公告管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/system/notice/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/system/notice/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    frontend_admin/system_management/notify:
+        dir_name: 站内信消息与模板管理
+        title: 站内信消息与模板管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/system/notify/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/system/notify/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/system_management/sms
+            - path: frontend_admin/system_management/login_log
+            - path: frontend_admin/bpm_workflow/task_management
+            - path: frontend_admin/crm_customer/crm_customer
+            - path: frontend_admin/system_management/tenant
+    frontend_admin/system_management/oauth2:
+        dir_name: OAuth2管理
+        title: OAuth2管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/system/oauth2/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/system/oauth2/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/system_management/social
+            - path: frontend_admin/system_management/tenant
+            - path: frontend_admin/system_management/operate_log
+            - path: frontend_admin/system_management/login_log
+            - path: framework
+    frontend_admin/system_management/operate_log:
+        dir_name: 操作日志管理
+        title: 操作日志管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/system/operatelog/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/system/operatelog/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/system_management/login_log
+            - path: frontend_admin/system_management/tenant
+            - path: frontend_admin/system_management/oauth2
+    frontend_admin/system_management/post:
+        dir_name: 岗位管理模块
+        title: 岗位管理模块
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/system/post/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/system/post/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/system_management/dept
+            - path: frontend_admin/system_management/role
+            - path: frontend_admin/system_management/tenant_package
+    frontend_admin/system_management/role:
+        dir_name: 角色管理模块
+        title: 角色管理模块
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/system/role/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/system/role/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/system_management/user
+            - path: frontend_admin/system_management/menu
+            - path: frontend_admin/ui_utilities
+            - path: frontend_admin/system_management/post
+            - path: frontend_admin/system_management/tenant_package
+    frontend_admin/system_management/sms:
+        dir_name: 短信管理模块
+        title: 短信管理模块
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/system/sms/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/system/sms/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/system_management/notify
+            - path: frontend_admin/system_management/mail
+            - path: frontend_admin/system_management/user
+            - path: frontend_admin/system_management/tenant
+            - path: frontend_admin/system_management/tenant_package
+    frontend_admin/system_management/social:
+        dir_name: 社交账号管理
+        title: 社交账号管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/system/social/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/system/social/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/system_management/oauth2
+    frontend_admin/system_management/tenant:
+        dir_name: 租户管理模块
+        title: 租户管理模块
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/system/tenant/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/system/tenant/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/system_management/tenant_package
+            - path: framework
+            - path: frontend_admin/system_management/oauth2
+            - path: frontend_admin/system_management/operate_log
+            - path: frontend_admin/system_management/sms
+            - path: frontend_admin/erp_enterprise/finance
+            - path: frontend_admin/system_management/menu
+            - path: frontend_admin/system_management/notify
+            - path: frontend_admin/system_management/area
+            - path: frontend_admin/erp_enterprise/sale
+    frontend_admin/system_management/tenant_package:
+        dir_name: 租户套餐管理
+        title: 租户套餐管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/system/tenantPackage/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/system/tenantPackage/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/system_management/tenant
+            - path: frontend_admin/system_management/menu
+            - path: frontend_admin/system_management/dept
+            - path: frontend_admin/system_management/role
+            - path: frontend_admin/system_management/post
+            - path: frontend_admin/system_management/sms
+            - path: frontend_admin/erp_enterprise/finance
+            - path: frontend_admin/system_management/mail
+    frontend_admin/system_management/user:
+        dir_name: 系统用户管理
+        title: 系统用户管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/system/user/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/system/user/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/system_management/role
+            - path: frontend_admin/core_views
+            - path: frontend_admin/system_management/dept
+            - path: frontend_admin/bpm_workflow/configuration
+            - path: frontend_admin/system_management/sms
+            - path: frontend_admin/system_management/mail
+    frontend_admin/ui_components:
+        dir_name: 通用UI组件库与布局系统
+        title: 通用UI组件库与布局系统
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/components/
+            - yudao-ui/yudao-ui-admin-vue3/src/layout/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/bpm_workflow
+            - path: frontend_admin/app_types_assets
+            - path: frontend_admin/bpm_workflow/model_definition
+            - path: frontend_admin/mall_ecommerce/trade
+            - path: frontend_admin/app_entry
+            - path: frontend_admin/crm_customer/crm_customer
+            - path: frontend_admin/erp_enterprise/sale
+            - path: frontend_admin/iot_platform/device_management
+            - path: frontend_admin/mes_manufacturing/pro
+            - path: frontend_admin/mp_wechat
+            - path: frontend_admin/member_center
+            - path: frontend_admin/payment
+    frontend_admin/ui_utilities:
+        dir_name: 前端 UI 工具与组合式逻辑封装
+        title: 前端 UI 工具与组合式逻辑封装
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/hooks/
+            - yudao-ui/yudao-ui-admin-vue3/src/utils/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/erp_enterprise
+            - path: frontend_admin/app_plugins
+            - path: frontend_admin/system_management/role
+            - path: frontend_admin/system_management/dict
+            - path: frontend_admin/app_framework
+            - path: frontend_admin/app_entry
+    frontend_admin/wms_warehouse:
+        dir_name: WMS 仓储管理
+        title: WMS 仓储管理
+        scope:
+            - yudao-ui/yudao-ui-admin-vue3/src/api/wms/
+            - yudao-ui/yudao-ui-admin-vue3/src/views/wms/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    module_bpm:
+        dir_name: 业务流程管理 (BPM) 与工作流引擎
+        title: 业务流程管理 (BPM) 与工作流引擎
+        scope:
+            - yudao-module-bpm/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/bpm_workflow
+            - path: server
+    module_infra:
+        dir_name: 基础设施运维与代码生成引擎
+        title: 基础设施运维与代码生成引擎
+        scope:
+            - yudao-module-infra/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/infra_infrastructure/codegen
+            - path: server
+    module_report:
+        dir_name: 数据可视化报表与大屏管理
+        title: 数据可视化报表与大屏管理
+        scope:
+            - yudao-module-report/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: frontend_admin/infra_infrastructure/data_source
+    module_system:
+        dir_name: 系统基础服务模块
+        title: 系统基础服务模块
+        scope:
+            - yudao-module-system/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: server
+            - path: sql_scripts
+    server:
+        dir_name: 后端服务启动容器
+        title: 后端服务启动容器
+        scope:
+            - yudao-server/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: module_system
+            - path: deployment_scripts
+            - path: module_infra
+            - path: module_bpm
+    sql_scripts:
+        dir_name: 多数据库脚本管理与迁移工具
+        title: 多数据库脚本管理与迁移工具
+        scope:
+            - sql/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: framework
+            - path: frontend_admin/infra_infrastructure/codegen
+            - path: module_system
