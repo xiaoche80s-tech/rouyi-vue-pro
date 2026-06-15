@@ -9,6 +9,4 @@ scope:
     - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/enums/ImConversationTypeEnum.java
 source_files: []
 depends_on: []
-related_to:
-    - path: infra/infra_framework
-    - path: im/rtc
+related_to: []

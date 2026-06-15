@@ -5,5 +5,4 @@ scope:
     - yudao-module-system/
 source_files: []
 depends_on: []
-related_to:
-    - path: ui_admin/system_management
+related_to: []

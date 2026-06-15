@@ -4,4 +4,5 @@ title: 签约进度模块采用管理员手动录入合同而非自动生成
 scope: []
 source_files: []
 depends_on: []
-related_to: []
+related_to:
+    - path: opshub/signing

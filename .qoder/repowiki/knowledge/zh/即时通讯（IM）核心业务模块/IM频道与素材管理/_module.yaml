@@ -11,11 +11,4 @@ scope:
 source_files: []
 depends_on: []
 related_to:
-    - path: im/group
     - path: im/message
-    - path: im/friend
-    - path: im/sensitiveword
-    - path: im/statistics
-    - path: im/rtc
-    - path: ui_admin/im_chat/admin_im
-    - path: ui_admin/im_chat/user_im

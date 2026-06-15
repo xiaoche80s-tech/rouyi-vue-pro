@@ -1,9 +1,0 @@
-schema_version: 1
-module_path: ui_admin/payment_center
-title: 支付中心管理模块
-scope:
-    - yudao-ui/yudao-ui-admin-vue3/src/views/pay/
-source_files: []
-depends_on: []
-related_to:
-    - path: system/system_support

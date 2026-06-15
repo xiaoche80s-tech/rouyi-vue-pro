@@ -1,9 +1,0 @@
-schema_version: 1
-module_path: ui_admin/report_designer
-title: 报表与大屏设计器集成
-scope:
-    - yudao-ui/yudao-ui-admin-vue3/src/views/report/
-source_files: []
-depends_on: []
-related_to:
-    - path: report

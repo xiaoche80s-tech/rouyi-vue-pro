@@ -1,8 +1,0 @@
-schema_version: 1
-module_path: framework
-title: 芋道框架核心组件库
-scope:
-    - yudao-framework/
-source_files: []
-depends_on: []
-related_to: []
