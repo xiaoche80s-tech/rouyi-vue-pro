@@ -1,0 +1,17 @@
+schema_version: 1
+module_path: ui_admin/im_chat/im_api_views
+title: 即时通讯（IM）API 与前端工具层
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/im/channel/
+    - yudao-ui/yudao-ui-admin-vue3/src/api/im/face/
+    - yudao-ui/yudao-ui-admin-vue3/src/api/im/friend/
+    - yudao-ui/yudao-ui-admin-vue3/src/api/im/group/
+    - yudao-ui/yudao-ui-admin-vue3/src/api/im/message/
+    - yudao-ui/yudao-ui-admin-vue3/src/api/im/rtc/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/im/utils/
+source_files: []
+depends_on: []
+related_to:
+    - path: im
+    - path: ui_admin/im_chat/user_im
+    - path: ui_admin/im_chat/admin_im

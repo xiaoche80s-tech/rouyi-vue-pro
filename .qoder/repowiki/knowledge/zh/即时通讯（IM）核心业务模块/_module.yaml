@@ -1,0 +1,12 @@
+schema_version: 1
+module_path: im
+title: 即时通讯（IM）核心业务模块
+scope:
+    - yudao-module-im/
+source_files: []
+depends_on: []
+related_to:
+    - path: ui_admin/im_chat/im_api_views
+    - path: ui_admin/im_chat/admin_im
+    - path: framework/starter_security
+    - path: framework/starter_web

@@ -1,0 +1,27 @@
+schema_version: 1
+module_path: infra/file_storage
+title: 文件存储管理
+scope:
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/api/file/
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/controller/admin/file/
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/controller/app/file/
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/convert/file/
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/dal/dataobject/file/
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/dal/mysql/file/
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/framework/file/
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/service/file/
+source_files: []
+depends_on: []
+related_to:
+    - path: im/face
+    - path: opshub/basedata
+    - path: ui_admin/ai_assistant/knowledge/document
+    - path: ui_admin/infra_platform/file_management
+    - path: framework/starter_mybatis
+    - path: framework/starter_protection
+    - path: framework/starter_redis
+    - path: im/message
+    - path: opshub/signing
+    - path: bpm/oa_leave
+    - path: system/message_center
+    - path: system/authentication

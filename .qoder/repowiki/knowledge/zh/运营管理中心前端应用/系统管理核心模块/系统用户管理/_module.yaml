@@ -1,0 +1,19 @@
+schema_version: 1
+module_path: ui_admin/system_management/user_management
+title: 系统用户管理
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/system/user/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/system/user/
+source_files: []
+depends_on: []
+related_to:
+    - path: system/user_identity
+    - path: ui_admin/system_management/operation_logs
+    - path: ui_admin/system_management/oauth2_social
+    - path: ui_admin/system_management/tenant_management
+    - path: framework/starter_excel
+    - path: ui_admin/system_management/dept_post
+    - path: framework/starter_biz_data_permission
+    - path: ui_admin/system_management/sms_notify_mail
+    - path: ui_admin/system_management/area_notice
+    - path: ui_admin/system_management/dict_management

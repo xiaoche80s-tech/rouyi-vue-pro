@@ -41,3 +41,10 @@ CREATE INDEX idx_ops_signing_contract_type ON ops_signing_contract (contract_typ
 CREATE INDEX idx_ops_signing_contract_status ON ops_signing_contract (status);
 CREATE INDEX idx_ops_signing_contract_issued_date ON ops_signing_contract (issued_date);
 CREATE SEQUENCE ops_signing_contract_seq START WITH 1 INCREMENT BY 1;
+
+-- ====== Step4 订单模块 (2026-06-15) ======
+-- 6 张表: ops_order_info, ops_order_product, ops_order_timeline,
+--         ops_order_payment, ops_order_invoice, ops_order_logistics
+-- 详见 db/branches/feature_step4-订单模块/feature_step4-订单模块_ddl.sql
+
+ALTER TABLE ops_order_product ADD COLUMN product_code varchar(50) NULL;

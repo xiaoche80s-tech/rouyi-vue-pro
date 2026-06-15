@@ -1,0 +1,18 @@
+schema_version: 1
+module_path: bpm/task_management
+title: BPM 流程实例与任务管理
+scope:
+    - yudao-module-bpm/src/main/java/cn/iocoder/yudao/module/bpm/controller/admin/task/
+    - yudao-module-bpm/src/main/java/cn/iocoder/yudao/module/bpm/service/task/
+source_files: []
+depends_on: []
+related_to:
+    - path: im/friend
+    - path: opshub/signing
+    - path: ui_admin/bpm_workflow/task_management
+    - path: bpm/oa_leave
+    - path: bpm/bpm_api
+    - path: bpm/message_integration
+    - path: bpm/process_definition
+    - path: framework/starter_security
+    - path: framework/starter_mybatis

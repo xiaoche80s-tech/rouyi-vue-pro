@@ -31,4 +31,16 @@ public interface ErrorCodeConstants {
     ErrorCode SIGNING_CONTRACT_NOT_UNSIGNED      = new ErrorCode(1_050_005_003, "仅未签署合同可发起签署");
     ErrorCode SIGNING_CONTRACT_DEALER_NOT_EXISTS = new ErrorCode(1_050_005_004, "关联经销商不存在");
 
+    // ========== 订单模块 1-050-006-xxx ==========
+    ErrorCode ORDER_NOT_EXISTS             = new ErrorCode(1_050_006_000, "订单不存在");
+    ErrorCode ORDER_CODE_DUPLICATE         = new ErrorCode(1_050_006_001, "订单号已存在");
+    ErrorCode ORDER_DEALER_NOT_EXISTS      = new ErrorCode(1_050_006_002, "关联经销商不存在");
+    ErrorCode ORDER_ALREADY_PAID           = new ErrorCode(1_050_006_003, "订单已付款，不可重复申请");
+    ErrorCode ORDER_ALREADY_INVOICED       = new ErrorCode(1_050_006_004, "订单已全部开票");
+    ErrorCode ORDER_NOT_SIGNED             = new ErrorCode(1_050_006_005, "订单未签收，不可申请退货");
+    ErrorCode ORDER_PRODUCT_NOT_EXISTS     = new ErrorCode(1_050_006_006, "订单产品明细不存在");
+    ErrorCode ORDER_RETURN_QTY_EXCEED      = new ErrorCode(1_050_006_007, "退货数量超过可退货数量");
+    ErrorCode ORDER_PAYMENT_PENDING        = new ErrorCode(1_050_006_008, "存在审批中的付款申请");
+    ErrorCode ORDER_INVOICE_PENDING        = new ErrorCode(1_050_006_009, "存在待开票的开票申请");
+
 }

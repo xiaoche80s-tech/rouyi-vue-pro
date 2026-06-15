@@ -1,0 +1,21 @@
+schema_version: 1
+module_path: ui_admin/ai_assistant/chat/user_chat
+title: AI 智能对话交互模块
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/ai/chat/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/ai/chat/index/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/ai/utils/
+source_files: []
+depends_on: []
+related_to:
+    - path: ui_admin/im_chat/user_im
+    - path: ui_admin/ai_assistant/write
+    - path: im/websocket
+    - path: ui_admin/ai_assistant/model_config
+    - path: ui_admin/ai_assistant/knowledge/segment
+    - path: ui_admin/ai_assistant/workflow
+    - path: ui_admin/ai_assistant/image
+    - path: ui_admin/ai_assistant/music
+    - path: ui_admin/ai_assistant/mindmap
+    - path: ui_admin/ai_assistant/knowledge/document
+    - path: ui_admin/ai_assistant/knowledge/knowledge_base

@@ -1,0 +1,17 @@
+schema_version: 1
+module_path: framework/starter_mybatis
+title: MyBatis 增强与数据访问基础组件
+scope:
+    - yudao-framework/yudao-spring-boot-starter-mybatis/
+source_files: []
+depends_on: []
+related_to:
+    - path: bpm/flowable_framework
+    - path: infra/db_management
+    - path: infra/file_storage
+    - path: infra/codegen
+    - path: opshub/dealer
+    - path: system/user_identity
+    - path: bpm/task_management
+    - path: opshub/signing
+    - path: system/access_control

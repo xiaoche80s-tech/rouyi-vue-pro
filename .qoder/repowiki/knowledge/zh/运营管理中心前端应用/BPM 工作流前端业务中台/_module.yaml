@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: ui_admin/bpm_workflow
+title: BPM 工作流前端业务中台
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/bpm/
+    - yudao-ui/yudao-ui-admin-vue3/src/store/modules/bpm/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/bpm/
+source_files: []
+depends_on: []
+related_to:
+    - path: bpm

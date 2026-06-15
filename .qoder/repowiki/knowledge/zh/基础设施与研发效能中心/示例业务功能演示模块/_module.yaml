@@ -1,0 +1,12 @@
+schema_version: 1
+module_path: infra/demo_examples
+title: 示例业务功能演示模块
+scope:
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/controller/admin/demo/
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/dal/dataobject/demo/
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/dal/mysql/demo/
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/service/demo/
+source_files: []
+depends_on: []
+related_to:
+    - path: infra/codegen

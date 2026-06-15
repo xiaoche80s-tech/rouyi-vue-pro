@@ -1,0 +1,19 @@
+schema_version: 1
+module_path: framework/starter_protection
+title: 服务保护与稳定性保障
+scope:
+    - yudao-framework/yudao-spring-boot-starter-protection/
+source_files: []
+depends_on: []
+related_to:
+    - path: infra/api_logging
+    - path: im/message
+    - path: infra/file_storage
+    - path: infra/job_scheduler
+    - path: infra/codegen
+    - path: system/authentication
+    - path: infra/redis_monitor
+    - path: infra/websocket_push
+    - path: opshub/signing
+    - path: im/rtc
+    - path: bpm/process_definition

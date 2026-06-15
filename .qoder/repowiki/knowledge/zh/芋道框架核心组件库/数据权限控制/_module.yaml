@@ -1,0 +1,15 @@
+schema_version: 1
+module_path: framework/starter_biz_data_permission
+title: 数据权限控制
+scope:
+    - yudao-framework/yudao-spring-boot-starter-biz-data-permission/
+source_files: []
+depends_on: []
+related_to:
+    - path: system/access_control
+    - path: opshub/dealer
+    - path: ui_admin/system_management/user_management
+    - path: system/tenant_management
+    - path: ui_admin/bpm_workflow/process_instance
+    - path: ui_admin/system_management/menu_management
+    - path: opshub/signing

@@ -1,0 +1,15 @@
+schema_version: 1
+module_path: ui_admin/ai_assistant/model_config
+title: AI模型与密钥配置管理
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/ai/model/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/ai/model/
+source_files: []
+depends_on: []
+related_to:
+    - path: infra/system_config
+    - path: ui_admin/ai_assistant/knowledge
+    - path: ui_admin/ai_assistant/image
+    - path: ui_admin/ai_assistant/chat/user_chat
+    - path: ui_admin/ai_assistant/write
+    - path: ui_admin/ai_assistant/mindmap

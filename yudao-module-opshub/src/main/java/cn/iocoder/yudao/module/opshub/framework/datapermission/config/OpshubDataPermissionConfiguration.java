@@ -30,6 +30,10 @@ public class OpshubDataPermissionConfiguration {
         // Step 3：注册签约进度表
         rule.addDealerColumn("ops_signing_contract");
         rule.addProductLineColumn("ops_signing_contract");
+
+        // Step 4：注册订单表
+        rule.addDealerColumn("ops_order_info");
+        rule.addProductLineColumn("ops_order_info");
         return rule;
     }
 

@@ -1,0 +1,26 @@
+schema_version: 1
+module_path: im/friend
+title: IM 好友关系与申请管理
+scope:
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/controller/admin/friend/
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/controller/admin/manager/friend/
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/service/friend/
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/dal/dataobject/friend/
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/dal/mysql/friend/
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/enums/friend/
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/mq/consumer/friend/
+source_files: []
+depends_on: []
+related_to:
+    - path: bpm/task_management
+    - path: system/user_identity
+    - path: system/oauth_social
+    - path: im/group
+    - path: im/message
+    - path: im/channel
+    - path: framework/starter_redis
+    - path: im/statistics
+    - path: im/rtc
+    - path: framework/starter_biz_ip
+    - path: ui_admin/im_chat/admin_im
+    - path: im/sensitiveword

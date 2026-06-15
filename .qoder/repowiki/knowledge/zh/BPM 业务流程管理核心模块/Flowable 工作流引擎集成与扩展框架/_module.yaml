@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: bpm/flowable_framework
+title: Flowable 工作流引擎集成与扩展框架
+scope:
+    - yudao-module-bpm/src/main/java/cn/iocoder/yudao/module/bpm/framework/
+source_files: []
+depends_on: []
+related_to:
+    - path: framework/starter_mybatis
+    - path: bpm/process_definition
+    - path: ui_admin/bpm_workflow/supporting_features

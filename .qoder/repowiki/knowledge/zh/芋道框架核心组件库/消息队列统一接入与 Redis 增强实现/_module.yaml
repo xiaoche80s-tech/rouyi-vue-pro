@@ -1,0 +1,13 @@
+schema_version: 1
+module_path: framework/starter_mq
+title: 消息队列统一接入与 Redis 增强实现
+scope:
+    - yudao-framework/yudao-spring-boot-starter-mq/
+source_files: []
+depends_on: []
+related_to:
+    - path: bpm/message_integration
+    - path: im/websocket
+    - path: system/message_center
+    - path: infra/websocket_push
+    - path: infra/redis_monitor

@@ -1,0 +1,18 @@
+schema_version: 1
+module_path: im/statistics
+title: IM 管理后台数据统计看板
+scope:
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/controller/admin/manager/statistics/
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/service/statistics/
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/dal/mysql/statistics/
+source_files: []
+depends_on: []
+related_to:
+    - path: infra/api_logging
+    - path: ui_admin/im_chat/admin_im
+    - path: im/message
+    - path: im/channel
+    - path: im/friend
+    - path: im/group
+    - path: im/rtc
+    - path: ui_admin/im_chat/user_im

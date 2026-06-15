@@ -1,0 +1,14 @@
+schema_version: 1
+module_path: infra/redis_monitor
+title: Redis 监控管理
+scope:
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/controller/admin/redis/
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/convert/redis/
+source_files: []
+depends_on: []
+related_to:
+    - path: ui_admin/infra_platform/redis_monitor
+    - path: framework/starter_redis
+    - path: framework/starter_protection
+    - path: framework/starter_mq
+    - path: framework/starter_web
