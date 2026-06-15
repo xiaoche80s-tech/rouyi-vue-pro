@@ -1,166 +1,12 @@
 -- =============================================
 -- OpsHub Step 1: 经销商管理 SaaS 基础设施层
 -- 数据库: PostgreSQL
--- 包含: DDL(5张业务表) + 角色 + 菜单 + 角色-菜单关联
+-- 包含: 纯 DML（角色 + 菜单 + 角色-菜单关联）
 -- 租户ID: 123
 -- =============================================
 
 -- =============================================
--- 一、DDL — 5 张业务表
--- =============================================
-
--- 1.1 经销商信息表
-CREATE TABLE ops_dealer_info (
-    id            int8         NOT NULL,
-    name          varchar(100) NOT NULL,
-    code          varchar(50)  NOT NULL,
-    contact_name  varchar(50)  DEFAULT NULL,
-    contact_phone varchar(20)  DEFAULT NULL,
-    address       varchar(200) DEFAULT NULL,
-    status        int2         NOT NULL DEFAULT 0,
-    remark        varchar(500) DEFAULT NULL,
-    creator       varchar(64)  DEFAULT '',
-    create_time   timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updater       varchar(64)  DEFAULT '',
-    update_time   timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    deleted       int2         NOT NULL DEFAULT 0,
-    tenant_id     int8         NOT NULL DEFAULT 0
-);
-ALTER TABLE ops_dealer_info ADD CONSTRAINT pk_ops_dealer_info PRIMARY KEY (id);
-CREATE UNIQUE INDEX uk_ops_dealer_info_code ON ops_dealer_info (code);
-CREATE SEQUENCE ops_dealer_info_seq START 1;
-COMMENT ON TABLE ops_dealer_info IS '经销商信息表';
-COMMENT ON COLUMN ops_dealer_info.id IS '经销商ID';
-COMMENT ON COLUMN ops_dealer_info.name IS '经销商名称';
-COMMENT ON COLUMN ops_dealer_info.code IS '经销商编码';
-COMMENT ON COLUMN ops_dealer_info.contact_name IS '联系人';
-COMMENT ON COLUMN ops_dealer_info.contact_phone IS '联系电话';
-COMMENT ON COLUMN ops_dealer_info.address IS '地址';
-COMMENT ON COLUMN ops_dealer_info.status IS '状态（0=正常, 1=停用）';
-COMMENT ON COLUMN ops_dealer_info.remark IS '备注';
-COMMENT ON COLUMN ops_dealer_info.creator IS '创建者';
-COMMENT ON COLUMN ops_dealer_info.create_time IS '创建时间';
-COMMENT ON COLUMN ops_dealer_info.updater IS '更新者';
-COMMENT ON COLUMN ops_dealer_info.update_time IS '更新时间';
-COMMENT ON COLUMN ops_dealer_info.deleted IS '是否删除';
-COMMENT ON COLUMN ops_dealer_info.tenant_id IS '租户编号';
-
--- 1.2 产品线表
-CREATE TABLE ops_dealer_product_line (
-    id            int8         NOT NULL,
-    name          varchar(100) NOT NULL,
-    code          varchar(50)  NOT NULL,
-    sort          int4         NOT NULL DEFAULT 0,
-    status        int2         NOT NULL DEFAULT 0,
-    remark        varchar(500) DEFAULT NULL,
-    creator       varchar(64)  DEFAULT '',
-    create_time   timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updater       varchar(64)  DEFAULT '',
-    update_time   timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    deleted       int2         NOT NULL DEFAULT 0,
-    tenant_id     int8         NOT NULL DEFAULT 0
-);
-ALTER TABLE ops_dealer_product_line ADD CONSTRAINT pk_ops_dealer_product_line PRIMARY KEY (id);
-CREATE SEQUENCE ops_dealer_product_line_seq START 1;
-COMMENT ON TABLE ops_dealer_product_line IS '产品线表';
-COMMENT ON COLUMN ops_dealer_product_line.id IS '产品线ID';
-COMMENT ON COLUMN ops_dealer_product_line.name IS '产品线名称';
-COMMENT ON COLUMN ops_dealer_product_line.code IS '产品线编码';
-COMMENT ON COLUMN ops_dealer_product_line.sort IS '排序';
-COMMENT ON COLUMN ops_dealer_product_line.status IS '状态（0=正常, 1=停用）';
-COMMENT ON COLUMN ops_dealer_product_line.remark IS '备注';
-COMMENT ON COLUMN ops_dealer_product_line.creator IS '创建者';
-COMMENT ON COLUMN ops_dealer_product_line.create_time IS '创建时间';
-COMMENT ON COLUMN ops_dealer_product_line.updater IS '更新者';
-COMMENT ON COLUMN ops_dealer_product_line.update_time IS '更新时间';
-COMMENT ON COLUMN ops_dealer_product_line.deleted IS '是否删除';
-COMMENT ON COLUMN ops_dealer_product_line.tenant_id IS '租户编号';
-
--- 1.3 经销商-产品线关联表
-CREATE TABLE ops_dealer_product_line_relation (
-    id              int8      NOT NULL,
-    dealer_id       int8      NOT NULL,
-    product_line_id int8      NOT NULL,
-    creator         varchar(64) DEFAULT '',
-    create_time     timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updater         varchar(64) DEFAULT '',
-    update_time     timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    deleted         int2      NOT NULL DEFAULT 0,
-    tenant_id       int8      NOT NULL DEFAULT 0
-);
-ALTER TABLE ops_dealer_product_line_relation ADD CONSTRAINT pk_ops_dealer_product_line_relation PRIMARY KEY (id);
-CREATE INDEX idx_ops_dealer_pl_relation_dealer ON ops_dealer_product_line_relation (dealer_id);
-CREATE INDEX idx_ops_dealer_pl_relation_pl ON ops_dealer_product_line_relation (product_line_id);
-CREATE SEQUENCE ops_dealer_product_line_relation_seq START 1;
-COMMENT ON TABLE ops_dealer_product_line_relation IS '经销商-产品线关联表';
-COMMENT ON COLUMN ops_dealer_product_line_relation.id IS '主键';
-COMMENT ON COLUMN ops_dealer_product_line_relation.dealer_id IS '经销商ID';
-COMMENT ON COLUMN ops_dealer_product_line_relation.product_line_id IS '产品线ID';
-COMMENT ON COLUMN ops_dealer_product_line_relation.creator IS '创建者';
-COMMENT ON COLUMN ops_dealer_product_line_relation.create_time IS '创建时间';
-COMMENT ON COLUMN ops_dealer_product_line_relation.updater IS '更新者';
-COMMENT ON COLUMN ops_dealer_product_line_relation.update_time IS '更新时间';
-COMMENT ON COLUMN ops_dealer_product_line_relation.deleted IS '是否删除';
-COMMENT ON COLUMN ops_dealer_product_line_relation.tenant_id IS '租户编号';
-
--- 1.4 用户-经销商授权表
-CREATE TABLE ops_dealer_user_scope (
-    id          int8      NOT NULL,
-    user_id     int8      NOT NULL,
-    dealer_id   int8      NOT NULL,
-    creator     varchar(64) DEFAULT '',
-    create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updater     varchar(64) DEFAULT '',
-    update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    deleted     int2      NOT NULL DEFAULT 0,
-    tenant_id   int8      NOT NULL DEFAULT 0
-);
-ALTER TABLE ops_dealer_user_scope ADD CONSTRAINT pk_ops_dealer_user_scope PRIMARY KEY (id);
-CREATE UNIQUE INDEX uk_ops_dealer_user_scope ON ops_dealer_user_scope (user_id, dealer_id);
-CREATE INDEX idx_ops_dealer_user_scope_user ON ops_dealer_user_scope (user_id);
-CREATE INDEX idx_ops_dealer_user_scope_dealer ON ops_dealer_user_scope (dealer_id);
-CREATE SEQUENCE ops_dealer_user_scope_seq START 1;
-COMMENT ON TABLE ops_dealer_user_scope IS '用户-经销商授权表';
-COMMENT ON COLUMN ops_dealer_user_scope.id IS '主键';
-COMMENT ON COLUMN ops_dealer_user_scope.user_id IS '用户ID';
-COMMENT ON COLUMN ops_dealer_user_scope.dealer_id IS '经销商ID';
-COMMENT ON COLUMN ops_dealer_user_scope.creator IS '创建者';
-COMMENT ON COLUMN ops_dealer_user_scope.create_time IS '创建时间';
-COMMENT ON COLUMN ops_dealer_user_scope.updater IS '更新者';
-COMMENT ON COLUMN ops_dealer_user_scope.update_time IS '更新时间';
-COMMENT ON COLUMN ops_dealer_user_scope.deleted IS '是否删除';
-COMMENT ON COLUMN ops_dealer_user_scope.tenant_id IS '租户编号';
-
--- 1.5 执行员-产品线授权表
-CREATE TABLE ops_executor_product_line_scope (
-    id              int8      NOT NULL,
-    user_id         int8      NOT NULL,
-    product_line_id int8      NOT NULL,
-    creator         varchar(64) DEFAULT '',
-    create_time     timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updater         varchar(64) DEFAULT '',
-    update_time     timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    deleted         int2      NOT NULL DEFAULT 0,
-    tenant_id       int8      NOT NULL DEFAULT 0
-);
-ALTER TABLE ops_executor_product_line_scope ADD CONSTRAINT pk_ops_executor_product_line_scope PRIMARY KEY (id);
-CREATE UNIQUE INDEX uk_ops_executor_pl_scope ON ops_executor_product_line_scope (user_id, product_line_id);
-CREATE INDEX idx_ops_executor_pl_scope_user ON ops_executor_product_line_scope (user_id);
-CREATE INDEX idx_ops_executor_pl_scope_pl ON ops_executor_product_line_scope (product_line_id);
-CREATE SEQUENCE ops_executor_product_line_scope_seq START 1;
-COMMENT ON TABLE ops_executor_product_line_scope IS '执行员-产品线授权表';
-COMMENT ON COLUMN ops_executor_product_line_scope.id IS '主键';
-COMMENT ON COLUMN ops_executor_product_line_scope.user_id IS '用户ID';
-COMMENT ON COLUMN ops_executor_product_line_scope.product_line_id IS '产品线ID';
-COMMENT ON COLUMN ops_executor_product_line_scope.creator IS '创建者';
-COMMENT ON COLUMN ops_executor_product_line_scope.create_time IS '创建时间';
-COMMENT ON COLUMN ops_executor_product_line_scope.updater IS '更新者';
-COMMENT ON COLUMN ops_executor_product_line_scope.update_time IS '更新时间';
-COMMENT ON COLUMN ops_executor_product_line_scope.deleted IS '是否删除';
-COMMENT ON COLUMN ops_executor_product_line_scope.tenant_id IS '租户编号';
-
--- =============================================
--- 二、角色数据（4 条，tenant_id = 123）
+-- 一、角色数据（4 条，tenant_id = 123）
 -- =============================================
 
 INSERT INTO system_role (id, name, code, sort, data_scope, data_scope_dept_ids, status, type, remark, tenant_id) VALUES
@@ -170,7 +16,7 @@ INSERT INTO system_role (id, name, code, sort, data_scope, data_scope_dept_ids, 
 (160, '经销商',       'dealer',           40, 1, '', 0, 1, '业务角色',     123);
 
 -- =============================================
--- 三、菜单数据（1 目录 + 8 菜单 + 36 按钮 = 45 条）
+-- 二、菜单数据（1 目录 + 9 菜单 + 43 按钮 = 53 条）
 -- 注意：system_menu 无 tenant_id 列（全局共享）
 -- =============================================
 
@@ -266,14 +112,14 @@ INSERT INTO system_menu (id, name, permission, type, sort, parent_id, path, icon
 (6096, '分配授权', 'dealer:scope:assign', 3, 2, 6009, '', '', '', NULL, 0, true, true, true, 0);
 
 -- =============================================
--- 四、角色-菜单关联（tenant_id = 123）
+-- 三、角色-菜单关联（tenant_id = 123）
 -- 注意：system_role_menu 有 id 列（bigint, NOT NULL, 无默认值）
 --       使用 row_number() 从当前最大 id+1 开始自动生成
 -- =============================================
 
 INSERT INTO system_role_menu (id, role_id, menu_id, tenant_id)
 SELECT (SELECT COALESCE(MAX(id),0) FROM system_role_menu) + row_number() OVER (), role_id, menu_id, 123 FROM (
-  -- brand_admin (157): 全部菜单 + 全部按钮（58条）
+  -- brand_admin (157): 全部菜单 + 全部按钮（53条）
   SELECT 157 AS role_id, unnest(ARRAY[
     6000,6001,6002,6003,6004,6005,6006,6007,6008,6009,
     6010,6011,6012,6013,6014,6015,
@@ -288,13 +134,13 @@ SELECT (SELECT COALESCE(MAX(id),0) FROM system_role_menu) + row_number() OVER ()
     6095,6096
   ]) AS menu_id
   UNION ALL
-  -- brand_sales (158): 只读菜单（18条）
+  -- brand_sales (158): 只读菜单（19条）
   SELECT 158, unnest(ARRAY[
     6000,6001,6002,6003,6004,6005,6006,6007,6009,
     6010,6020,6024,6030,6040,6050,6060,6070,6095
   ])
   UNION ALL
-  -- service_executor (159): 9个菜单 + 按钮（48条）
+  -- service_executor (159): 9个菜单 + 按钮（49条）
   SELECT 159, unnest(ARRAY[
     6000,6001,6002,6003,6004,6005,6006,6007,6008,6009,
     6010,6020,
@@ -308,7 +154,7 @@ SELECT (SELECT COALESCE(MAX(id),0) FROM system_role_menu) + row_number() OVER ()
     6095
   ])
   UNION ALL
-  -- dealer (160): 9个菜单 + 按钮（37条）
+  -- dealer (160): 9个菜单 + 按钮（38条）
   SELECT 160, unnest(ARRAY[
     6000,6001,6002,6003,6004,6005,6006,6007,6008,6009,
     6010,6020,

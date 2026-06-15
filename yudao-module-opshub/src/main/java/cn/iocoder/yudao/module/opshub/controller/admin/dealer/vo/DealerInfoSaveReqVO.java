@@ -14,11 +14,11 @@ public class DealerInfoSaveReqVO {
 
     @Schema(description = "经销商名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "华康医疗器械")
     @NotEmpty(message = "经销商名称不能为空")
-    private String name;
+    private String dealerName;
 
     @Schema(description = "经销商编码", requiredMode = Schema.RequiredMode.REQUIRED, example = "HK")
     @NotEmpty(message = "经销商编码不能为空")
-    private String code;
+    private String dealerCode;
 
     @Schema(description = "联系人", example = "张三")
     private String contactName;

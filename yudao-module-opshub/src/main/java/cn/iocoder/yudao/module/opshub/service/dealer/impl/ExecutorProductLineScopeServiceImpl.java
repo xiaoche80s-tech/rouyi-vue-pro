@@ -21,29 +21,29 @@ public class ExecutorProductLineScopeServiceImpl implements ExecutorProductLineS
     private ExecutorProductLineScopeMapper executorPlScopeMapper;
 
     @Override
-    public Set<Long> getProductLineIdsByUserId(Long userId) {
-        return executorPlScopeMapper.selectProductLineIdsByUserId(userId);
+    public Set<String> getProductLineCodesByUserId(Long userId) {
+        return executorPlScopeMapper.selectProductLineCodesByUserId(userId);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void assign(Long userId, Set<Long> productLineIds) {
+    public void assign(Long userId, Set<String> productLineCodes) {
         // 1. 先删除旧的授权
         executorPlScopeMapper.deleteByUserId(userId);
         // 2. 批量插入新的授权
-        if (productLineIds != null && !productLineIds.isEmpty()) {
-            for (Long productLineId : productLineIds) {
+        if (productLineCodes != null && !productLineCodes.isEmpty()) {
+            for (String productLineCode : productLineCodes) {
                 ExecutorProductLineScopeDO scope = new ExecutorProductLineScopeDO();
                 scope.setUserId(userId);
-                scope.setProductLineId(productLineId);
+                scope.setProductLineCode(productLineCode);
                 executorPlScopeMapper.insert(scope);
             }
         }
     }
 
     @Override
-    public Set<Long> getUserIdsByProductLineId(Long productLineId) {
-        return executorPlScopeMapper.selectUserIdsByProductLineId(productLineId);
+    public Set<Long> getUserIdsByProductLineCode(String productLineCode) {
+        return executorPlScopeMapper.selectUserIdsByProductLineCode(productLineCode);
     }
 
 }

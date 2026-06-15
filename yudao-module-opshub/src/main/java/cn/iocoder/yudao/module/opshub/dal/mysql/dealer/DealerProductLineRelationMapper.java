@@ -10,23 +10,23 @@ import java.util.List;
 @Mapper
 public interface DealerProductLineRelationMapper extends BaseMapperX<DealerProductLineRelationDO> {
 
-    default List<DealerProductLineRelationDO> selectListByDealerId(Long dealerId) {
-        return selectList(DealerProductLineRelationDO::getDealerId, dealerId);
+    default List<DealerProductLineRelationDO> selectListByDealerCode(String dealerCode) {
+        return selectList(DealerProductLineRelationDO::getDealerCode, dealerCode);
     }
 
-    default List<DealerProductLineRelationDO> selectListByProductLineId(Long productLineId) {
-        return selectList(DealerProductLineRelationDO::getProductLineId, productLineId);
+    default List<DealerProductLineRelationDO> selectListByProductLineCode(String productLineCode) {
+        return selectList(DealerProductLineRelationDO::getProductLineCode, productLineCode);
     }
 
-    default DealerProductLineRelationDO selectByDealerIdAndProductLineId(Long dealerId, Long productLineId) {
-        return selectOne(DealerProductLineRelationDO::getDealerId, dealerId,
-                DealerProductLineRelationDO::getProductLineId, productLineId);
+    default DealerProductLineRelationDO selectByDealerCodeAndProductLineCode(String dealerCode, String productLineCode) {
+        return selectOne(DealerProductLineRelationDO::getDealerCode, dealerCode,
+                DealerProductLineRelationDO::getProductLineCode, productLineCode);
     }
 
-    default int deleteByDealerIdAndProductLineId(Long dealerId, Long productLineId) {
+    default int deleteByDealerCodeAndProductLineCode(String dealerCode, String productLineCode) {
         return delete(new LambdaQueryWrapperX<DealerProductLineRelationDO>()
-                .eq(DealerProductLineRelationDO::getDealerId, dealerId)
-                .eq(DealerProductLineRelationDO::getProductLineId, productLineId));
+                .eq(DealerProductLineRelationDO::getDealerCode, dealerCode)
+                .eq(DealerProductLineRelationDO::getProductLineCode, productLineCode));
     }
 
 }

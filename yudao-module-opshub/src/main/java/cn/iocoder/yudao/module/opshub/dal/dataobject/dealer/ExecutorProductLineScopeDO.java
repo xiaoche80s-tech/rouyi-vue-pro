@@ -26,8 +26,8 @@ public class ExecutorProductLineScopeDO extends TenantBaseDO {
      */
     private Long userId;
     /**
-     * 产品线 ID
+     * 产品线编码
      */
-    private Long productLineId;
+    private String productLineCode;
 
 }

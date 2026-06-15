@@ -13,10 +13,10 @@ import lombok.ToString;
 public class DealerInfoPageReqVO extends PageParam {
 
     @Schema(description = "经销商名称", example = "华康")
-    private String name;
+    private String dealerName;
 
     @Schema(description = "经销商编码", example = "HK")
-    private String code;
+    private String dealerCode;
 
     @Schema(description = "状态", example = "0")
     private Integer status;

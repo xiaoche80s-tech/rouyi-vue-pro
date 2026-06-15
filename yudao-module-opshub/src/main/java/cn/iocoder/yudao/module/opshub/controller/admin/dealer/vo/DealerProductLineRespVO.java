@@ -13,10 +13,10 @@ public class DealerProductLineRespVO {
     private Long id;
 
     @Schema(description = "产品线名称", example = "骨科")
-    private String name;
+    private String productLineName;
 
     @Schema(description = "产品线编码", example = "GK")
-    private String code;
+    private String productLineCode;
 
     @Schema(description = "排序", example = "0")
     private Integer sort;

@@ -28,10 +28,10 @@ public interface DealerProductLineService {
 
     // ========== 经销商绑定 ==========
 
-    void bindDealer(Long productLineId, Long dealerId);
+    void bindDealer(String productLineCode, String dealerCode);
 
-    void unbindDealer(Long productLineId, Long dealerId);
+    void unbindDealer(String productLineCode, String dealerCode);
 
-    List<DealerInfoDO> getDealers(Long productLineId);
+    List<DealerInfoDO> getDealers(String productLineCode);
 
 }

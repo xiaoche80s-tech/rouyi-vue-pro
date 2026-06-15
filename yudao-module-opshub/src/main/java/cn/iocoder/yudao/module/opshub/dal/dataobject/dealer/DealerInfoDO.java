@@ -24,11 +24,11 @@ public class DealerInfoDO extends TenantBaseDO {
     /**
      * 经销商名称
      */
-    private String name;
+    private String dealerName;
     /**
      * 经销商编码
      */
-    private String code;
+    private String dealerCode;
     /**
      * 联系人
      */

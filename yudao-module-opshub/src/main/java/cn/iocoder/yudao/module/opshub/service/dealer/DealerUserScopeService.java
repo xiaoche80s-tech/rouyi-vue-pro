@@ -8,18 +8,18 @@ import java.util.Set;
 public interface DealerUserScopeService {
 
     /**
-     * 获取用户授权的经销商 ID 集合
+     * 获取用户授权的经销商 Code 集合
      */
-    Set<Long> getDealerIdsByUserId(Long userId);
+    Set<String> getDealerCodesByUserId(Long userId);
 
     /**
      * 分配用户经销商授权（全量替换）
      */
-    void assign(Long userId, Set<Long> dealerIds);
+    void assign(Long userId, Set<String> dealerCodes);
 
     /**
      * 获取经销商关联的所有代理人 userId 集合
      */
-    Set<Long> getUserIdsByDealerId(Long dealerId);
+    Set<Long> getUserIdsByDealerCode(String dealerCode);
 
 }

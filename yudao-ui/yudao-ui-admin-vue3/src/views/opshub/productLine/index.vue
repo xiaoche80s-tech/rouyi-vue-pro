@@ -8,18 +8,18 @@
       class="-mb-15px"
       label-width="68px"
     >
-      <el-form-item label="名称" prop="name">
+      <el-form-item label="名称" prop="productLineName">
         <el-input
-          v-model="queryParams.name"
+          v-model="queryParams.productLineName"
           class="!w-240px"
           clearable
           placeholder="请输入名称"
           @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="编码" prop="code">
+      <el-form-item label="编码" prop="productLineCode">
         <el-input
-          v-model="queryParams.code"
+          v-model="queryParams.productLineCode"
           class="!w-240px"
           clearable
           placeholder="请输入编码"
@@ -62,8 +62,8 @@
   <ContentWrap>
     <el-table v-loading="loading" :data="list">
       <el-table-column align="center" label="编号" prop="id" width="80" />
-      <el-table-column align="center" label="名称" prop="name" />
-      <el-table-column align="center" label="编码" prop="code" />
+      <el-table-column align="center" label="名称" prop="productLineName" />
+      <el-table-column align="center" label="编码" prop="productLineCode" />
       <el-table-column align="center" label="排序" prop="sort" width="80" />
       <el-table-column align="center" label="状态" prop="status">
         <template #default="scope">
@@ -83,7 +83,7 @@
             v-hasPermi="['dealer:productline:binddealer']"
             link
             type="primary"
-            @click="openDealerForm(scope.row.id)"
+            @click="openDealerForm(scope.row.productLineCode)"
           >
             管理经销商
           </el-button>
@@ -138,8 +138,8 @@ const list = ref([])
 const queryParams = reactive({
   pageNo: 1,
   pageSize: 10,
-  name: '',
-  code: '',
+  productLineName: '',
+  productLineCode: '',
   status: undefined
 })
 const queryFormRef = ref()
@@ -176,8 +176,8 @@ const openForm = (type: string, id?: number) => {
 
 /** 管理经销商操作 */
 const dealerFormRef = ref()
-const openDealerForm = (id: number) => {
-  dealerFormRef.value.open(id)
+const openDealerForm = (productLineCode: string) => {
+  dealerFormRef.value.open(productLineCode)
 }
 
 /** 删除按钮操作 */

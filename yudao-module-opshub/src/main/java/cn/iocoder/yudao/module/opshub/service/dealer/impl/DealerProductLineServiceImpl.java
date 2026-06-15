@@ -37,8 +37,8 @@ public class DealerProductLineServiceImpl implements DealerProductLineService {
 
     @Override
     public Long createProductLine(DealerProductLineSaveReqVO createReqVO) {
-        // 1. 校验 code 唯一
-        validateCodeUnique(null, createReqVO.getCode());
+        // 1. 校验 productLineCode 唯一
+        validateProductLineCodeUnique(null, createReqVO.getProductLineCode());
         // 2. 转换 VO → DO
         DealerProductLineDO productLine = BeanUtils.toBean(createReqVO, DealerProductLineDO.class);
         // 3. 插入数据库
@@ -51,7 +51,7 @@ public class DealerProductLineServiceImpl implements DealerProductLineService {
     public void updateProductLine(DealerProductLineSaveReqVO updateReqVO) {
         // 1. 校验存在
         validateProductLineExists(updateReqVO.getId());
-        validateCodeUnique(updateReqVO.getId(), updateReqVO.getCode());
+        validateProductLineCodeUnique(updateReqVO.getId(), updateReqVO.getProductLineCode());
         // 2. 转换 VO → DO
         DealerProductLineDO updateObj = BeanUtils.toBean(updateReqVO, DealerProductLineDO.class);
         // 3. 更新数据库
@@ -84,39 +84,47 @@ public class DealerProductLineServiceImpl implements DealerProductLineService {
     // ========== 经销商绑定 ==========
 
     @Override
-    public void bindDealer(Long productLineId, Long dealerId) {
+    public void bindDealer(String productLineCode, String dealerCode) {
         // 1. 校验产品线存在
-        validateProductLineExists(productLineId);
+        DealerProductLineDO productLine = productLineMapper.selectByProductLineCode(productLineCode);
+        if (productLine == null) {
+            throw exception(PRODUCT_LINE_NOT_EXISTS);
+        }
         // 2. 校验经销商存在
-        if (dealerInfoMapper.selectById(dealerId) == null) {
+        DealerInfoDO dealer = dealerInfoMapper.selectByDealerCode(dealerCode);
+        if (dealer == null) {
             throw exception(DEALER_NOT_EXISTS);
         }
         // 3. 校验未重复绑定
-        if (productLineRelationMapper.selectByDealerIdAndProductLineId(dealerId, productLineId) != null) {
+        if (productLineRelationMapper.selectByDealerCodeAndProductLineCode(dealerCode, productLineCode) != null) {
             throw exception(DEALER_PRODUCT_LINE_EXISTS);
         }
         // 4. 插入关联
         DealerProductLineRelationDO relation = new DealerProductLineRelationDO();
-        relation.setProductLineId(productLineId);
-        relation.setDealerId(dealerId);
+        relation.setProductLineCode(productLineCode);
+        relation.setDealerCode(dealerCode);
         productLineRelationMapper.insert(relation);
     }
 
     @Override
-    public void unbindDealer(Long productLineId, Long dealerId) {
-        productLineRelationMapper.deleteByDealerIdAndProductLineId(dealerId, productLineId);
+    public void unbindDealer(String productLineCode, String dealerCode) {
+        productLineRelationMapper.deleteByDealerCodeAndProductLineCode(dealerCode, productLineCode);
     }
 
     @Override
-    public List<DealerInfoDO> getDealers(Long productLineId) {
-        List<DealerProductLineRelationDO> relations = productLineRelationMapper.selectListByProductLineId(productLineId);
+    public List<DealerInfoDO> getDealers(String productLineCode) {
+        List<DealerProductLineRelationDO> relations = productLineRelationMapper.selectListByProductLineCode(productLineCode);
         if (relations.isEmpty()) {
             return List.of();
         }
-        List<Long> dealerIds = relations.stream()
-                .map(DealerProductLineRelationDO::getDealerId)
+        List<String> dealerCodes = relations.stream()
+                .map(DealerProductLineRelationDO::getDealerCode)
                 .collect(Collectors.toList());
-        return dealerInfoMapper.selectBatchIds(dealerIds);
+        // 通过 dealerCode 查询经销商信息
+        return dealerCodes.stream()
+                .map(code -> dealerInfoMapper.selectOne(DealerInfoDO::getDealerCode, code))
+                .filter(java.util.Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     // ========== 校验方法 ==========
@@ -127,8 +135,8 @@ public class DealerProductLineServiceImpl implements DealerProductLineService {
         }
     }
 
-    private void validateCodeUnique(Long id, String code) {
-        DealerProductLineDO existing = productLineMapper.selectByCode(code);
+    private void validateProductLineCodeUnique(Long id, String productLineCode) {
+        DealerProductLineDO existing = productLineMapper.selectByProductLineCode(productLineCode);
         if (existing != null && !existing.getId().equals(id)) {
             throw exception(PRODUCT_LINE_CODE_DUPLICATE);
         }

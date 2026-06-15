@@ -18,17 +18,17 @@ public interface ExecutorProductLineScopeMapper extends BaseMapperX<ExecutorProd
         return delete(ExecutorProductLineScopeDO::getUserId, userId);
     }
 
-    default Set<Long> selectProductLineIdsByUserId(Long userId) {
+    default Set<String> selectProductLineCodesByUserId(Long userId) {
         List<ExecutorProductLineScopeDO> list = selectList(ExecutorProductLineScopeDO::getUserId, userId);
-        return cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertSet(list, ExecutorProductLineScopeDO::getProductLineId);
+        return cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertSet(list, ExecutorProductLineScopeDO::getProductLineCode);
     }
 
-    default List<ExecutorProductLineScopeDO> selectListByProductLineId(Long productLineId) {
-        return selectList(ExecutorProductLineScopeDO::getProductLineId, productLineId);
+    default List<ExecutorProductLineScopeDO> selectListByProductLineCode(String productLineCode) {
+        return selectList(ExecutorProductLineScopeDO::getProductLineCode, productLineCode);
     }
 
-    default Set<Long> selectUserIdsByProductLineId(Long productLineId) {
-        List<ExecutorProductLineScopeDO> list = selectList(ExecutorProductLineScopeDO::getProductLineId, productLineId);
+    default Set<Long> selectUserIdsByProductLineCode(String productLineCode) {
+        List<ExecutorProductLineScopeDO> list = selectList(ExecutorProductLineScopeDO::getProductLineCode, productLineCode);
         return cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertSet(list, ExecutorProductLineScopeDO::getUserId);
     }
 

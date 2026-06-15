@@ -29,8 +29,8 @@ public class DealerInfoServiceImpl implements DealerInfoService {
 
     @Override
     public Long createDealer(DealerInfoSaveReqVO createReqVO) {
-        // 1. 校验 code 唯一
-        validateCodeUnique(null, createReqVO.getCode());
+        // 1. 校验 dealerCode 唯一
+        validateDealerCodeUnique(null, createReqVO.getDealerCode());
         // 2. 转换 VO → DO
         DealerInfoDO dealer = BeanUtils.toBean(createReqVO, DealerInfoDO.class);
         // 3. 插入数据库
@@ -43,7 +43,7 @@ public class DealerInfoServiceImpl implements DealerInfoService {
     public void updateDealer(DealerInfoSaveReqVO updateReqVO) {
         // 1. 校验存在
         validateDealerExists(updateReqVO.getId());
-        validateCodeUnique(updateReqVO.getId(), updateReqVO.getCode());
+        validateDealerCodeUnique(updateReqVO.getId(), updateReqVO.getDealerCode());
         // 2. 转换 VO → DO
         DealerInfoDO updateObj = BeanUtils.toBean(updateReqVO, DealerInfoDO.class);
         // 3. 更新数据库
@@ -81,8 +81,8 @@ public class DealerInfoServiceImpl implements DealerInfoService {
         }
     }
 
-    private void validateCodeUnique(Long id, String code) {
-        DealerInfoDO existing = dealerInfoMapper.selectByCode(code);
+    private void validateDealerCodeUnique(Long id, String dealerCode) {
+        DealerInfoDO existing = dealerInfoMapper.selectByDealerCode(dealerCode);
         if (existing != null && !existing.getId().equals(id)) {
             throw exception(DEALER_CODE_DUPLICATE);
         }

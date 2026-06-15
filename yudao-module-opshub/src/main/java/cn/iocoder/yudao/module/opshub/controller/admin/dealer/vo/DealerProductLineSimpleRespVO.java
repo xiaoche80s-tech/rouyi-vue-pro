@@ -11,6 +11,9 @@ public class DealerProductLineSimpleRespVO {
     private Long id;
 
     @Schema(description = "产品线名称", example = "骨科")
-    private String name;
+    private String productLineName;
+
+    @Schema(description = "产品线编码", example = "GK")
+    private String productLineCode;
 
 }

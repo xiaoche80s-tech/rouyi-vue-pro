@@ -24,11 +24,11 @@ public class DealerProductLineDO extends TenantBaseDO {
     /**
      * 产品线名称
      */
-    private String name;
+    private String productLineName;
     /**
      * 产品线编码
      */
-    private String code;
+    private String productLineCode;
     /**
      * 排序
      */

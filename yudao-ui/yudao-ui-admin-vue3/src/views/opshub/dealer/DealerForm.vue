@@ -7,11 +7,11 @@
       :rules="formRules"
       label-width="100px"
     >
-      <el-form-item label="经销商名称" prop="name">
-        <el-input v-model="formData.name" placeholder="请输入经销商名称" />
+      <el-form-item label="经销商名称" prop="dealerName">
+        <el-input v-model="formData.dealerName" placeholder="请输入经销商名称" />
       </el-form-item>
-      <el-form-item label="经销商编码" prop="code">
-        <el-input v-model="formData.code" placeholder="请输入经销商编码" />
+      <el-form-item label="经销商编码" prop="dealerCode">
+        <el-input v-model="formData.dealerCode" placeholder="请输入经销商编码" />
       </el-form-item>
       <el-form-item label="联系人" prop="contactName">
         <el-input v-model="formData.contactName" placeholder="请输入联系人" />
@@ -58,8 +58,8 @@ const formLoading = ref(false)
 const formType = ref('')
 const formData = ref({
   id: undefined,
-  name: '',
-  code: '',
+  dealerName: '',
+  dealerCode: '',
   contactName: '',
   contactPhone: '',
   address: '',
@@ -67,8 +67,8 @@ const formData = ref({
   remark: ''
 })
 const formRules = reactive({
-  name: [{ required: true, message: '经销商名称不能为空', trigger: 'blur' }],
-  code: [{ required: true, message: '经销商编码不能为空', trigger: 'blur' }]
+  dealerName: [{ required: true, message: '经销商名称不能为空', trigger: 'blur' }],
+  dealerCode: [{ required: true, message: '经销商编码不能为空', trigger: 'blur' }]
 })
 const formRef = ref()
 
@@ -92,8 +92,8 @@ const open = async (type: string, id?: number) => {
 const resetForm = () => {
   formData.value = {
     id: undefined,
-    name: '',
-    code: '',
+    dealerName: '',
+    dealerCode: '',
     contactName: '',
     contactPhone: '',
     address: '',

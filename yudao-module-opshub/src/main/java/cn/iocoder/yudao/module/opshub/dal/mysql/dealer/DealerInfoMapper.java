@@ -14,14 +14,14 @@ public interface DealerInfoMapper extends BaseMapperX<DealerInfoDO> {
 
     default PageResult<DealerInfoDO> selectPage(DealerInfoPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<DealerInfoDO>()
-                .likeIfPresent(DealerInfoDO::getName, reqVO.getName())
-                .likeIfPresent(DealerInfoDO::getCode, reqVO.getCode())
+                .likeIfPresent(DealerInfoDO::getDealerName, reqVO.getDealerName())
+                .likeIfPresent(DealerInfoDO::getDealerCode, reqVO.getDealerCode())
                 .eqIfPresent(DealerInfoDO::getStatus, reqVO.getStatus())
                 .orderByDesc(DealerInfoDO::getId));
     }
 
-    default DealerInfoDO selectByCode(String code) {
-        return selectOne(DealerInfoDO::getCode, code);
+    default DealerInfoDO selectByDealerCode(String dealerCode) {
+        return selectOne(DealerInfoDO::getDealerCode, dealerCode);
     }
 
     default List<DealerInfoDO> selectListByStatus(Integer status) {

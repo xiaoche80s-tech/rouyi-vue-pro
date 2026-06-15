@@ -23,9 +23,13 @@ public class OpshubDataPermissionConfiguration {
                                                               ExecutorProductLineScopeMapper executorProductLineScopeMapper) {
         DealerDataPermissionRule rule = new DealerDataPermissionRule(
                 permissionApi, dealerUserScopeMapper, executorProductLineScopeMapper);
-        // Step 1：暂不注册表名映射，后续 Step 中按需调用 addDealerColumn / addProductLineColumn
-        // 示例：rule.addDealerColumn("ops_signing_contract");
-        // 示例：rule.addProductLineColumn("ops_aftersale_order");
+        // Step 2：注册基础数据表的经销商维度过滤
+        rule.addDealerColumn("ops_basedata_file");
+        // 基础数据与产品线无关，不注册 productLineColumn
+
+        // Step 3：注册签约进度表
+        rule.addDealerColumn("ops_signing_contract");
+        rule.addProductLineColumn("ops_signing_contract");
         return rule;
     }
 

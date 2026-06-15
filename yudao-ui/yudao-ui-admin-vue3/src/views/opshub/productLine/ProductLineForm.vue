@@ -7,11 +7,11 @@
       :rules="formRules"
       label-width="80px"
     >
-      <el-form-item label="名称" prop="name">
-        <el-input v-model="formData.name" placeholder="请输入产品线名称" />
+      <el-form-item label="名称" prop="productLineName">
+        <el-input v-model="formData.productLineName" placeholder="请输入产品线名称" />
       </el-form-item>
-      <el-form-item label="编码" prop="code">
-        <el-input v-model="formData.code" placeholder="请输入产品线编码" />
+      <el-form-item label="编码" prop="productLineCode">
+        <el-input v-model="formData.productLineCode" placeholder="请输入产品线编码" />
       </el-form-item>
       <el-form-item label="排序" prop="sort">
         <el-input-number v-model="formData.sort" :min="0" controls-position="right" />
@@ -52,15 +52,15 @@ const formLoading = ref(false)
 const formType = ref('')
 const formData = ref({
   id: undefined,
-  name: '',
-  code: '',
+  productLineName: '',
+  productLineCode: '',
   sort: 0,
   status: CommonStatusEnum.ENABLE,
   remark: ''
 })
 const formRules = reactive({
-  name: [{ required: true, message: '名称不能为空', trigger: 'blur' }],
-  code: [{ required: true, message: '编码不能为空', trigger: 'blur' }]
+  productLineName: [{ required: true, message: '名称不能为空', trigger: 'blur' }],
+  productLineCode: [{ required: true, message: '编码不能为空', trigger: 'blur' }]
 })
 const formRef = ref()
 
@@ -84,8 +84,8 @@ const open = async (type: string, id?: number) => {
 const resetForm = () => {
   formData.value = {
     id: undefined,
-    name: '',
-    code: '',
+    productLineName: '',
+    productLineCode: '',
     sort: 0,
     status: CommonStatusEnum.ENABLE,
     remark: ''

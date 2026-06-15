@@ -36,42 +36,7 @@ CREATE TABLE ops_order (
 CREATE INDEX idx_ops_order_dealer ON ops_order (dealer_id);
 ```
 
-### 2. 表间关联使用业务唯一字段，不使用自增 ID
-
-建立表之间的关联关系时，**必须使用业务唯一标识字段**（如编码 `code`），而非自增主键 `id`。
-
-**原因**：
-- 业务字段具有语义，便于数据排查、数据迁移和多环境同步
-- 自增 ID 在不同环境（开发/测试/生产）中不一致，数据导入导出容易错乱
-- 使用业务字段关联天然避免了对外键的依赖
-
-**错误示例**：
-```sql
--- ✗ 禁止：用自增 ID 关联
-CREATE TABLE ops_dealer_product_line_relation (
-    id              int8 NOT NULL,
-    dealer_id       int8 NOT NULL,      -- 关联 ops_dealer_info.id
-    product_line_id int8 NOT NULL       -- 关联 ops_dealer_product_line.id
-);
-```
-
-**正确示例**：
-```sql
--- ✓ 正确：用业务唯一字段关联
-CREATE TABLE ops_dealer_product_line_relation (
-    id              int8         NOT NULL,
-    dealer_code     varchar(50)  NOT NULL,  -- 关联 ops_dealer_info.code
-    product_line_code varchar(50) NOT NULL   -- 关联 ops_dealer_product_line.code
-);
-CREATE UNIQUE INDEX uk_ops_dealer_pl_relation
-    ON ops_dealer_product_line_relation (dealer_code, product_line_code);
-```
-
-**例外情况**：
-- 与框架内置表（`system_users`、`system_dept` 等）关联时，因为这些表没有业务编码字段或编码字段不稳定，可使用 `user_id` / `dept_id` 等 ID 字段关联
-- 纯中间关联表（多对多映射表）且双方表都无稳定业务编码时，经确认后可以使用 ID 关联
-
-### 3. 禁止使用数据库保留关键字作为字段名
+### 2. 禁止使用数据库保留关键字作为字段名
 
 字段名和表名**不得使用** MySQL、PostgreSQL 等数据库的保留关键字。
 

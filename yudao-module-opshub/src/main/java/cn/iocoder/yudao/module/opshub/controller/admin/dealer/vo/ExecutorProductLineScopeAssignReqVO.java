@@ -14,7 +14,7 @@ public class ExecutorProductLineScopeAssignReqVO {
     @NotNull(message = "用户ID不能为空")
     private Long userId;
 
-    @Schema(description = "产品线ID集合", example = "[1, 2, 3]")
-    private Set<Long> productLineIds;
+    @Schema(description = "产品线编码集合", example = "[\"GK\", \"FK\"]")
+    private Set<String> productLineCodes;
 
 }

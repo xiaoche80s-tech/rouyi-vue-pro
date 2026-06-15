@@ -29,24 +29,24 @@ public class DealerProductLineScopeController {
     @Operation(summary = "查看用户授权的产品线")
     @Parameter(name = "userId", description = "用户ID", required = true)
     @PreAuthorize("@ss.hasPermission('system:user:query')")
-    public CommonResult<Set<Long>> getListByUserId(@RequestParam("userId") Long userId) {
-        return success(executorPlScopeService.getProductLineIdsByUserId(userId));
+    public CommonResult<Set<String>> getListByUserId(@RequestParam("userId") Long userId) {
+        return success(executorPlScopeService.getProductLineCodesByUserId(userId));
     }
 
     @PostMapping("/assign")
     @Operation(summary = "分配用户产品线授权")
     @PreAuthorize("@ss.hasPermission('system:user:update')")
     public CommonResult<Boolean> assign(@Valid @RequestBody ExecutorProductLineScopeAssignReqVO reqVO) {
-        executorPlScopeService.assign(reqVO.getUserId(), reqVO.getProductLineIds());
+        executorPlScopeService.assign(reqVO.getUserId(), reqVO.getProductLineCodes());
         return success(true);
     }
 
     @GetMapping("/users")
     @Operation(summary = "查看产品线关联的所有执行员用户ID")
-    @Parameter(name = "productLineId", description = "产品线ID", required = true)
+    @Parameter(name = "productLineCode", description = "产品线编码", required = true)
     @PreAuthorize("@ss.hasPermission('system:user:query')")
-    public CommonResult<Set<Long>> getUserIdsByProductLineId(@RequestParam("productLineId") Long productLineId) {
-        return success(executorPlScopeService.getUserIdsByProductLineId(productLineId));
+    public CommonResult<Set<Long>> getUserIdsByProductLineCode(@RequestParam("productLineCode") String productLineCode) {
+        return success(executorPlScopeService.getUserIdsByProductLineCode(productLineCode));
     }
 
 }

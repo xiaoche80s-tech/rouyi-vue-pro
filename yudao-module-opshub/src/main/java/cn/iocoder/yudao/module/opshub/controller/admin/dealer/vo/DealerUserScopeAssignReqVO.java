@@ -14,7 +14,7 @@ public class DealerUserScopeAssignReqVO {
     @NotNull(message = "用户ID不能为空")
     private Long userId;
 
-    @Schema(description = "经销商ID集合", example = "[1, 2, 3]")
-    private Set<Long> dealerIds;
+    @Schema(description = "经销商编码集合", example = "[\"HK\", \"ZS\"]")
+    private Set<String> dealerCodes;
 
 }

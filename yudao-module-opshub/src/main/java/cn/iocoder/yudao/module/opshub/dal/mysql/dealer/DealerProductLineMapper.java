@@ -14,8 +14,8 @@ public interface DealerProductLineMapper extends BaseMapperX<DealerProductLineDO
 
     default PageResult<DealerProductLineDO> selectPage(DealerProductLinePageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<DealerProductLineDO>()
-                .likeIfPresent(DealerProductLineDO::getName, reqVO.getName())
-                .likeIfPresent(DealerProductLineDO::getCode, reqVO.getCode())
+                .likeIfPresent(DealerProductLineDO::getProductLineName, reqVO.getProductLineName())
+                .likeIfPresent(DealerProductLineDO::getProductLineCode, reqVO.getProductLineCode())
                 .eqIfPresent(DealerProductLineDO::getStatus, reqVO.getStatus())
                 .orderByAsc(DealerProductLineDO::getSort));
     }
@@ -24,8 +24,8 @@ public interface DealerProductLineMapper extends BaseMapperX<DealerProductLineDO
         return selectList(DealerProductLineDO::getStatus, status);
     }
 
-    default DealerProductLineDO selectByCode(String code) {
-        return selectOne(DealerProductLineDO::getCode, code);
+    default DealerProductLineDO selectByProductLineCode(String productLineCode) {
+        return selectOne(DealerProductLineDO::getProductLineCode, productLineCode);
     }
 
 }

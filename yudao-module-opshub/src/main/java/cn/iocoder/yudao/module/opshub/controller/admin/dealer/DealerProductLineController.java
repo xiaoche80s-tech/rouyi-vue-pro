@@ -89,7 +89,7 @@ public class DealerProductLineController {
     @Operation(summary = "绑定经销商")
     @PreAuthorize("@ss.hasPermission('dealer:productline:binddealer')")
     public CommonResult<Boolean> bindDealer(@Valid @RequestBody ProductLineBindDealerReqVO reqVO) {
-        productLineService.bindDealer(reqVO.getProductLineId(), reqVO.getDealerId());
+        productLineService.bindDealer(reqVO.getProductLineCode(), reqVO.getDealerCode());
         return success(true);
     }
 
@@ -97,16 +97,16 @@ public class DealerProductLineController {
     @Operation(summary = "解绑经销商")
     @PreAuthorize("@ss.hasPermission('dealer:productline:binddealer')")
     public CommonResult<Boolean> unbindDealer(@Valid ProductLineBindDealerReqVO reqVO) {
-        productLineService.unbindDealer(reqVO.getProductLineId(), reqVO.getDealerId());
+        productLineService.unbindDealer(reqVO.getProductLineCode(), reqVO.getDealerCode());
         return success(true);
     }
 
     @GetMapping("/dealers")
     @Operation(summary = "获得产品线已绑定经销商")
-    @Parameter(name = "productLineId", description = "产品线ID", required = true)
+    @Parameter(name = "productLineCode", description = "产品线编码", required = true)
     @PreAuthorize("@ss.hasPermission('dealer:productline:query')")
-    public CommonResult<List<DealerInfoRespVO>> getDealers(@RequestParam("productLineId") Long productLineId) {
-        List<DealerInfoDO> list = productLineService.getDealers(productLineId);
+    public CommonResult<List<DealerInfoRespVO>> getDealers(@RequestParam("productLineCode") String productLineCode) {
+        List<DealerInfoDO> list = productLineService.getDealers(productLineCode);
         return success(BeanUtils.toBean(list, DealerInfoRespVO.class));
     }
 

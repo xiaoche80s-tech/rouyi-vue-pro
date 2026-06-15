@@ -3,8 +3,8 @@ import request from '@/config/axios'
 // 经销商信息 VO
 export interface DealerVO {
   id: number
-  name: string
-  code: string
+  dealerName: string
+  dealerCode: string
   contactName: string
   contactPhone: string
   address: string
@@ -22,14 +22,15 @@ export interface ProductLineSimpleVO {
 // 经销商 VO（精简）
 export interface DealerSimpleVO {
   id: number
-  name: string
+  dealerName: string
+  dealerCode: string
 }
 
 // 产品线 VO（完整）
 export interface ProductLineVO {
   id: number
-  name: string
-  code: string
+  productLineName: string
+  productLineCode: string
   sort: number
   status: number
   remark: string

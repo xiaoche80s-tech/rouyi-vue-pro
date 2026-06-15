@@ -18,7 +18,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.expression.Alias;
 import net.sf.jsqlparser.expression.Expression;
-import net.sf.jsqlparser.expression.LongValue;
+import net.sf.jsqlparser.expression.StringValue;
 import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
 import net.sf.jsqlparser.expression.operators.relational.ExpressionList;
 import net.sf.jsqlparser.expression.operators.relational.InExpression;
@@ -34,8 +34,8 @@ import java.util.Set;
  * <p>
  * 核心逻辑：
  * 1. super_admin → 返回 null（不过滤，查看全部数据）
- * 2. brand_admin / brand_sales / service_executor → 基于产品线维度过滤（product_line_id IN ...）
- * 3. dealer → 基于经销商维度过滤（dealer_id IN ...）
+ * 2. brand_admin / brand_sales / service_executor → 基于产品线维度过滤（product_line_code IN ...）
+ * 3. dealer → 基于经销商维度过滤（dealer_code IN ...）
  * 4. 其他角色 → 返回 null（不过滤）
  * <p>
  * 与 DeptDataPermissionRule 共存，通过 @DataPermission(includeRules = ...) 注解按方法控制启用哪个规则。
@@ -48,21 +48,21 @@ public class DealerDataPermissionRule implements DataPermissionRule {
      */
     private static final String CONTEXT_KEY = DealerDataPermissionRule.class.getSimpleName();
 
-    private static final String DEALER_COLUMN_NAME = "dealer_id";
-    private static final String PRODUCT_LINE_COLUMN_NAME = "product_line_id";
+    private static final String DEALER_COLUMN_NAME = "dealer_code";
+    private static final String PRODUCT_LINE_COLUMN_NAME = "product_line_code";
 
     private final PermissionCommonApi permissionApi;
     private final DealerUserScopeMapper dealerUserScopeMapper;
     private final ExecutorProductLineScopeMapper executorProductLineScopeMapper;
 
     /**
-     * 基于经销商 ID 的表字段配置
+     * 基于经销商 Code 的表字段配置
      * key：表名，value：字段名
      */
     private final Map<String, String> dealerColumns = new HashMap<>();
 
     /**
-     * 基于产品线 ID 的表字段配置
+     * 基于产品线 Code 的表字段配置
      * key：表名，value：字段名
      */
     private final Map<String, String> productLineColumns = new HashMap<>();
@@ -111,12 +111,12 @@ public class DealerDataPermissionRule implements DataPermissionRule {
 
         // 情况二：经销商维度
         if (permissionData.getDealerScope()) {
-            return buildDealerExpression(tableName, tableAlias, permissionData.getDealerIds());
+            return buildDealerExpression(tableName, tableAlias, permissionData.getDealerCodes());
         }
 
         // 情况三：产品线维度
         if (permissionData.getProductLineScope()) {
-            return buildProductLineExpression(tableName, tableAlias, permissionData.getProductLineIds());
+            return buildProductLineExpression(tableName, tableAlias, permissionData.getProductLineCodes());
         }
 
         // 兜底：无匹配角色，不过滤
@@ -141,63 +141,63 @@ public class DealerDataPermissionRule implements DataPermissionRule {
                 OpsRoleCodeConstants.BRAND_SALES,
                 OpsRoleCodeConstants.SERVICE_EXECUTOR)) {
             data.setProductLineScope(true);
-            Set<Long> productLineIds = executorProductLineScopeMapper.selectProductLineIdsByUserId(userId);
-            data.setProductLineIds(productLineIds);
+            Set<String> productLineCodes = executorProductLineScopeMapper.selectProductLineCodesByUserId(userId);
+            data.setProductLineCodes(productLineCodes);
         }
 
         // 3. 经销商维度角色：dealer
         if (permissionApi.hasAnyRoles(userId, OpsRoleCodeConstants.DEALER)) {
             data.setDealerScope(true);
-            Set<Long> dealerIds = dealerUserScopeMapper.selectDealerIdsByUserId(userId);
-            data.setDealerIds(dealerIds);
+            Set<String> dealerCodes = dealerUserScopeMapper.selectDealerCodesByUserId(userId);
+            data.setDealerCodes(dealerCodes);
         }
 
         return data;
     }
 
     /**
-     * 构建经销商维度 WHERE 条件：WHERE dealer_id IN (1, 2, 3)
+     * 构建经销商维度 WHERE 条件：WHERE dealer_code IN ('HK', 'ZS')
      */
-    private Expression buildDealerExpression(String tableName, Alias tableAlias, Set<Long> dealerIds) {
+    private Expression buildDealerExpression(String tableName, Alias tableAlias, Set<String> dealerCodes) {
         String columnName = dealerColumns.get(tableName);
         if (StrUtil.isEmpty(columnName)) {
             return null;
         }
-        // 经销商 ID 为空 → 无权查看任何数据
-        if (CollUtil.isEmpty(dealerIds)) {
+        // 经销商 Code 为空 → 无权查看任何数据
+        if (CollUtil.isEmpty(dealerCodes)) {
             return new EqualsTo(null, null);
         }
         return new InExpression(
                 MyBatisUtils.buildColumn(tableName, tableAlias, columnName),
-                new ParenthesedExpressionList(new ExpressionList<LongValue>(
-                        CollectionUtils.convertList(dealerIds, LongValue::new))));
+                new ParenthesedExpressionList(new ExpressionList<StringValue>(
+                        CollectionUtils.convertList(dealerCodes, StringValue::new))));
     }
 
     /**
-     * 构建产品线维度 WHERE 条件：WHERE product_line_id IN (1, 2, 3)
+     * 构建产品线维度 WHERE 条件：WHERE product_line_code IN ('GK', 'FK')
      */
-    private Expression buildProductLineExpression(String tableName, Alias tableAlias, Set<Long> productLineIds) {
+    private Expression buildProductLineExpression(String tableName, Alias tableAlias, Set<String> productLineCodes) {
         String columnName = productLineColumns.get(tableName);
         if (StrUtil.isEmpty(columnName)) {
             return null;
         }
-        // 产品线 ID 为空 → 无权查看任何数据
-        if (CollUtil.isEmpty(productLineIds)) {
+        // 产品线 Code 为空 → 无权查看任何数据
+        if (CollUtil.isEmpty(productLineCodes)) {
             return new EqualsTo(null, null);
         }
         return new InExpression(
                 MyBatisUtils.buildColumn(tableName, tableAlias, columnName),
-                new ParenthesedExpressionList(new ExpressionList<LongValue>(
-                        CollectionUtils.convertList(productLineIds, LongValue::new))));
+                new ParenthesedExpressionList(new ExpressionList<StringValue>(
+                        CollectionUtils.convertList(productLineCodes, StringValue::new))));
     }
 
     // ==================== 添加配置 ====================
 
     /**
-     * 添加经销商 ID 列的过滤配置
+     * 添加经销商 Code 列的过滤配置
      *
      * @param tableName  表名
-     * @param columnName 列名（默认 dealer_id）
+     * @param columnName 列名（默认 dealer_code）
      */
     public void addDealerColumn(String tableName, String columnName) {
         dealerColumns.put(tableName, columnName);
@@ -209,10 +209,10 @@ public class DealerDataPermissionRule implements DataPermissionRule {
     }
 
     /**
-     * 添加产品线 ID 列的过滤配置
+     * 添加产品线 Code 列的过滤配置
      *
      * @param tableName  表名
-     * @param columnName 列名（默认 product_line_id）
+     * @param columnName 列名（默认 product_line_code）
      */
     public void addProductLineColumn(String tableName, String columnName) {
         productLineColumns.put(tableName, columnName);
@@ -236,10 +236,10 @@ public class DealerDataPermissionRule implements DataPermissionRule {
         private Boolean dealerScope = false;
         /** 是否为产品线维度角色 */
         private Boolean productLineScope = false;
-        /** 授权的经销商 ID 集合 */
-        private Set<Long> dealerIds;
-        /** 授权的产品线 ID 集合 */
-        private Set<Long> productLineIds;
+        /** 授权的经销商 Code 集合 */
+        private Set<String> dealerCodes;
+        /** 授权的产品线 Code 集合 */
+        private Set<String> productLineCodes;
     }
 
 }

@@ -26,8 +26,8 @@ public class DealerUserScopeDO extends TenantBaseDO {
      */
     private Long userId;
     /**
-     * 经销商 ID
+     * 经销商编码
      */
-    private Long dealerId;
+    private String dealerCode;
 
 }

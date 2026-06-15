@@ -29,24 +29,24 @@ public class DealerUserScopeController {
     @Operation(summary = "查看用户授权的经销商")
     @Parameter(name = "userId", description = "用户ID", required = true)
     @PreAuthorize("@ss.hasPermission('system:user:query')")
-    public CommonResult<Set<Long>> getListByUserId(@RequestParam("userId") Long userId) {
-        return success(dealerUserScopeService.getDealerIdsByUserId(userId));
+    public CommonResult<Set<String>> getListByUserId(@RequestParam("userId") Long userId) {
+        return success(dealerUserScopeService.getDealerCodesByUserId(userId));
     }
 
     @PostMapping("/assign")
     @Operation(summary = "分配用户经销商授权")
     @PreAuthorize("@ss.hasPermission('system:user:update')")
     public CommonResult<Boolean> assign(@Valid @RequestBody DealerUserScopeAssignReqVO reqVO) {
-        dealerUserScopeService.assign(reqVO.getUserId(), reqVO.getDealerIds());
+        dealerUserScopeService.assign(reqVO.getUserId(), reqVO.getDealerCodes());
         return success(true);
     }
 
     @GetMapping("/users")
     @Operation(summary = "查看经销商关联的所有代理人用户ID")
-    @Parameter(name = "dealerId", description = "经销商ID", required = true)
+    @Parameter(name = "dealerCode", description = "经销商编码", required = true)
     @PreAuthorize("@ss.hasPermission('system:user:query')")
-    public CommonResult<Set<Long>> getUserIdsByDealerId(@RequestParam("dealerId") Long dealerId) {
-        return success(dealerUserScopeService.getUserIdsByDealerId(dealerId));
+    public CommonResult<Set<Long>> getUserIdsByDealerCode(@RequestParam("dealerCode") String dealerCode) {
+        return success(dealerUserScopeService.getUserIdsByDealerCode(dealerCode));
     }
 
 }

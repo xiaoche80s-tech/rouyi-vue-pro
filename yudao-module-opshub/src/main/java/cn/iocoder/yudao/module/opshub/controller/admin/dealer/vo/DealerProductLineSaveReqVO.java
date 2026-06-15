@@ -14,11 +14,11 @@ public class DealerProductLineSaveReqVO {
 
     @Schema(description = "产品线名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "骨科")
     @NotEmpty(message = "产品线名称不能为空")
-    private String name;
+    private String productLineName;
 
     @Schema(description = "产品线编码", requiredMode = Schema.RequiredMode.REQUIRED, example = "GK")
     @NotEmpty(message = "产品线编码不能为空")
-    private String code;
+    private String productLineCode;
 
     @Schema(description = "排序", requiredMode = Schema.RequiredMode.REQUIRED, example = "0")
     @NotNull(message = "排序不能为空")

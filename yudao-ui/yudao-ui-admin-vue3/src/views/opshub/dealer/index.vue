@@ -8,18 +8,18 @@
       class="-mb-15px"
       label-width="68px"
     >
-      <el-form-item label="名称" prop="name">
+      <el-form-item label="名称" prop="dealerName">
         <el-input
-          v-model="queryParams.name"
+          v-model="queryParams.dealerName"
           class="!w-240px"
           clearable
           placeholder="请输入经销商名称"
           @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="编码" prop="code">
+      <el-form-item label="编码" prop="dealerCode">
         <el-input
-          v-model="queryParams.code"
+          v-model="queryParams.dealerCode"
           class="!w-240px"
           clearable
           placeholder="请输入经销商编码"
@@ -62,8 +62,8 @@
   <ContentWrap>
     <el-table v-loading="loading" :data="list">
       <el-table-column align="center" label="编号" prop="id" width="80" />
-      <el-table-column align="center" label="名称" prop="name" min-width="120" />
-      <el-table-column align="center" label="编码" prop="code" width="120" />
+      <el-table-column align="center" label="名称" prop="dealerName" min-width="120" />
+      <el-table-column align="center" label="编码" prop="dealerCode" width="120" />
       <el-table-column align="center" label="联系人" prop="contactName" width="100" />
       <el-table-column align="center" label="联系电话" prop="contactPhone" width="120" />
       <el-table-column align="center" label="状态" prop="status" width="80">
@@ -128,8 +128,8 @@ const list = ref([])
 const queryParams = reactive({
   pageNo: 1,
   pageSize: 10,
-  name: '',
-  code: '',
+  dealerName: '',
+  dealerCode: '',
   status: undefined
 })
 const queryFormRef = ref()

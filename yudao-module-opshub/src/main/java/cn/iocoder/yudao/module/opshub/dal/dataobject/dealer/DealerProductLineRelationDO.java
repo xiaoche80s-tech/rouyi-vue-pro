@@ -1,19 +1,26 @@
 package cn.iocoder.yudao.module.opshub.dal.dataobject.dealer;
 
-import cn.iocoder.yudao.framework.tenant.core.db.TenantBaseDO;
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.KeySequence;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+
+import cn.iocoder.yudao.framework.tenant.core.db.TenantBaseDO;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+import org.apache.ibatis.type.JdbcType;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * 经销商-产品线关联 DO
+ * <p>
+ * 
  */
 @TableName("ops_dealer_product_line_relation")
 @KeySequence("ops_dealer_product_line_relation_seq")
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class DealerProductLineRelationDO extends TenantBaseDO {
 
     /**
@@ -22,12 +29,12 @@ public class DealerProductLineRelationDO extends TenantBaseDO {
     @TableId
     private Long id;
     /**
-     * 经销商 ID
+     * 经销商编码
      */
-    private Long dealerId;
+    private String dealerCode;
     /**
-     * 产品线 ID
+     * 产品线编码
      */
-    private Long productLineId;
+    private String productLineCode;
 
 }

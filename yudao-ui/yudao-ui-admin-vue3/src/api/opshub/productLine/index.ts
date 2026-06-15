@@ -3,8 +3,8 @@ import request from '@/config/axios'
 // 产品线 VO
 export interface ProductLineVO {
   id: number
-  name: string
-  code: string
+  productLineName: string
+  productLineCode: string
   sort: number
   status: number
   remark: string
@@ -14,7 +14,8 @@ export interface ProductLineVO {
 // 产品线精简 VO
 export interface ProductLineSimpleVO {
   id: number
-  name: string
+  productLineName: string
+  productLineCode: string
 }
 
 // 查询产品线分页
@@ -50,16 +51,16 @@ export const getSimpleProductLineList = async (): Promise<ProductLineSimpleVO[]>
 // ========== 经销商绑定 ==========
 
 // 绑定经销商
-export const bindDealer = async (productLineId: number, dealerId: number) => {
-  return await request.post({ url: '/opshub/product-line/bind-dealer', data: { productLineId, dealerId } })
+export const bindDealer = async (productLineCode: string, dealerCode: string) => {
+  return await request.post({ url: '/opshub/product-line/bind-dealer', data: { productLineCode, dealerCode } })
 }
 
 // 解绑经销商
-export const unbindDealer = async (productLineId: number, dealerId: number) => {
-  return await request.delete({ url: '/opshub/product-line/unbind-dealer', params: { productLineId, dealerId } })
+export const unbindDealer = async (productLineCode: string, dealerCode: string) => {
+  return await request.delete({ url: '/opshub/product-line/unbind-dealer', params: { productLineCode, dealerCode } })
 }
 
 // 获得产品线已绑定的经销商
-export const getProductLineDealers = async (productLineId: number) => {
-  return await request.get({ url: '/opshub/product-line/dealers?productLineId=' + productLineId })
+export const getProductLineDealers = async (productLineCode: string) => {
+  return await request.get({ url: '/opshub/product-line/dealers?productLineCode=' + productLineCode })
 }

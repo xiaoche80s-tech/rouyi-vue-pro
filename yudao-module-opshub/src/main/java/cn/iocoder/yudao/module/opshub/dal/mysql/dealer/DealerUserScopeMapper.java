@@ -15,26 +15,26 @@ public interface DealerUserScopeMapper extends BaseMapperX<DealerUserScopeDO> {
         return selectList(DealerUserScopeDO::getUserId, userId);
     }
 
-    default List<DealerUserScopeDO> selectListByDealerId(Long dealerId) {
-        return selectList(DealerUserScopeDO::getDealerId, dealerId);
+    default List<DealerUserScopeDO> selectListByDealerCode(String dealerCode) {
+        return selectList(DealerUserScopeDO::getDealerCode, dealerCode);
     }
 
-    default DealerUserScopeDO selectByUserIdAndDealerId(Long userId, Long dealerId) {
+    default DealerUserScopeDO selectByUserIdAndDealerCode(Long userId, String dealerCode) {
         return selectOne(DealerUserScopeDO::getUserId, userId,
-                DealerUserScopeDO::getDealerId, dealerId);
+                DealerUserScopeDO::getDealerCode, dealerCode);
     }
 
     default int deleteByUserId(Long userId) {
         return delete(DealerUserScopeDO::getUserId, userId);
     }
 
-    default Set<Long> selectDealerIdsByUserId(Long userId) {
+    default Set<String> selectDealerCodesByUserId(Long userId) {
         List<DealerUserScopeDO> list = selectList(DealerUserScopeDO::getUserId, userId);
-        return cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertSet(list, DealerUserScopeDO::getDealerId);
+        return cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertSet(list, DealerUserScopeDO::getDealerCode);
     }
 
-    default Set<Long> selectUserIdsByDealerId(Long dealerId) {
-        List<DealerUserScopeDO> list = selectList(DealerUserScopeDO::getDealerId, dealerId);
+    default Set<Long> selectUserIdsByDealerCode(String dealerCode) {
+        List<DealerUserScopeDO> list = selectList(DealerUserScopeDO::getDealerCode, dealerCode);
         return cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertSet(list, DealerUserScopeDO::getUserId);
     }
 

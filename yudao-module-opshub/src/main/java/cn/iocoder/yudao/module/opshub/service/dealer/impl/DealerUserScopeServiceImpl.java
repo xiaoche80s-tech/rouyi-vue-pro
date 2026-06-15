@@ -21,29 +21,29 @@ public class DealerUserScopeServiceImpl implements DealerUserScopeService {
     private DealerUserScopeMapper userScopeMapper;
 
     @Override
-    public Set<Long> getDealerIdsByUserId(Long userId) {
-        return userScopeMapper.selectDealerIdsByUserId(userId);
+    public Set<String> getDealerCodesByUserId(Long userId) {
+        return userScopeMapper.selectDealerCodesByUserId(userId);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void assign(Long userId, Set<Long> dealerIds) {
+    public void assign(Long userId, Set<String> dealerCodes) {
         // 1. 先删除旧的授权
         userScopeMapper.deleteByUserId(userId);
         // 2. 批量插入新的授权
-        if (dealerIds != null && !dealerIds.isEmpty()) {
-            for (Long dealerId : dealerIds) {
+        if (dealerCodes != null && !dealerCodes.isEmpty()) {
+            for (String dealerCode : dealerCodes) {
                 DealerUserScopeDO scope = new DealerUserScopeDO();
                 scope.setUserId(userId);
-                scope.setDealerId(dealerId);
+                scope.setDealerCode(dealerCode);
                 userScopeMapper.insert(scope);
             }
         }
     }
 
     @Override
-    public Set<Long> getUserIdsByDealerId(Long dealerId) {
-        return userScopeMapper.selectUserIdsByDealerId(dealerId);
+    public Set<Long> getUserIdsByDealerCode(String dealerCode) {
+        return userScopeMapper.selectUserIdsByDealerCode(dealerCode);
     }
 
 }

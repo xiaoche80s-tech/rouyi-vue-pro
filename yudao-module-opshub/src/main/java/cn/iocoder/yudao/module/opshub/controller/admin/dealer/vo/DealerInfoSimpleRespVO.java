@@ -11,6 +11,9 @@ public class DealerInfoSimpleRespVO {
     private Long id;
 
     @Schema(description = "经销商名称", example = "XX医疗器械")
-    private String name;
+    private String dealerName;
+
+    @Schema(description = "经销商编码", example = "HK")
+    private String dealerCode;
 
 }

@@ -13,10 +13,10 @@ public class DealerInfoRespVO {
     private Long id;
 
     @Schema(description = "经销商名称", example = "华康医疗器械")
-    private String name;
+    private String dealerName;
 
     @Schema(description = "经销商编码", example = "HK")
-    private String code;
+    private String dealerCode;
 
     @Schema(description = "联系人", example = "张三")
     private String contactName;
