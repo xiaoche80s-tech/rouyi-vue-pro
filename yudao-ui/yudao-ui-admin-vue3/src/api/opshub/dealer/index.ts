@@ -16,7 +16,8 @@ export interface DealerVO {
 // 产品线 VO（精简）
 export interface ProductLineSimpleVO {
   id: number
-  name: string
+  productLineName: string
+  productLineCode: string
 }
 
 // 经销商 VO（精简）
@@ -67,5 +68,10 @@ export const deleteDealer = async (id: number) => {
 // 获得经销商精简列表（开启状态）
 export const getSimpleDealerList = async (): Promise<DealerSimpleVO[]> => {
   return await request.get({ url: '/opshub/dealer/simple-list' })
+}
+
+// 获得产品线精简列表（开启状态）
+export const getSimpleProductLineList = async (): Promise<ProductLineSimpleVO[]> => {
+  return await request.get({ url: '/opshub/product-line/simple-list' })
 }
 

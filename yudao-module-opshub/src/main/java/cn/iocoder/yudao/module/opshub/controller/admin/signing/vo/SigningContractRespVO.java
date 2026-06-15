@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.opshub.controller.admin.signing.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -47,9 +48,11 @@ public class SigningContractRespVO {
     private String subStatus;
 
     @Schema(description = "下发日期")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private LocalDate issuedDate;
 
     @Schema(description = "签署日期")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private LocalDate signDate;
 
     @Schema(description = "合同摘要")

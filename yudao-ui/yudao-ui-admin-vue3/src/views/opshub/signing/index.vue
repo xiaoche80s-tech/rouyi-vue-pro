@@ -189,5 +189,15 @@ onMounted(async () => {
   } catch (e) {
     console.error('加载经销商列表失败', e)
   }
+  // 加载产品线列表
+  try {
+    const plList = await DealerApi.getSimpleProductLineList()
+    productLineList.value = plList.map((pl: any) => ({
+      productLineCode: pl.productLineCode,
+      productLineName: pl.productLineName
+    }))
+  } catch (e) {
+    console.error('加载产品线列表失败', e)
+  }
 })
 </script>

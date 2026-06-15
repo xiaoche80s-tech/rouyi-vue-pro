@@ -4,7 +4,16 @@
     @selection-change="(rows: any[]) => emit('selectionChange', rows)"
   >
     <el-table-column type="selection" width="55" />
-    <el-table-column align="center" label="经销商" prop="dealerName" min-width="120" show-overflow-tooltip />
+    <el-table-column align="center" label="经销商" min-width="120" show-overflow-tooltip>
+      <template #default="{ row }">
+        {{ row.dealerName || row.dealerCode || '-' }}
+      </template>
+    </el-table-column>
+    <el-table-column align="center" label="产品线" min-width="100" show-overflow-tooltip>
+      <template #default="{ row }">
+        {{ row.productLineName || row.productLineCode || '-' }}
+      </template>
+    </el-table-column>
     <el-table-column align="center" label="合同类型" prop="contractTypeName" width="100" />
     <el-table-column align="center" label="合同编码" prop="contractCode" width="150" />
     <el-table-column align="center" label="合同名称" min-width="200">
@@ -27,8 +36,16 @@
         </div>
       </template>
     </el-table-column>
-    <el-table-column align="center" label="下发日期" prop="issuedDate" width="110" />
-    <el-table-column align="center" label="签署日期" prop="signDate" width="110" />
+    <el-table-column align="center" label="下发日期" width="120">
+      <template #default="{ row }">
+        {{ formatDate(row.issuedDate, 'YYYY-MM-DD') }}
+      </template>
+    </el-table-column>
+    <el-table-column align="center" label="签署日期" width="120">
+      <template #default="{ row }">
+        {{ formatDate(row.signDate, 'YYYY-MM-DD') }}
+      </template>
+    </el-table-column>
     <el-table-column align="center" label="操作" width="240" fixed="right">
       <template #default="{ row }">
         <!-- 管理员：编辑 -->
@@ -63,6 +80,7 @@
 
 <script lang="ts" setup>
 import type { SigningContractVO } from '@/api/opshub/signing'
+import { formatDate } from '@/utils/formatTime'
 import ContractHoverCard from './ContractHoverCard.vue'
 import AttachmentPopover from './AttachmentPopover.vue'
 

@@ -1,10 +1,10 @@
 <template>
   <ContentWrap>
-    <div class="flex gap-12px flex-wrap">
-      <el-card v-for="card in cards" :key="card.key" class="stat-card flex-1 min-w-140px" shadow="hover">
+    <div class="stat-grid">
+      <el-card v-for="card in cards" :key="card.key" class="stat-card" shadow="hover" body-class="p-12px">
         <div class="text-12px text-gray-400 mb-4px">{{ card.label }}</div>
         <div class="text-24px font-bold" :class="card.color">{{ card.value }}</div>
-        <div class="text-12px text-gray-400 mt-4px">{{ card.sub }}</div>
+        <div class="text-12px text-gray-400 mt-4px leading-tight">{{ card.sub }}</div>
       </el-card>
     </div>
   </ContentWrap>
@@ -85,7 +85,12 @@ defineExpose({ refresh: loadStats })
 </script>
 
 <style scoped>
-.stat-card {
-  min-width: 140px;
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 12px;
+}
+.stat-card :deep(.el-card__body) {
+  padding: 12px;
 }
 </style>

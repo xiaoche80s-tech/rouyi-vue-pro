@@ -1,12 +1,15 @@
 package cn.iocoder.yudao.module.opshub.controller.admin.signing;
 
+import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.opshub.controller.admin.signing.vo.*;
 import cn.iocoder.yudao.module.opshub.dal.dataobject.dealer.DealerInfoDO;
+import cn.iocoder.yudao.module.opshub.dal.dataobject.dealer.DealerProductLineDO;
 import cn.iocoder.yudao.module.opshub.dal.dataobject.signing.SigningContractDO;
 import cn.iocoder.yudao.module.opshub.service.dealer.DealerInfoService;
+import cn.iocoder.yudao.module.opshub.service.dealer.DealerProductLineService;
 import cn.iocoder.yudao.module.opshub.service.signing.SigningContractService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -36,6 +39,9 @@ public class SigningContractController {
     @Resource
     private DealerInfoService dealerInfoService;
 
+    @Resource
+    private DealerProductLineService dealerProductLineService;
+
     @GetMapping("/page")
     @Operation(summary = "获得签约合同分页")
     @PreAuthorize("@ss.hasPermission('dealer:signing:query')")
@@ -43,6 +49,7 @@ public class SigningContractController {
         PageResult<SigningContractDO> pageResult = signingContractService.getSigningContractPage(pageReqVO);
         PageResult<SigningContractRespVO> voPageResult = BeanUtils.toBean(pageResult, SigningContractRespVO.class);
         fillDealerNames(voPageResult.getList());
+        fillProductLineNames(voPageResult.getList());
         return success(voPageResult);
     }
 
@@ -57,6 +64,13 @@ public class SigningContractController {
             DealerInfoDO dealer = dealerInfoService.getDealer(contract.getDealerId());
             if (dealer != null) {
                 vo.setDealerName(dealer.getDealerName());
+            }
+            // 回填产品线名称
+            if (StrUtil.isNotBlank(contract.getProductLineCode())) {
+                dealerProductLineService.getSimpleList().stream()
+                        .filter(pl -> pl.getProductLineCode().equals(contract.getProductLineCode()))
+                        .findFirst()
+                        .ifPresent(pl -> vo.setProductLineName(pl.getProductLineName()));
             }
         }
         return success(vo);
@@ -127,6 +141,21 @@ public class SigningContractController {
                         }));
         for (SigningContractRespVO vo : list) {
             vo.setDealerName(dealerNameMap.getOrDefault(vo.getDealerId(), ""));
+        }
+    }
+
+    private void fillProductLineNames(List<SigningContractRespVO> list) {
+        if (list == null || list.isEmpty()) return;
+        // 产品线数据量小，一次查出构建 Map
+        Map<String, String> plNameMap = dealerProductLineService.getSimpleList().stream()
+                .collect(Collectors.toMap(
+                        DealerProductLineDO::getProductLineCode,
+                        DealerProductLineDO::getProductLineName,
+                        (a, b) -> a));
+        for (SigningContractRespVO vo : list) {
+            if (StrUtil.isNotBlank(vo.getProductLineCode())) {
+                vo.setProductLineName(plNameMap.getOrDefault(vo.getProductLineCode(), ""));
+            }
         }
     }
 
