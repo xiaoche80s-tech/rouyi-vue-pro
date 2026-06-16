@@ -1,0 +1,12 @@
+schema_version: 1
+module_path: ui_admin/system_management/tenant_management
+title: 租户与套餐管理
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/system/tenant/
+    - yudao-ui/yudao-ui-admin-vue3/src/api/system/tenantPackage/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/system/tenant/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/system/tenantPackage/
+source_files: []
+depends_on: []
+related_to:
+    - path: ui_admin/system_management/user_management

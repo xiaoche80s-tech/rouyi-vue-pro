@@ -34,6 +34,10 @@ public class OpshubDataPermissionConfiguration {
         // Step 4：注册订单表
         rule.addDealerColumn("ops_order_info");
         rule.addProductLineColumn("ops_order_info");
+
+        // Step 5：注册售后表
+        rule.addDealerColumn("ops_aftersale_info");
+        rule.addProductLineColumn("ops_aftersale_info");
         return rule;
     }
 

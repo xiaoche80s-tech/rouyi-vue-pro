@@ -1,0 +1,14 @@
+schema_version: 1
+module_path: system/access_control
+title: RBAC权限与数据范围控制
+scope:
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/api/permission/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/controller/admin/permission/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/dal/dataobject/permission/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/dal/mysql/permission/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/service/permission/
+source_files: []
+depends_on: []
+related_to:
+    - path: system/authentication
+    - path: system/user_identity

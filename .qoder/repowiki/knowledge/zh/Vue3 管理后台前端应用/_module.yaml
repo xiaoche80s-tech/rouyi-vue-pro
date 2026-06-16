@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: ui_admin
+title: Vue3 管理后台前端应用
+scope:
+    - yudao-ui/
+source_files: []
+depends_on: []
+related_to: []

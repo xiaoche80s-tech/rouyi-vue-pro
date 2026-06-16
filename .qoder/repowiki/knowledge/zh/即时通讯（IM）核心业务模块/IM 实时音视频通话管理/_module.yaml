@@ -1,0 +1,17 @@
+schema_version: 1
+module_path: im/rtc
+title: IM 实时音视频通话管理
+scope:
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/controller/admin/rtc/
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/controller/admin/manager/rtc/
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/service/rtc/
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/dal/dataobject/rtc/
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/dal/mysql/rtc/
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/dal/redis/rtc/
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/enums/rtc/
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/job/rtc/
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/framework/rtc/
+source_files: []
+depends_on: []
+related_to:
+    - path: im/websocket

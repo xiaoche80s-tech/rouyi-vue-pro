@@ -1,0 +1,12 @@
+schema_version: 1
+module_path: infra/db_management
+title: 数据源配置与数据库表结构管理
+scope:
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/controller/admin/db/
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/dal/dataobject/db/
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/dal/mysql/db/
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/service/db/
+source_files: []
+depends_on: []
+related_to:
+    - path: infra/codegen
