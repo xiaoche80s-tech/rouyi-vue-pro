@@ -15,6 +15,9 @@ export interface CsTaskVO {
   slaDeadline: string
   dealerCode: string
   dealerName: string
+  productLineCode: string
+  productLineName: string
+  sourceModule: string
   remark: string
   acceptTime: string
   deliverTime: string
