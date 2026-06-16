@@ -66,6 +66,24 @@ public class CsTaskDO extends TenantBaseDO {
      */
     private String dealerCode;
     /**
+     * 经销商名称（冗余存储）
+     */
+    private String dealerName;
+    /**
+     * 产品线编码（数据权限用）
+     */
+    private String productLineCode;
+    /**
+     * 产品线名称（冗余存储）
+     */
+    private String productLineName;
+    /**
+     * 来源模块
+     *
+     * 枚举 {@link cn.iocoder.yudao.module.opshub.enums.CsSourceModuleEnum}
+     */
+    private String sourceModule;
+    /**
      * 备注
      */
     private String remark;

@@ -1,0 +1,15 @@
+schema_version: 1
+module_path: infra/api_logging
+title: API 访问与错误日志管理
+scope:
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/api/logger/
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/controller/admin/logger/
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/dal/dataobject/logger/
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/dal/mysql/logger/
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/enums/logger/
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/job/logger/
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/service/logger/
+source_files: []
+depends_on: []
+related_to:
+    - path: ui_admin/infra_platform/api_logs

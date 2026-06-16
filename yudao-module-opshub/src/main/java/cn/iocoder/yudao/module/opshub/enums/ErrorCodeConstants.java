@@ -64,4 +64,28 @@ public interface ErrorCodeConstants {
     ErrorCode CS_TASK_NOT_CREATOR       = new ErrorCode(1_050_008_006, "非提单人，无权验收");
     ErrorCode CS_TASK_TRANSFER_SAME     = new ErrorCode(1_050_008_007, "不可转单给自己");
 
+    // ========== 操作请求 1-050-008-0xx ==========
+    ErrorCode CS_OPREQ_NOT_EXISTS       = new ErrorCode(1_050_008_010, "操作请求不存在");
+    ErrorCode CS_OPREQ_NOT_PENDING      = new ErrorCode(1_050_008_011, "仅待处理状态可接单");
+    ErrorCode CS_OPREQ_NOT_IN_PROGRESS  = new ErrorCode(1_050_008_012, "仅处理中状态可提交");
+    ErrorCode CS_OPREQ_NOT_DELIVERED    = new ErrorCode(1_050_008_013, "仅等待验收状态可验收");
+    ErrorCode CS_OPREQ_ALREADY_CLOSED   = new ErrorCode(1_050_008_014, "操作请求已完成");
+    ErrorCode CS_OPREQ_NOT_ASSIGNEE     = new ErrorCode(1_050_008_015, "非当前处理人");
+    ErrorCode CS_OPREQ_CODE_DUPLICATE   = new ErrorCode(1_050_008_016, "编号重复");
+    ErrorCode CS_OPREQ_SOURCE_NOT_EXISTS= new ErrorCode(1_050_008_017, "来源业务不存在");
+
+    // ========== 附件 1-050-008-0xx ==========
+    ErrorCode CS_ATTACHMENT_NOT_EXISTS  = new ErrorCode(1_050_008_020, "附件不存在");
+    ErrorCode CS_ATTACHMENT_UPLOAD_FAIL = new ErrorCode(1_050_008_021, "附件上传失败");
+
+    // ========== 咨询会话 1-050-009-xxx ==========
+    ErrorCode CS_SESSION_NOT_EXISTS      = new ErrorCode(1_050_009_000, "咨询会话不存在");
+    ErrorCode CS_SESSION_NOT_PENDING     = new ErrorCode(1_050_009_001, "仅待处理状态可接单");
+    ErrorCode CS_SESSION_NOT_PROCESSING  = new ErrorCode(1_050_009_002, "仅处理中状态可完成");
+    ErrorCode CS_SESSION_NOT_COMPLETED   = new ErrorCode(1_050_009_003, "仅已完成状态可操作");
+    ErrorCode CS_SESSION_ALREADY_CLOSED  = new ErrorCode(1_050_009_004, "咨询已关闭");
+    ErrorCode CS_SESSION_NOT_ASSIGNEE    = new ErrorCode(1_050_009_005, "非当前处理人，无权操作");
+    ErrorCode CS_SESSION_NOT_INITIATOR   = new ErrorCode(1_050_009_006, "非发起人，无权关闭");
+    ErrorCode CS_SESSION_DUPLICATE       = new ErrorCode(1_050_009_007, "已存在相同咨询");
+
 }

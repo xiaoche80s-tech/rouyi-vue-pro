@@ -36,7 +36,6 @@ CREATE TABLE ops_order_info (
     CONSTRAINT pk_ops_order_info PRIMARY KEY (id)
 );
 
-CREATE UNIQUE INDEX uk_ops_order_info_code ON ops_order_info (order_code) WHERE deleted = 0;
 CREATE INDEX idx_ops_order_info_dealer_code ON ops_order_info (dealer_code);
 CREATE INDEX idx_ops_order_info_pl_code ON ops_order_info (product_line_code);
 CREATE INDEX idx_ops_order_info_progress ON ops_order_info (progress_status);

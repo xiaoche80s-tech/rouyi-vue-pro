@@ -1,0 +1,10 @@
+schema_version: 1
+module_path: infra/websocket_push
+title: WebSocket 消息推送与示例
+scope:
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/api/websocket/
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/websocket/
+source_files: []
+depends_on: []
+related_to:
+    - path: im/websocket

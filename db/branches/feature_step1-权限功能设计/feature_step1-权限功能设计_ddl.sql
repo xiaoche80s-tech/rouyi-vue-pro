@@ -26,7 +26,6 @@ CREATE TABLE ops_dealer_info (
     tenant_id     int8         NOT NULL DEFAULT 0
 );
 ALTER TABLE ops_dealer_info ADD CONSTRAINT pk_ops_dealer_info PRIMARY KEY (id);
-CREATE UNIQUE INDEX uk_ops_dealer_info_dealer_code ON ops_dealer_info (dealer_code);
 CREATE SEQUENCE ops_dealer_info_seq START 1;
 COMMENT ON TABLE ops_dealer_info IS '经销商信息表';
 COMMENT ON COLUMN ops_dealer_info.id IS '经销商ID';
@@ -60,7 +59,6 @@ CREATE TABLE ops_dealer_product_line (
     tenant_id         int8         NOT NULL DEFAULT 0
 );
 ALTER TABLE ops_dealer_product_line ADD CONSTRAINT pk_ops_dealer_product_line PRIMARY KEY (id);
-CREATE UNIQUE INDEX uk_ops_dealer_product_line_code ON ops_dealer_product_line (product_line_code);
 CREATE SEQUENCE ops_dealer_product_line_seq START 1;
 COMMENT ON TABLE ops_dealer_product_line IS '产品线表';
 COMMENT ON COLUMN ops_dealer_product_line.id IS '产品线ID';
@@ -89,7 +87,6 @@ CREATE TABLE ops_dealer_product_line_relation (
     deleted     int2         NOT NULL DEFAULT 0,
 );
 ALTER TABLE ops_dealer_product_line_relation ADD CONSTRAINT pk_ops_dealer_product_line_relation PRIMARY KEY (id);
-CREATE UNIQUE INDEX uk_ops_dealer_pl_relation ON ops_dealer_product_line_relation (dealer_code, product_line_code);
 CREATE INDEX idx_ops_dealer_pl_relation_dealer ON ops_dealer_product_line_relation (dealer_code);
 CREATE INDEX idx_ops_dealer_pl_relation_pl ON ops_dealer_product_line_relation (product_line_code);
 CREATE SEQUENCE ops_dealer_product_line_relation_seq START 1;
@@ -116,7 +113,6 @@ CREATE TABLE ops_dealer_user_scope (
     tenant_id   int8         NOT NULL DEFAULT 0
 );
 ALTER TABLE ops_dealer_user_scope ADD CONSTRAINT pk_ops_dealer_user_scope PRIMARY KEY (id);
-CREATE UNIQUE INDEX uk_ops_dealer_user_scope ON ops_dealer_user_scope (user_id, dealer_code);
 CREATE INDEX idx_ops_dealer_user_scope_user ON ops_dealer_user_scope (user_id);
 CREATE INDEX idx_ops_dealer_user_scope_dealer ON ops_dealer_user_scope (dealer_code);
 CREATE SEQUENCE ops_dealer_user_scope_seq START 1;
@@ -144,7 +140,6 @@ CREATE TABLE ops_executor_product_line_scope (
     tenant_id         int8         NOT NULL DEFAULT 0
 );
 ALTER TABLE ops_executor_product_line_scope ADD CONSTRAINT pk_ops_executor_product_line_scope PRIMARY KEY (id);
-CREATE UNIQUE INDEX uk_ops_executor_pl_scope ON ops_executor_product_line_scope (user_id, product_line_code);
 CREATE INDEX idx_ops_executor_pl_scope_user ON ops_executor_product_line_scope (user_id);
 CREATE INDEX idx_ops_executor_pl_scope_pl ON ops_executor_product_line_scope (product_line_code);
 CREATE SEQUENCE ops_executor_product_line_scope_seq START 1;

@@ -5,4 +5,5 @@ scope:
     - yudao-framework/yudao-spring-boot-starter-biz-tenant/
 source_files: []
 depends_on: []
-related_to: []
+related_to:
+    - path: system/tenant_management

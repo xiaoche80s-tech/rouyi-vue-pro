@@ -14,7 +14,8 @@ scope:
 source_files: []
 depends_on: []
 related_to:
-    - path: opshub/dealer
-    - path: opshub/basedata
-    - path: ui_admin/report_designer
+    - path: docs
+    - path: ui_admin/opshub/order
+    - path: framework/starter_protection
     - path: ui_admin/payment_center
+    - path: framework/starter_excel

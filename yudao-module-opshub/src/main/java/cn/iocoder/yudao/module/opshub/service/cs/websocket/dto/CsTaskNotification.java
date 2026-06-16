@@ -55,4 +55,10 @@ public class CsTaskNotification {
     public static final String TYPE_SLA_WARNING = "cs-sla-warning";
     public static final String TYPE_SLA_ALERT = "cs-sla-alert";
 
+    // ========== 操作请求通知类型 ==========
+    public static final String TYPE_OPREQ_CREATED = "cs-opreq-created";
+    public static final String TYPE_OPREQ_ACCEPTED = "cs-opreq-accepted";
+    public static final String TYPE_OPREQ_SUBMITTED = "cs-opreq-submitted";
+    public static final String TYPE_OPREQ_VERIFIED = "cs-opreq-verified";
+
 }

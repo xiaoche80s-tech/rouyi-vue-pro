@@ -5,5 +5,4 @@ scope:
     - yudao-module-bpm/src/main/java/cn/iocoder/yudao/module/bpm/framework/
 source_files: []
 depends_on: []
-related_to:
-    - path: bpm/bpm_api
+related_to: []

@@ -33,8 +33,6 @@ CREATE TABLE ops_signing_contract (
     CONSTRAINT pk_ops_signing_contract PRIMARY KEY (id)
 );
 
--- 唯一索引：合同编码
-CREATE UNIQUE INDEX uk_ops_signing_contract_code ON ops_signing_contract (contract_code) WHERE deleted = 0;
 -- 普通索引
 CREATE INDEX idx_ops_signing_contract_dealer_code ON ops_signing_contract (dealer_code);
 CREATE INDEX idx_ops_signing_contract_pl_code ON ops_signing_contract (product_line_code);

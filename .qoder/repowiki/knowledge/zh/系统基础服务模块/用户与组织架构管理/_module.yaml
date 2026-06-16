@@ -1,0 +1,19 @@
+schema_version: 1
+module_path: system/user_identity
+title: 用户与组织架构管理
+scope:
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/api/dept/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/api/user/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/controller/admin/dept/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/controller/admin/user/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/dal/dataobject/dept/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/dal/dataobject/user/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/dal/mysql/dept/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/dal/mysql/user/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/service/dept/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/service/user/
+source_files: []
+depends_on: []
+related_to:
+    - path: ui_admin/system_management/user_management
+    - path: ui_admin/system_management/dept_post

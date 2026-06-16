@@ -33,4 +33,18 @@ public class CsTaskPageReqVO extends PageParam {
     @Schema(description = "关键词搜索")
     private String keyword;
 
+    @Schema(description = "产品线编码", example = "PL01")
+    private String productLineCode;
+
+    @Schema(description = "来源模块", example = "signing")
+    private String sourceModule;
+
+    // ========== 以下字段由 Service 层按角色自动填充 ==========
+
+    @Schema(description = "可见范围：all/creator/assignee（Service 层自动填充）", hidden = true)
+    private String viewScope;
+
+    @Schema(description = "当前用户 ID（Service 层自动填充）", hidden = true)
+    private Long currentUserId;
+
 }

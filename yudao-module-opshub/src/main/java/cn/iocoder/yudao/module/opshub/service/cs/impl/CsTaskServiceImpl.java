@@ -10,11 +10,13 @@ import cn.iocoder.yudao.module.opshub.controller.admin.cs.vo.*;
 import cn.iocoder.yudao.module.opshub.dal.dataobject.cs.CsTaskDO;
 import cn.iocoder.yudao.module.opshub.dal.mysql.cs.CsTaskMapper;
 import cn.iocoder.yudao.module.opshub.enums.CsTaskStatusEnum;
+import cn.iocoder.yudao.module.opshub.enums.OpsRoleCodeConstants;
 import cn.iocoder.yudao.module.opshub.service.cs.CsTaskService;
 import cn.iocoder.yudao.module.opshub.service.cs.websocket.CsWebSocketService;
 import cn.iocoder.yudao.module.opshub.service.cs.websocket.dto.CsTaskNotification;
 import cn.iocoder.yudao.module.system.api.notify.NotifyMessageSendApi;
 import cn.iocoder.yudao.module.system.api.notify.dto.NotifySendSingleToUserReqDTO;
+import cn.iocoder.yudao.framework.common.biz.system.permission.PermissionCommonApi;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -63,6 +65,9 @@ public class CsTaskServiceImpl implements CsTaskService {
     @Resource
     private NotifyMessageSendApi notifyMessageSendApi;
 
+    @Resource
+    private PermissionCommonApi permissionCommonApi;
+
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
 
     @Override
@@ -110,6 +115,10 @@ public class CsTaskServiceImpl implements CsTaskService {
 
     @Override
     public PageResult<CsTaskDO> getCsTaskPage(CsTaskPageReqVO reqVO) {
+        // 按角色注入可见性过滤
+        Long currentUserId = SecurityFrameworkUtils.getLoginUserId();
+        reqVO.setCurrentUserId(currentUserId);
+        reqVO.setViewScope(resolveViewScope(currentUserId));
         return csTaskMapper.selectPage(reqVO);
     }
 
@@ -329,6 +338,22 @@ public class CsTaskServiceImpl implements CsTaskService {
         Map<String, Object> params = new HashMap<>();
         params.put("taskNo", task.getTaskNo());
         return params;
+    }
+
+    /**
+     * 根据当前用户角色解析可见范围
+     */
+    private String resolveViewScope(Long userId) {
+        // 检查是否是经销商角色
+        if (permissionCommonApi.hasAnyRoles(userId, OpsRoleCodeConstants.DEALER)) {
+            return "creator";
+        }
+        // 检查是否是执行员角色
+        if (permissionCommonApi.hasAnyRoles(userId, OpsRoleCodeConstants.SERVICE_EXECUTOR)) {
+            return "assignee";
+        }
+        // 管理员/销售员 → 看全部
+        return "all";
     }
 
     @Override

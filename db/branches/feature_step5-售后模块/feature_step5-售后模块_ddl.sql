@@ -43,7 +43,6 @@ CREATE TABLE ops_aftersale_info (
     CONSTRAINT pk_ops_aftersale_info PRIMARY KEY (id)
 );
 
-CREATE UNIQUE INDEX uk_ops_aftersale_info_code ON ops_aftersale_info (aftersale_code) WHERE deleted = 0;
 CREATE INDEX idx_ops_aftersale_info_dealer_code ON ops_aftersale_info (dealer_code);
 CREATE INDEX idx_ops_aftersale_info_pl_code ON ops_aftersale_info (product_line_code);
 CREATE INDEX idx_ops_aftersale_info_order_code ON ops_aftersale_info (order_code);

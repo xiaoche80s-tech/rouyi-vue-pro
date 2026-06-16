@@ -5,5 +5,4 @@ scope:
     - yudao-framework/yudao-spring-boot-starter-mq/
 source_files: []
 depends_on: []
-related_to:
-    - path: im/websocket
+related_to: []

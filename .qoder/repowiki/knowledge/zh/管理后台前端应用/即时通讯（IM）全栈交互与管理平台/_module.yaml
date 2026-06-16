@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: ui_admin/im_chat
+title: 即时通讯（IM）全栈交互与管理平台
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/im/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/im/
+source_files: []
+depends_on: []
+related_to:
+    - path: ui_admin/opshub
+    - path: ui_admin/ai_assistant

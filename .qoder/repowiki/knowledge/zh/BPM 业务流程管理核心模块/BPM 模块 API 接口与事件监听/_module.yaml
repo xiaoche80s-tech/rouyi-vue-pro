@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: bpm/bpm_api
+title: BPM 模块 API 接口与事件监听
+scope:
+    - yudao-module-bpm/src/main/java/cn/iocoder/yudao/module/bpm/api/
+source_files: []
+depends_on: []
+related_to: []

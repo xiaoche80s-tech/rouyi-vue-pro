@@ -4,6 +4,7 @@ import cn.hutool.extra.spring.SpringUtil;
 import cn.iocoder.yudao.framework.common.enums.UserTypeEnum;
 import cn.iocoder.yudao.module.infra.api.websocket.WebSocketSenderApi;
 import cn.iocoder.yudao.module.opshub.service.cs.websocket.CsWebSocketService;
+import cn.iocoder.yudao.module.opshub.service.cs.websocket.dto.CsChatMessage;
 import cn.iocoder.yudao.module.opshub.service.cs.websocket.dto.CsTaskNotification;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +36,49 @@ public class CsWebSocketServiceImpl implements CsWebSocketService {
     @Override
     public void broadcastSlaAlert(CsTaskNotification notification) {
         executeAfterTransaction(() -> getSelf().doBroadcastToAdmin(notification));
+    }
+
+    // ========== Step 7: 咨询聊天 WebSocket ==========
+
+    @Override
+    public void sendChatMessageAsync(Long userId, CsChatMessage chatMessage) {
+        executeAfterTransaction(() -> getSelf().doSendChatToUser(userId, chatMessage));
+    }
+
+    @Override
+    public void sendSessionEventAsync(Long userId, CsChatMessage sessionEvent) {
+        executeAfterTransaction(() -> getSelf().doSendChatToUser(userId, sessionEvent));
+    }
+
+    @Override
+    public void broadcastNewConsult(CsChatMessage consultNotify) {
+        executeAfterTransaction(() -> getSelf().doBroadcastChatToAdmin(consultNotify));
+    }
+
+    /**
+     * 异步推送聊天消息给指定用户
+     */
+    @Async
+    public void doSendChatToUser(Long userId, CsChatMessage chatMessage) {
+        try {
+            webSocketSenderApi.sendObject(UserTypeEnum.ADMIN.getValue(), userId,
+                    chatMessage.getType(), chatMessage);
+        } catch (Exception e) {
+            log.error("[doSendChatToUser][userId({}) chatMessage({}) 发送失败]", userId, chatMessage, e);
+        }
+    }
+
+    /**
+     * 异步广播聊天消息给所有管理端用户
+     */
+    @Async
+    public void doBroadcastChatToAdmin(CsChatMessage chatMessage) {
+        try {
+            webSocketSenderApi.sendObject(UserTypeEnum.ADMIN.getValue(),
+                    chatMessage.getType(), chatMessage);
+        } catch (Exception e) {
+            log.error("[doBroadcastChatToAdmin][chatMessage({}) 广播失败]", chatMessage, e);
+        }
     }
 
     /**

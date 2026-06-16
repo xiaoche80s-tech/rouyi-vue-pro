@@ -9,6 +9,11 @@
     <el-tab-pane label="操作请求" name="opreq">
       <OpReqTab />
     </el-tab-pane>
+
+    <!-- Tab 3: 咨询队列 -->
+    <el-tab-pane label="咨询队列" name="consult">
+      <ConsultTab />
+    </el-tab-pane>
   </el-tabs>
 </template>
 
@@ -16,6 +21,7 @@
 import { ref } from 'vue'
 import TaskTab from './components/TaskTab.vue'
 import OpReqTab from './components/OpReqTab.vue'
+import ConsultTab from './components/ConsultTab.vue'
 
 defineOptions({ name: 'OpshubCustomerService' })
 

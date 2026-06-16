@@ -1,0 +1,13 @@
+schema_version: 1
+module_path: im/face
+title: IM表情包管理模块
+scope:
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/controller/admin/face/
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/controller/admin/manager/face/
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/service/face/
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/dal/dataobject/face/
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/dal/mysql/face/
+source_files: []
+depends_on: []
+related_to:
+    - path: im/message

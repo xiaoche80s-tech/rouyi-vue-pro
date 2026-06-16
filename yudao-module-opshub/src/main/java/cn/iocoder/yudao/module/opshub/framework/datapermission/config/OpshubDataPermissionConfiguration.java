@@ -38,6 +38,17 @@ public class OpshubDataPermissionConfiguration {
         // Step 5：注册售后表
         rule.addDealerColumn("ops_aftersale_info");
         rule.addProductLineColumn("ops_aftersale_info");
+
+        // Step 6：注册客服工单表和操作请求表
+        rule.addDealerColumn("ops_cs_task");
+        rule.addProductLineColumn("ops_cs_task");
+        rule.addDealerColumn("ops_cs_opreq");
+        rule.addProductLineColumn("ops_cs_opreq");
+
+        // Step 7：注册咨询会话表
+        rule.addDealerColumn("ops_cs_session");
+        rule.addProductLineColumn("ops_cs_session");
+
         return rule;
     }
 

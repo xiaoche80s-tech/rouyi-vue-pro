@@ -48,6 +48,15 @@ public class CsTaskRespVO {
     @Schema(description = "关联经销商名称")
     private String dealerName;
 
+    @Schema(description = "产品线编码")
+    private String productLineCode;
+
+    @Schema(description = "产品线名称")
+    private String productLineName;
+
+    @Schema(description = "来源模块：aftersale/order/signing/basedata/manual")
+    private String sourceModule;
+
     @Schema(description = "备注")
     private String remark;
 

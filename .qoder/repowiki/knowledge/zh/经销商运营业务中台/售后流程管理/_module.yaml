@@ -1,0 +1,19 @@
+schema_version: 1
+module_path: opshub/aftersale
+title: 售后流程管理
+scope:
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/controller/admin/aftersale/
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/dal/dataobject/aftersale/
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/dal/mysql/aftersale/
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/service/aftersale/
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/enums/AfterSaleHandlingMethodEnum.java
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/enums/AfterSaleNodeCodeEnum.java
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/enums/AfterSaleProgressStatusEnum.java
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/enums/AfterSaleReasonEnum.java
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/enums/AfterSaleRedInvoiceStatusEnum.java
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/enums/AfterSaleRefundStatusEnum.java
+source_files: []
+depends_on: []
+related_to:
+    - path: opshub/cs
+    - path: decisions/14276d8c8f17_9d2fc86bda6e

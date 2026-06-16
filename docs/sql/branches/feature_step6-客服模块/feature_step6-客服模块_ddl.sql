@@ -1,7 +1,7 @@
 -- =============================================
--- OpsHub Step 6: 客户服务模块 - 工单系统 DDL
+-- OpsHub Step 6: 客户服务模块 - 完整 DDL
 -- 数据库: PostgreSQL
--- 包含: 1 张业务表（ops_cs_task）
+-- 包含: ops_cs_task（增强）+ ops_cs_opreq（新建）+ ops_cs_attachment（新建）
 -- =============================================
 
 -- 1.1 客服工单表
@@ -60,3 +60,91 @@ COMMENT ON COLUMN ops_cs_task.updater IS '更新者';
 COMMENT ON COLUMN ops_cs_task.update_time IS '更新时间';
 COMMENT ON COLUMN ops_cs_task.deleted IS '是否删除';
 COMMENT ON COLUMN ops_cs_task.tenant_id IS '租户编号';
+
+-- ===== Step 6 增强：ops_cs_task 新增 4 字段 + assignee_id 改为可空 =====
+ALTER TABLE ops_cs_task ADD COLUMN IF NOT EXISTS dealer_name VARCHAR(100);
+ALTER TABLE ops_cs_task ADD COLUMN IF NOT EXISTS product_line_code VARCHAR(50);
+ALTER TABLE ops_cs_task ADD COLUMN IF NOT EXISTS product_line_name VARCHAR(100);
+ALTER TABLE ops_cs_task ADD COLUMN IF NOT EXISTS source_module VARCHAR(20);
+ALTER TABLE ops_cs_task ALTER COLUMN assignee_id DROP NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_ops_cs_task_pl_code ON ops_cs_task (product_line_code);
+COMMENT ON COLUMN ops_cs_task.dealer_name IS '经销商名称（冗余存储）';
+COMMENT ON COLUMN ops_cs_task.product_line_code IS '产品线编码（数据权限用）';
+COMMENT ON COLUMN ops_cs_task.product_line_name IS '产品线名称（冗余存储）';
+COMMENT ON COLUMN ops_cs_task.source_module IS '来源模块：aftersale/order/signing/basedata/manual';
+
+-- ===== Step 6 新建：操作请求主表 ops_cs_opreq =====
+CREATE TABLE ops_cs_opreq (
+    id                  BIGINT          NOT NULL,
+    opreq_code          VARCHAR(30)     NOT NULL,
+    op_type             VARCHAR(20)     NOT NULL,
+    status              INTEGER         NOT NULL    DEFAULT 0,
+    dealer_code         VARCHAR(50)     NOT NULL,
+    dealer_name         VARCHAR(100)    NOT NULL,
+    product_line_code   VARCHAR(50),
+    product_line_name   VARCHAR(100),
+    source_module       VARCHAR(20)     NOT NULL,
+    source_id           BIGINT,
+    source_code         VARCHAR(50),
+    content             VARCHAR(500)    NOT NULL,
+    creator_user_id     BIGINT          NOT NULL,
+    assignee_id         BIGINT,
+    accept_time         TIMESTAMP,
+    submit_time         TIMESTAMP,
+    submit_remark       VARCHAR(500),
+    verify_time         TIMESTAMP,
+    completed_time      TIMESTAMP,
+    remark              VARCHAR(500),
+    creator             VARCHAR(64)                 DEFAULT '',
+    create_time         TIMESTAMP       NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    updater             VARCHAR(64)                 DEFAULT '',
+    update_time         TIMESTAMP       NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    deleted             SMALLINT        NOT NULL    DEFAULT 0,
+    tenant_id           BIGINT          NOT NULL    DEFAULT 0,
+    CONSTRAINT pk_ops_cs_opreq PRIMARY KEY (id)
+);
+CREATE UNIQUE INDEX uk_ops_cs_opreq_code ON ops_cs_opreq (opreq_code) WHERE deleted = 0;
+CREATE INDEX idx_ops_cs_opreq_dealer_code ON ops_cs_opreq (dealer_code);
+CREATE INDEX idx_ops_cs_opreq_pl_code ON ops_cs_opreq (product_line_code);
+CREATE INDEX idx_ops_cs_opreq_status ON ops_cs_opreq (status);
+CREATE INDEX idx_ops_cs_opreq_type ON ops_cs_opreq (op_type);
+CREATE INDEX idx_ops_cs_opreq_source ON ops_cs_opreq (source_module, source_id);
+CREATE INDEX idx_ops_cs_opreq_creator ON ops_cs_opreq (creator_user_id);
+CREATE INDEX idx_ops_cs_opreq_assignee ON ops_cs_opreq (assignee_id);
+CREATE SEQUENCE ops_cs_opreq_seq START WITH 1 INCREMENT BY 1;
+COMMENT ON TABLE ops_cs_opreq IS '操作请求主表';
+COMMENT ON COLUMN ops_cs_opreq.opreq_code IS '操作请求编号（OPR-YYYYMMDD-NNN）';
+COMMENT ON COLUMN ops_cs_opreq.op_type IS '操作类型：sign/invoice/stamp/aftersale';
+COMMENT ON COLUMN ops_cs_opreq.status IS '状态：0=待处理 1=处理中 2=等待验收 3=已完成';
+
+-- ===== Step 6 新建：通用附件表 ops_cs_attachment =====
+CREATE TABLE ops_cs_attachment (
+    id              BIGINT          NOT NULL,
+    module          VARCHAR(20)     NOT NULL,
+    business_id     BIGINT          NOT NULL,
+    business_code   VARCHAR(50),
+    file_name       VARCHAR(200)    NOT NULL,
+    file_url        VARCHAR(500)    NOT NULL,
+    file_size       BIGINT,
+    file_type       VARCHAR(100),
+    remark          VARCHAR(500),
+    creator         VARCHAR(64)                 DEFAULT '',
+    create_time     TIMESTAMP       NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    updater         VARCHAR(64)                 DEFAULT '',
+    update_time     TIMESTAMP       NOT NULL    DEFAULT CURRENT_TIMESTAMP,
+    deleted         SMALLINT        NOT NULL    DEFAULT 0,
+    tenant_id       BIGINT          NOT NULL    DEFAULT 0,
+    CONSTRAINT pk_ops_cs_attachment PRIMARY KEY (id)
+);
+CREATE INDEX idx_ops_cs_attachment_module_biz ON ops_cs_attachment (module, business_id);
+CREATE INDEX idx_ops_cs_attachment_biz_code ON ops_cs_attachment (business_code);
+CREATE SEQUENCE ops_cs_attachment_seq START WITH 1 INCREMENT BY 1;
+COMMENT ON TABLE ops_cs_attachment IS '通用附件表';
+COMMENT ON COLUMN ops_cs_attachment.module IS '关联模块：task/opreq/basedata/signing/order/aftersale';
+COMMENT ON COLUMN ops_cs_attachment.business_id IS '业务ID';
+COMMENT ON COLUMN ops_cs_attachment.business_code IS '业务编号（冗余存储）';
+COMMENT ON COLUMN ops_cs_attachment.file_name IS '原始文件名';
+COMMENT ON COLUMN ops_cs_attachment.file_url IS '文件URL';
+COMMENT ON COLUMN ops_cs_attachment.file_size IS '文件大小（字节）';
+COMMENT ON COLUMN ops_cs_attachment.file_type IS 'MIME类型';
+COMMENT ON COLUMN ops_cs_attachment.remark IS '备注';

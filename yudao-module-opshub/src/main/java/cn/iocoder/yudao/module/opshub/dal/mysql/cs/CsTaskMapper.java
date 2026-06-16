@@ -23,6 +23,8 @@ public interface CsTaskMapper extends BaseMapperX<CsTaskDO> {
                 .eqIfPresent(CsTaskDO::getAssigneeId, reqVO.getAssigneeId())
                 .eqIfPresent(CsTaskDO::getCreatorUserId, reqVO.getCreatorUserId())
                 .eqIfPresent(CsTaskDO::getDealerCode, reqVO.getDealerCode())
+                .eqIfPresent(CsTaskDO::getProductLineCode, reqVO.getProductLineCode())
+                .eqIfPresent(CsTaskDO::getSourceModule, reqVO.getSourceModule())
                 .orderByDesc(CsTaskDO::getId);
 
         // 关键词搜索
@@ -33,7 +35,26 @@ public interface CsTaskMapper extends BaseMapperX<CsTaskDO> {
                     .or().like(CsTaskDO::getRemark, reqVO.getKeyword()));
         }
 
+        // 可见性过滤（由 Service 层按角色注入）
+        applyViewScope(wrapper, reqVO);
+
         return selectPage(reqVO, wrapper);
+    }
+
+    /**
+     * 应用用户级可见性过滤
+     */
+    private void applyViewScope(LambdaQueryWrapperX<CsTaskDO> wrapper, CsTaskPageReqVO reqVO) {
+        if (reqVO.getViewScope() == null) {
+            return;
+        }
+        switch (reqVO.getViewScope()) {
+            case "creator" -> wrapper.eq(CsTaskDO::getCreatorUserId, reqVO.getCurrentUserId());
+            case "assignee" -> wrapper.and(w -> w
+                    .eq(CsTaskDO::getStatus, 0) // PENDING
+                    .or().eq(CsTaskDO::getAssigneeId, reqVO.getCurrentUserId()));
+            // "all" 或其他 → 无额外过滤
+        }
     }
 
     /**

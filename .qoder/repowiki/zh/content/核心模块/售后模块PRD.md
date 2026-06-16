@@ -3,8 +3,24 @@
 <cite>
 **本文档引用的文件**
 - [feature_step5-售后模块_ddl.sql](file://db/branches/feature_step5-售后模块/feature_step5-售后模块_ddl.sql)
+- [feature_step5-售后模块_dml.sql](file://db/branches/feature_step5-售后模块/feature_step5-售后模块_dml.sql)
 - [PRD-Step5-售后模块.md](file://docs/PRD-Step5-售后模块.md)
+- [AfterSaleInfoService.java](file://yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/service/aftersale/AfterSaleInfoService.java)
+- [AfterSaleInfoDO.java](file://yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/dal/dataobject/aftersale/AfterSaleInfoDO.java)
+- [AfterSaleProgressDO.java](file://yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/dal/dataobject/aftersale/AfterSaleProgressDO.java)
+- [AfterSaleHandlingMethodEnum.java](file://yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/enums/AfterSaleHandlingMethodEnum.java)
+- [index.vue](file://yudao-ui/yudao-ui-admin-vue3/src/views/opshub/aftersale/index.vue)
+- [index.ts](file://yudao-ui/yudao-ui-admin-vue3/src/api/opshub/aftersale/index.ts)
 </cite>
+
+## 更新摘要
+**所做更改**
+- 更新了数据库设计部分，反映完整的DDL结构（120行）
+- 新增了完整的DML测试数据（338行），包含9种售后类型和4种进度状态
+- 补充了后端服务实现细节，包括完整的Service接口和数据对象
+- 更新了前端实现，包含完整的Vue组件和API接口定义
+- 增强了权限控制矩阵，反映新增的按钮权限
+- 完善了统计分析组件的实现细节
 
 ## 目录
 1. [项目概述](#项目概述)
@@ -222,6 +238,64 @@ class AfterSaleRedInvoiceStatusEnum {
 
 **章节来源**
 - [PRD-Step5-售后模块.md:174-224](file://docs/PRD-Step5-售后模块.md#L174-L224)
+
+### 4. 后端服务实现
+
+售后模块的后端服务实现了完整的业务逻辑：
+
+**服务接口定义**
+```java
+public interface AfterSaleInfoService {
+    AfterSaleDetailRespVO getAfterSaleDetail(Long id);
+    PageResult<AfterSaleInfoDO> getAfterSalePage(AfterSaleInfoPageReqVO reqVO);
+    AfterSaleStatisticsRespVO getStatistics();
+    void updateProgress(AfterSaleUpdateProgressReqVO reqVO);
+}
+```
+
+**数据对象结构**
+- `AfterSaleInfoDO`: 售后主表数据对象，继承租户基础DO
+- `AfterSaleProgressDO`: 进度节点数据对象，包含节点编码、名称、完成时间等
+
+**章节来源**
+- [AfterSaleInfoService.java:1-33](file://yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/service/aftersale/AfterSaleInfoService.java#L1-L33)
+- [AfterSaleInfoDO.java:1-139](file://yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/dal/dataobject/aftersale/AfterSaleInfoDO.java#L1-L139)
+- [AfterSaleProgressDO.java:1-62](file://yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/dal/dataobject/aftersale/AfterSaleProgressDO.java#L1-L62)
+
+### 5. 前端实现
+
+售后模块的前端提供了完整的用户界面：
+
+**主要组件**
+- `index.vue`: 主页面组件，包含统计卡片、筛选栏、表格和操作按钮
+- `AfterSaleStatisticsCards.vue`: 统计卡片组件
+- `AfterSaleFilterBar.vue`: 筛选栏组件
+- `AfterSaleTable.vue`: 售后单列表表格组件
+- `AfterSaleDetailModal.vue`: 售后详情弹窗组件
+- `UpdateProgressModal.vue`: 进度更新弹窗组件
+
+**API接口定义**
+```typescript
+export const getAfterSalePage = (params: AfterSalePageParams) => {
+  return request.get({ url: '/opshub/aftersale/page', params })
+}
+
+export const getAfterSaleDetail = (id: number) => {
+  return request.get({ url: '/opshub/aftersale/get', params: { id } })
+}
+
+export const getAfterSaleStatistics = () => {
+  return request.get({ url: '/opshub/aftersale/statistics' })
+}
+
+export const updateAfterSaleProgress = (data: AfterSaleUpdateProgressParams) => {
+  return request.put({ url: '/opshub/aftersale/update-progress', data })
+}
+```
+
+**章节来源**
+- [index.vue:1-533](file://yudao-ui/yudao-ui-admin-vue3/src/views/opshub/aftersale/index.vue#L1-L533)
+- [index.ts:1-126](file://yudao-ui/yudao-ui-admin-vue3/src/api/opshub/aftersale/index.ts#L1-L126)
 
 ## 架构概览
 
@@ -468,6 +542,46 @@ TABLE --> PAGINATION
 - [PRD-Step5-售后模块.md:437-458](file://docs/PRD-Step5-售后模块.md#L437-L458)
 - [PRD-Step5-售后模块.md:518-539](file://docs/PRD-Step5-售后模块.md#L518-L539)
 
+### 4. 数据库设计详解
+
+售后模块的数据库设计包含了完整的DDL结构：
+
+**主表结构 (ops_aftersale_info)**
+- 主键：`id` (BIGINT, PK)
+- 唯一索引：`aftersale_code` (VARCHAR(30))
+- 普通索引：`dealer_code`, `product_line_code`, `order_code`, `progress_status`, `handling_method`, `apply_time`
+- 序列：`ops_aftersale_info_seq`
+- 注释：售后主表
+
+**进度表结构 (ops_aftersale_progress)**
+- 主键：`id` (BIGINT, PK)
+- 索引：`aftersale_code`, `aftersale_id`
+- 序列：`ops_aftersale_progress_seq`
+- 注释：售后进度节点子表
+
+**章节来源**
+- [feature_step5-售后模块_ddl.sql:1-121](file://db/branches/feature_step5-售后模块/feature_step5-售后模块_ddl.sql#L1-L121)
+
+### 5. 测试数据实现
+
+售后模块包含了完整的测试数据，覆盖了所有业务场景：
+
+**测试数据覆盖范围**
+- 9种售后类型：3种处理方式 × 3种售后原因
+- 4种进度状态：pending, in_progress, exchanging, completed
+- 多个经销商和产品线
+- 每条售后单5个进度节点
+- 物流信息、退款信息、红字发票信息
+
+**数据分布示例**
+- pending状态：3条（退货投诉、退换货投诉、退货退款投诉）
+- in_progress状态：6条（退货召回、退换货召回、退货退款破损等）
+- completed状态：6条（各种类型的完成案例）
+
+**章节来源**
+- [feature_step5-售后模块_dml.sql:45-194](file://db/branches/feature_step5-售后模块/feature_step5-售后模块_dml.sql#L45-L194)
+- [feature_step5-售后模块_dml.sql:197-337](file://db/branches/feature_step5-售后模块/feature_step5-售后模块_dml.sql#L197-L337)
+
 ## 依赖分析
 
 ### 1. 外部依赖关系
@@ -570,6 +684,10 @@ RETURN_RESULT --> END
 - **字典数据缓存**: 枚举值缓存1小时
 - **权限数据缓存**: 用户权限缓存10分钟
 
+**章节来源**
+- [feature_step5-售后模块_ddl.sql:46-54](file://db/branches/feature_step5-售后模块/feature_step5-售后模块_ddl.sql#L46-L54)
+- [feature_step5-售后模块_ddl.sql:106-109](file://db/branches/feature_step5-售后模块/feature_step5-售后模块_ddl.sql#L106-L109)
+
 ## 故障排除指南
 
 ### 1. 常见问题诊断
@@ -645,6 +763,7 @@ RETURN_RESULT --> END
 - **枚举体系**: 完整的枚举定义保证了业务语义的统一性
 - **索引优化**: 针对查询场景的索引设计提升了系统性能
 - **缓存策略**: 合理的缓存机制改善了用户体验
+- **完整的测试数据**: 338行DML测试数据覆盖所有业务场景
 
 ### 发展前景
 
@@ -694,6 +813,7 @@ RETURN_RESULT --> END
 - [ ] 分页查询功能正常
 - [ ] 统计卡片数据准确
 - [ ] 进度更新流程顺畅
+- [ ] 前端组件正常渲染
 
 #### 性能验证
 - [ ] 查询响应时间达标
@@ -706,3 +826,21 @@ RETURN_RESULT --> END
 - [ ] 移动端适配
 - [ ] 权限控制有效
 - [ ] 日志记录完整
+
+### 4. 数据库脚本
+
+**DDL脚本结构**
+- 主表：`ops_aftersale_info` (120行)
+- 子表：`ops_aftersale_progress` (120行)
+- 索引：多个复合索引优化查询性能
+- 序列：两个自增序列支持数据插入
+
+**DML脚本内容**
+- 菜单更新：组件路径更新
+- 权限配置：新增按钮权限
+- 测试数据：15-25条覆盖所有场景
+- 角色分配：权限与角色绑定
+
+**章节来源**
+- [feature_step5-售后模块_ddl.sql:1-121](file://db/branches/feature_step5-售后模块/feature_step5-售后模块_ddl.sql#L1-L121)
+- [feature_step5-售后模块_dml.sql:1-338](file://db/branches/feature_step5-售后模块/feature_step5-售后模块_dml.sql#L1-L338)
