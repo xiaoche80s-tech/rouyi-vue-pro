@@ -90,6 +90,15 @@
       <Icon class="mr-5px" icon="ep:stamp" />
       批量申请盖章
     </el-button>
+    <el-button
+      v-hasPermi="['dealer:basedata:consult']"
+      :disabled="selectedRows.length === 0"
+      plain
+      @click="handleBatchConsult"
+    >
+      <Icon class="mr-5px" icon="ep:chat-dot-round" />
+      批量咨询
+    </el-button>
   </ContentWrap>
 
   <!-- 列表 -->
@@ -156,6 +165,14 @@
           >
             申请盖章
           </el-button>
+          <el-button
+            v-hasPermi="['dealer:basedata:consult']"
+            link
+            type="primary"
+            @click="handleConsult(scope.row)"
+          >
+            💬 咨询
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -171,6 +188,9 @@
   <!-- 弹窗 -->
   <FileDetailModal ref="fileDetailModalRef" />
   <AiInterpretModal ref="aiInterpretModalRef" />
+
+  <!-- 咨询聊天窗口 -->
+  <ChatWindow v-model="chatVisible" :session-id="currentSessionId" mode="dealer" />
 </template>
 
 <script lang="ts" setup>
@@ -179,11 +199,16 @@ import * as BasedataApi from '@/api/opshub/basedata'
 import * as DealerApi from '@/api/opshub/dealer'
 import FileDetailModal from './components/FileDetailModal.vue'
 import AiInterpretModal from './components/AiInterpretModal.vue'
+import ChatWindow from '@/components/CsChatWindow/ChatWindow.vue'
+import { useCsConsult } from '@/hooks/useCsConsult'
 import type { TabsPaneContext } from 'element-plus'
 
 defineOptions({ name: 'OpshubBasedata' })
 
 const message = useMessage()
+
+// ========== 咨询集成 ==========
+const { chatVisible, currentSessionId, openConsult, openBatchConsult } = useCsConsult()
 
 // ========== 数据 ==========
 const loading = ref(false)
@@ -191,6 +216,7 @@ const total = ref(0)
 const list = ref<BasedataApi.BasedataFileVO[]>([])
 const dealerList = ref<DealerApi.DealerSimpleVO[]>([])
 const selectedIds = ref<number[]>([])
+const selectedRows = ref<BasedataApi.BasedataFileVO[]>([])
 const activeTab = ref('all')
 
 const queryParams = reactive({
@@ -240,6 +266,7 @@ const handleTabClick = (tab: TabsPaneContext) => {
 /** 多选变化 */
 const handleSelectionChange = (rows: BasedataApi.BasedataFileVO[]) => {
   selectedIds.value = rows.map((row) => row.id)
+  selectedRows.value = rows
 }
 
 /** 明细 */
@@ -290,6 +317,32 @@ const handleStamp = () => {
 /** 批量申请盖章（占位） */
 const handleBatchStamp = () => {
   message.info('批量盖章申请功能将在 Step 3 客户服务模块中实现')
+}
+
+/** 咨询 */
+const handleConsult = (row: BasedataApi.BasedataFileVO) => {
+  openConsult({
+    consultType: 'basedata',
+    sourceModule: 'basedata',
+    context: `文件 ${row.fileName || row.fileNo} 咨询`,
+    contextId: row.id,
+    contextCode: row.fileNo,
+    dealerCode: row.dealerCode,
+    dealerName: row.dealerName
+  })
+}
+
+/** 批量咨询 */
+const handleBatchConsult = async () => {
+  await openBatchConsult(selectedRows.value, (row) => ({
+    consultType: 'basedata',
+    sourceModule: 'basedata',
+    context: `文件 ${row.fileName || row.fileNo} 咨询`,
+    contextId: row.id,
+    contextCode: row.fileNo,
+    dealerCode: row.dealerCode,
+    dealerName: row.dealerName
+  }))
 }
 
 /** 有效期状态标签 */

@@ -133,9 +133,13 @@ public class UserController {
     @GetMapping({"/list-all-simple", "/simple-list"})
     @Operation(summary = "获取用户精简信息列表", description = "只包含被开启的用户，主要用于前端的下拉选项")
     public CommonResult<List<UserSimpleRespVO>> getSimpleUserList(
-            @RequestParam(value = "deptId", required = false) Long deptId) {
+            @RequestParam(value = "deptId", required = false) Long deptId,
+            @RequestParam(value = "roleCode", required = false) String roleCode) {
         List<AdminUserDO> list;
-        if (deptId != null) {
+        if (StrUtil.isNotBlank(roleCode)) {
+            // 按角色编码过滤
+            list = userService.getUserListByRoleCode(roleCode);
+        } else if (deptId != null) {
             List<Long> deptIds = Collections.singletonList(deptId);
             list = userService.getDeptUsers(deptIds);
         } else {

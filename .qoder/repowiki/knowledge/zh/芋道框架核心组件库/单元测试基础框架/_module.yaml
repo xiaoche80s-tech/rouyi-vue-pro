@@ -1,8 +1,0 @@
-schema_version: 1
-module_path: framework/starter_test
-title: 单元测试基础框架
-scope:
-    - yudao-framework/yudao-spring-boot-starter-test/
-source_files: []
-depends_on: []
-related_to: []

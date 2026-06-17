@@ -7,5 +7,13 @@ scope:
 source_files: []
 depends_on: []
 related_to:
-    - path: infra/websocket_push
+    - path: opshub/cs
     - path: framework/starter_websocket
+    - path: framework/starter_mq
+    - path: im/framework
+    - path: ui_admin/im_chat/user_im
+    - path: im/group
+    - path: im/friend
+    - path: im/channel
+    - path: im/rtc
+    - path: ui_admin/im_chat/admin_im

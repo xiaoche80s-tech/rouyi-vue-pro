@@ -63,7 +63,7 @@
 
       <!-- 政策指标（仅 policy） -->
       <el-form-item v-if="formData.contractType === 'policy'" label="政策指标">
-        <el-input v-model="formData.indicators" type="textarea" :rows="4" placeholder='JSON格式，如 [{"indicatorName":"xxx","targetValue":100}]' />
+        <el-input v-model="formData.indicators" type="textarea" :rows="4" placeholder="JSON格式，如 [{&quot;indicatorName&quot;:&quot;xxx&quot;,&quot;targetValue&quot;:100}]" />
       </el-form-item>
 
       <!-- 备注 -->

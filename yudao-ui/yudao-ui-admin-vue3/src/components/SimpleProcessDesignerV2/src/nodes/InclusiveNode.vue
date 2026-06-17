@@ -78,8 +78,8 @@
                 class="branch-node-move move-node-right"
                 v-if="
                   !readonly &&
-                  currentNode.conditionNodes &&
-                  index < currentNode.conditionNodes.length - 2
+                    currentNode.conditionNodes &&
+                    index < currentNode.conditionNodes.length - 2
                 "
                 @click="moveNode(index, 1)"
               >

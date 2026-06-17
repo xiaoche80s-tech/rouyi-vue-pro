@@ -51,6 +51,7 @@
       @sign="handleSign"
       @upload-proof="handleUploadProof"
       @view-detail="handleViewDetail"
+      @consult="handleConsult"
     />
 
     <Pagination
@@ -69,6 +70,9 @@
   <ContractPreviewModal ref="previewModalRef" />
   <SignRequestModal ref="signModalRef" @success="getList" />
   <UploadSignProofModal ref="uploadProofModalRef" @success="getList" />
+
+  <!-- 咨询聊天窗口 -->
+  <ChatWindow v-model="chatVisible" :session-id="currentSessionId" mode="dealer" />
 </template>
 
 <script lang="ts" setup>
@@ -82,6 +86,8 @@ import ContractFormModal from './components/ContractFormModal.vue'
 import ContractPreviewModal from './components/ContractPreviewModal.vue'
 import SignRequestModal from './components/SignRequestModal.vue'
 import UploadSignProofModal from './components/UploadSignProofModal.vue'
+import ChatWindow from '@/components/CsChatWindow/ChatWindow.vue'
+import { useCsConsult } from '@/hooks/useCsConsult'
 
 defineOptions({ name: 'OpshubSigning' })
 
@@ -173,8 +179,35 @@ const handleBatchStamp = () => {
   message.info('批量盖章功能开发中')
 }
 
-const handleBatchConsult = () => {
-  message.info('批量咨询功能开发中')
+// ========== 咨询集成 ==========
+const { chatVisible, currentSessionId, openConsult, openBatchConsult } = useCsConsult()
+
+const handleConsult = (row: SigningApi.SigningContractVO) => {
+  openConsult({
+    consultType: 'signing',
+    sourceModule: 'signing',
+    context: `${row.contractName || row.contractCode} 签署流程咨询`,
+    contextId: row.id,
+    contextCode: row.contractCode,
+    productLineCode: row.productLineCode,
+    productLineName: row.productLineName,
+    dealerCode: row.dealerCode,
+    dealerName: row.dealerName
+  })
+}
+
+const handleBatchConsult = async () => {
+  await openBatchConsult(selectedRows.value, (row) => ({
+    consultType: 'signing',
+    sourceModule: 'signing',
+    context: `${row.contractName || row.contractCode} 签署流程咨询`,
+    contextId: row.id,
+    contextCode: row.contractCode,
+    productLineCode: row.productLineCode,
+    productLineName: row.productLineName,
+    dealerCode: row.dealerCode,
+    dealerName: row.dealerName
+  }))
 }
 
 // ========== 引用 ==========

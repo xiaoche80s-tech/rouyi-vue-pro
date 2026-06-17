@@ -1,5 +1,5 @@
 <template>
-  <div ref="containerRef" class="chat-message-list flex-1 overflow-y-auto px-4 py-3" style="min-height: 300px; max-height: calc(100vh - 300px);">
+  <div ref="containerRef" class="chat-message-list flex-1 overflow-y-auto px-4 py-3 min-h-0">
     <div v-if="loading" class="text-center text-gray-400 py-8">
       <el-icon class="is-loading"><Loading /></el-icon>
       <span class="ml-2">加载历史消息...</span>

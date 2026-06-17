@@ -168,3 +168,12 @@ SELECT (SELECT COALESCE(MAX(id),0) FROM system_role_menu) + row_number() OVER ()
     6095
   ])
 ) t;
+
+-- =============================================
+-- 四、同步序列值（防止应用插入时主键冲突）
+-- DML 手动指定了 id，必须推进对应序列
+-- =============================================
+
+SELECT setval('system_role_seq',      (SELECT COALESCE(MAX(id), 0) FROM system_role));
+SELECT setval('system_menu_seq',      (SELECT COALESCE(MAX(id), 0) FROM system_menu));
+SELECT setval('system_role_menu_seq', (SELECT COALESCE(MAX(id), 0) FROM system_role_menu));

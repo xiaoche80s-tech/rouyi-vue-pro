@@ -72,7 +72,7 @@
           <AttachmentPopover :file-ids="row.fileIds" />
         </el-popover>
         <!-- 咨询 -->
-        <el-button v-hasPermi="['dealer:signing:consult']" link>咨询</el-button>
+        <el-button v-hasPermi="['dealer:signing:consult']" link type="primary" @click="emit('consult', row)">咨询</el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -94,5 +94,6 @@ const emit = defineEmits<{
   (e: 'sign', row: SigningContractVO): void
   (e: 'uploadProof', row: SigningContractVO): void
   (e: 'viewDetail', row: SigningContractVO): void
+  (e: 'consult', row: SigningContractVO): void
 }>()
 </script>

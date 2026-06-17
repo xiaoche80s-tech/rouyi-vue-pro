@@ -96,6 +96,7 @@
   <ChatWindow
     v-model="chatDrawerVisible"
     :session-id="currentSessionId"
+    mode="agent"
     @session-updated="getList"
   />
 </template>

@@ -79,8 +79,8 @@
             <el-form-item
               v-if="
                 configForm.candidateStrategy == CandidateStrategy.DEPT_MEMBER ||
-                configForm.candidateStrategy == CandidateStrategy.DEPT_LEADER ||
-                configForm.candidateStrategy == CandidateStrategy.MULTI_LEVEL_DEPT_LEADER
+                  configForm.candidateStrategy == CandidateStrategy.DEPT_LEADER ||
+                  configForm.candidateStrategy == CandidateStrategy.MULTI_LEVEL_DEPT_LEADER
               "
               label="指定部门"
               prop="deptIds"
@@ -194,10 +194,10 @@
             <el-form-item
               v-if="
                 configForm.candidateStrategy == CandidateStrategy.MULTI_LEVEL_DEPT_LEADER ||
-                configForm.candidateStrategy == CandidateStrategy.START_USER_DEPT_LEADER ||
-                configForm.candidateStrategy ==
+                  configForm.candidateStrategy == CandidateStrategy.START_USER_DEPT_LEADER ||
+                  configForm.candidateStrategy ==
                   CandidateStrategy.START_USER_MULTI_LEVEL_DEPT_LEADER ||
-                configForm.candidateStrategy == CandidateStrategy.FORM_DEPT_LEADER
+                  configForm.candidateStrategy == CandidateStrategy.FORM_DEPT_LEADER
               "
               :label="deptLevelLabel!"
               prop="deptLevel"
@@ -245,7 +245,7 @@
                         size="small"
                         v-if="
                           item.value === ApproveMethodType.APPROVE_BY_RATIO &&
-                          configForm.approveMethod === ApproveMethodType.APPROVE_BY_RATIO
+                            configForm.approveMethod === ApproveMethodType.APPROVE_BY_RATIO
                         "
                       />
                     </el-form-item>

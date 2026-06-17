@@ -1,8 +1,0 @@
-schema_version: 1
-module_path: framework/common
-title: 通用基础组件与跨模块 API 定义
-scope:
-    - yudao-framework/yudao-common/
-source_files: []
-depends_on: []
-related_to: []

@@ -222,15 +222,23 @@
       <el-button type="primary" @click="submitProgress">确认推进</el-button>
     </template>
   </el-dialog>
+
+  <!-- 咨询聊天窗口 -->
+  <ChatWindow v-model="chatVisible" :session-id="currentSessionId" mode="dealer" />
 </template>
 
 <script lang="ts" setup>
 import * as AfterSaleApi from '@/api/opshub/aftersale'
 import * as DealerApi from '@/api/opshub/dealer'
+import ChatWindow from '@/components/CsChatWindow/ChatWindow.vue'
+import { useCsConsult } from '@/hooks/useCsConsult'
 
 defineOptions({ name: 'OpshubAfterSale' })
 
 const message = useMessage()
+
+// ========== 咨询集成 ==========
+const { chatVisible, currentSessionId, openConsult, openBatchConsult } = useCsConsult()
 
 // ========== 枚举映射 ==========
 const handlingMethodMap: Record<string, string> = { return: '退货', exchange: '退换货', return_refund: '退货退款' }
@@ -458,23 +466,28 @@ const submitProgress = async () => {
 }
 
 // ========== 咨询 ==========
-const handleConsult = (_row: AfterSaleApi.AfterSaleSimpleVO) => {
-  message.info('咨询功能开发中，将对接客户服务模块')
+const handleConsult = (row: AfterSaleApi.AfterSaleSimpleVO) => {
+  openConsult({
+    consultType: 'aftersale',
+    sourceModule: 'aftersale',
+    context: `售后单 ${row.aftersaleCode} 咨询`,
+    contextId: row.id,
+    contextCode: row.aftersaleCode,
+    productLineName: row.productLineName,
+    dealerName: row.dealerName
+  })
 }
 
 const handleBatchConsult = async () => {
-  if (selectedRows.value.length === 0) {
-    message.warning('请先选择售后单')
-    return
-  }
-  try {
-    await message.confirm(`确认批量咨询 ${selectedRows.value.length} 条售后单？`)
-    const ids = selectedRows.value.map((r) => r.id)
-    await AfterSaleApi.batchAfterSaleConsult(ids)
-    message.success('批量咨询已提交')
-  } catch (e: any) {
-    if (e !== 'cancel') message.error('批量咨询失败')
-  }
+  await openBatchConsult(selectedRows.value, (row) => ({
+    consultType: 'aftersale',
+    sourceModule: 'aftersale',
+    context: `售后单 ${row.aftersaleCode} 咨询`,
+    contextId: row.id,
+    contextCode: row.aftersaleCode,
+    productLineName: row.productLineName,
+    dealerName: row.dealerName
+  }))
 }
 
 // ========== 刷新 ==========

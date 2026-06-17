@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.opshub.service.dealer;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -21,5 +22,12 @@ public interface DealerUserScopeService {
      * 获取经销商关联的所有代理人 userId 集合
      */
     Set<Long> getUserIdsByDealerCode(String dealerCode);
+
+    /**
+     * 获取所有有经销商授权的用户及其授权编码
+     *
+     * @return 用户授权范围列表
+     */
+    List<UserScopeDTO> getAllUserDealerScopes();
 
 }

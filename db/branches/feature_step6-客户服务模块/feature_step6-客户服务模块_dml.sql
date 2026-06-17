@@ -244,3 +244,14 @@ INSERT INTO system_notify_template (name, code, nickname, content, params, statu
 ('操作请求-接单通知',   'cs-opreq-accepted',  '系统通知', '操作请求 {opreqCode} 已被接单，处理人正在处理中',                  '["opreqCode"]',              0, '执行员接单后通知发起人',   '1', '2026-06-16 00:00:00', '1', '2026-06-16 00:00:00', 0, 123),
 ('操作请求-提交通知',   'cs-opreq-submitted', '系统通知', '操作请求 {opreqCode} 已提交结果，请验收',                           '["opreqCode"]',              0, '执行员提交后通知发起人验收', '1', '2026-06-16 00:00:00', '1', '2026-06-16 00:00:00', 0, 123),
 ('操作请求-验收通知',   'cs-opreq-verified',  '系统通知', '操作请求 {opreqCode} 已验收完成',                                   '["opreqCode"]',              0, '经销商验收后通知处理人',   '1', '2026-06-16 00:00:00', '1', '2026-06-16 00:00:00', 0, 123);
+
+-- =============================================
+-- 八、同步序列值（防止应用插入时主键冲突）
+-- DML 手动指定了 id，必须推进对应序列
+-- =============================================
+
+SELECT setval('system_menu_seq',             (SELECT COALESCE(MAX(id), 0) FROM system_menu));
+SELECT setval('system_role_menu_seq',        (SELECT COALESCE(MAX(id), 0) FROM system_role_menu));
+SELECT setval('system_notify_template_seq',  (SELECT COALESCE(MAX(id), 0) FROM system_notify_template));
+SELECT setval('ops_cs_opreq_seq',           (SELECT COALESCE(MAX(id), 0) FROM ops_cs_opreq));
+SELECT setval('ops_cs_task_seq',            (SELECT COALESCE(MAX(id), 0) FROM ops_cs_task));

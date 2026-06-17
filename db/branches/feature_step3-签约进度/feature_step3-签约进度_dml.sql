@@ -135,3 +135,12 @@ INSERT INTO ops_signing_contract (
 (20, 101, 'D001', 'PL01', 'termination', '终止协议', 'TA-2026-001', '2026年终止协议-经销商A', 'unsigned', 'signing',
  '2026-05-01', NULL, '终止部分产品线合作', NULL, NULL, NULL, NULL, NULL,
  '1', '2026-05-01 10:00:00', '1', '2026-05-01 10:00:00', 0, 123);
+
+-- =============================================
+-- 五、同步序列值（防止应用插入时主键冲突）
+-- DML 手动指定了 id，必须推进对应序列
+-- =============================================
+
+SELECT setval('system_menu_seq',          (SELECT COALESCE(MAX(id), 0) FROM system_menu));
+SELECT setval('system_role_menu_seq',     (SELECT COALESCE(MAX(id), 0) FROM system_role_menu));
+SELECT setval('ops_signing_contract_seq', (SELECT COALESCE(MAX(id), 0) FROM ops_signing_contract));

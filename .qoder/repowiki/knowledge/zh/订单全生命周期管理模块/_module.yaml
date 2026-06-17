@@ -1,9 +1,0 @@
-schema_version: 1
-module_path: docs
-title: 订单全生命周期管理模块
-scope:
-    - docs/
-source_files: []
-depends_on: []
-related_to:
-    - path: opshub/order

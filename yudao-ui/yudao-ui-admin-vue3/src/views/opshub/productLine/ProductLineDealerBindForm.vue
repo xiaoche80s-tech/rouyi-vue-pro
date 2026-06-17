@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model="dialogVisible" title="管理经销商" width="700px">
+  <el-drawer v-model="dialogVisible" title="管理经销商" size="700px" direction="rtl">
     <el-alert v-if="!productLineCode" title="缺少产品线信息" type="error" />
 
     <!-- 已绑定经销商列表 -->
@@ -44,7 +44,7 @@
     <template #footer>
       <el-button @click="dialogVisible = false">关 闭</el-button>
     </template>
-  </Dialog>
+  </el-drawer>
 </template>
 
 <script lang="ts" setup>
@@ -68,7 +68,7 @@ const availableDealers = computed(() => {
   return allDealers.value.filter((d) => !boundCodes.has(d.dealerCode))
 })
 
-/** 打开弹窗 */
+/** 打开抽屉 */
 const open = async (code: string) => {
   dialogVisible.value = true
   productLineCode.value = code

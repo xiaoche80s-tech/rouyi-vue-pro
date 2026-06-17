@@ -1,11 +1,15 @@
 <script lang="tsx">
-import { computed, defineComponent, unref } from 'vue'
+import { computed, defineComponent, unref, ref } from 'vue'
 import { useAppStore } from '@/store/modules/app'
 import { Backtop } from '@/components/Backtop'
 import { Setting } from '@/layout/components/Setting'
 import { useRenderLayout } from './components/useRenderLayout'
 import { useDesign } from '@/hooks/web/useDesign'
 import { getLayoutRenderMode } from '@/utils/layout'
+import ChatFloatingButton from '@/components/CsChatWindow/ChatFloatingButton.vue'
+import ChatWindow from '@/components/CsChatWindow/ChatWindow.vue'
+import { useCsConsult } from '@/hooks/useCsConsult'
+import { useUserStore } from '@/store/modules/user'
 
 const { getPrefixCls } = useDesign()
 
@@ -47,6 +51,14 @@ const renderLayout = () => {
 export default defineComponent({
   name: 'Layout',
   setup() {
+    const { chatVisible, currentSessionId, openByCategory } = useCsConsult()
+    const userStore = useUserStore()
+    /** 浮动按钮仅经销商角色可见 */
+    const isDealer = computed(() => userStore.getRoles.includes('dealer'))
+    const unreadCount = ref(0)
+    const handleFloatingClick = () => {
+      openByCategory('other')
+    }
     return () => (
       <section
         class={[
@@ -68,6 +80,18 @@ export default defineComponent({
         <Backtop></Backtop>
 
         <Setting></Setting>
+
+        {isDealer.value ? (
+          <>
+            <ChatFloatingButton unreadCount={unreadCount.value} onClick={handleFloatingClick} />
+            <ChatWindow
+              modelValue={chatVisible.value}
+              onUpdate:modelValue={(v: boolean) => { chatVisible.value = v }}
+              sessionId={currentSessionId.value}
+              mode="dealer"
+            />
+          </>
+        ) : undefined}
       </section>
     )
   }

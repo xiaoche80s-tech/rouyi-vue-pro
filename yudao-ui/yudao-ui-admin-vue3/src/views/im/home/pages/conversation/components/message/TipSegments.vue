@@ -11,7 +11,7 @@
       class="text-[#576b95]"
       :class="{ 'cursor-pointer hover:underline': isClickableMention(segment) }"
       @click.stop="handleMentionClick(segment, $event)"
-      >{{ segment.text }}</span
+    >{{ segment.text }}</span
     >
     <a
       v-else-if="segment.type === 'link'"
@@ -20,7 +20,7 @@
       rel="noopener noreferrer"
       class="text-[#576b95] hover:underline break-all"
       @click.stop
-      >{{ segment.text }}</a
+    >{{ segment.text }}</a
     >
     <span v-else>{{ segment.text }}</span>
   </template>

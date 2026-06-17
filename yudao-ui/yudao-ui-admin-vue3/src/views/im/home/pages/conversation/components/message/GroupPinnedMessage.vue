@@ -15,7 +15,7 @@
         class="flex-shrink-0 text-[var(--el-color-warning)]"
       />
       <span class="flex-shrink-0 text-[var(--el-text-color-secondary)]"
-        >{{ getSenderName(latest) }}：</span
+      >{{ getSenderName(latest) }}：</span
       >
       <span class="flex-1 min-w-0 truncate">{{ getPreview(latest) }}</span>
       <!-- 单条：移除按钮；多条折叠：共 N 条；多条展开：收起箭头 -->

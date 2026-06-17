@@ -7,3 +7,5 @@ source_files: []
 depends_on: []
 related_to:
     - path: system/tenant_management
+    - path: framework/starter_mybatis
+    - path: ui_admin/system_management/tenant_management

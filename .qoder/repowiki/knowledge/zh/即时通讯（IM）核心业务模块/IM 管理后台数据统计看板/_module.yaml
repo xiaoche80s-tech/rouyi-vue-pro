@@ -8,4 +8,6 @@ scope:
 source_files: []
 depends_on: []
 related_to:
-    - path: report
+    - path: ui_admin/im_chat/admin_im
+    - path: im/message
+    - path: im/group

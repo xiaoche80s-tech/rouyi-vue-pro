@@ -92,6 +92,9 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Resource
     private AdminUserProducer adminUserProducer;
 
+    @Resource
+    private cn.iocoder.yudao.module.system.dal.mysql.permission.RoleMapper roleMapper;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     @LogRecord(type = SYSTEM_USER_TYPE, subType = SYSTEM_USER_CREATE_SUB_TYPE, bizNo = "{{#user.id}}",
@@ -566,6 +569,23 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Override
     public List<AdminUserDO> getDeptUsers(Collection<Long> deptIds) {
         return userMapper.selectListByDeptIds(deptIds);
+    }
+
+    @Override
+    public List<AdminUserDO> getUserListByRoleCode(String roleCode) {
+        // 1. 根据角色编码查找角色
+        cn.iocoder.yudao.module.system.dal.dataobject.permission.RoleDO role = roleMapper.selectByCode(roleCode);
+        if (role == null) {
+            return Collections.emptyList();
+        }
+        // 2. 根据角色 ID 查找关联的用户 ID 集合
+        Set<Long> userIds = permissionService.getUserRoleIdListByRoleId(Collections.singleton(role.getId()));
+        if (CollUtil.isEmpty(userIds)) {
+            return Collections.emptyList();
+        }
+        // 3. 查询用户列表并过滤已启用的
+        List<AdminUserDO> users = userMapper.selectByIds(userIds);
+        return convertList(users, user -> CommonStatusEnum.ENABLE.getStatus().equals(user.getStatus()) ? user : null);
     }
 
     @Override

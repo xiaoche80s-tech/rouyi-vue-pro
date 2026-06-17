@@ -320,3 +320,17 @@ INSERT INTO ops_order_logistics (
 -- 订单8 (shipped)
 (8,  8, 'ORD-2026-0410-001', '顺丰速运', 'SF1000002', '包裹已揽收',         '2026-04-15 09:00:00', TRUE, 1, '1', '2026-04-15 09:00:00', '1', '2026-04-15 09:00:00', 0, 123),
 (9,  8, 'ORD-2026-0410-001', '顺丰速运', 'SF1000002', '运输中-北京中转站',   '2026-04-17 14:00:00', TRUE, 2, '1', '2026-04-15 09:00:00', '1', '2026-04-17 14:00:00', 0, 123);
+
+-- =============================================
+-- 十、同步序列值（防止应用插入时主键冲突）
+-- DML 手动指定了 id，必须推进对应序列
+-- =============================================
+
+SELECT setval('system_menu_seq',          (SELECT COALESCE(MAX(id), 0) FROM system_menu));
+SELECT setval('system_role_menu_seq',     (SELECT COALESCE(MAX(id), 0) FROM system_role_menu));
+SELECT setval('ops_order_info_seq',       (SELECT COALESCE(MAX(id), 0) FROM ops_order_info));
+SELECT setval('ops_order_product_seq',    (SELECT COALESCE(MAX(id), 0) FROM ops_order_product));
+SELECT setval('ops_order_timeline_seq',   (SELECT COALESCE(MAX(id), 0) FROM ops_order_timeline));
+SELECT setval('ops_order_payment_seq',    (SELECT COALESCE(MAX(id), 0) FROM ops_order_payment));
+SELECT setval('ops_order_invoice_seq',    (SELECT COALESCE(MAX(id), 0) FROM ops_order_invoice));
+SELECT setval('ops_order_logistics_seq',  (SELECT COALESCE(MAX(id), 0) FROM ops_order_logistics));

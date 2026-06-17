@@ -1,9 +1,0 @@
-schema_version: 1
-module_path: framework/starter_security
-title: 安全认证与操作日志
-scope:
-    - yudao-framework/yudao-spring-boot-starter-security/
-source_files: []
-depends_on: []
-related_to:
-    - path: system/authentication

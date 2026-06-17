@@ -86,7 +86,7 @@
               <div class="flex justify-end gap-2">
                 <el-button size="small" @click="displayNamePopoverVisible = false">取消</el-button>
                 <el-button size="small" type="primary" @click="handleSaveDisplayName"
-                  >保存</el-button
+                >保存</el-button
                 >
               </div>
             </div>

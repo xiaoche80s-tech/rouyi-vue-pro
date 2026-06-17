@@ -47,14 +47,14 @@ import { computed } from 'vue'
 import { Document } from '@element-plus/icons-vue'
 import type { CsMessageVO } from '@/api/opshub/csSession'
 import { formatDate } from '@/utils/formatTime'
+import { getCurrentUserId } from '@/utils/auth'
 
 const props = defineProps<{
   message: CsMessageVO
 }>()
 
 const isSelf = computed(() => {
-  return props.message.senderRole === 'dealer' || props.message.senderRole === 'executor' || props.message.senderRole === 'admin'
-  // 实际判断逻辑需要结合当前用户 ID，这里简化处理
+  return props.message.senderId === getCurrentUserId()
 })
 
 const formatTime = (time: string) => {

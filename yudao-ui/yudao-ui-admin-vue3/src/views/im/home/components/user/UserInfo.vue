@@ -53,7 +53,7 @@
               <el-dropdown-item @click="handleRecommend">把他推荐给朋友</el-dropdown-item>
               <!-- 拉黑 / 移出黑名单：按 friendInfo.blocked 切换文案 -->
               <el-dropdown-item v-if="!isBlocked" divided @click="handleBlock"
-                >加入黑名单</el-dropdown-item
+              >加入黑名单</el-dropdown-item
               >
               <el-dropdown-item v-else divided @click="handleUnblock">移出黑名单</el-dropdown-item>
               <el-dropdown-item divided @click="handleDeleteFriend">
@@ -78,7 +78,7 @@
         @click="handleRowClick"
       >
         <span class="flex-shrink-0 w-16 whitespace-nowrap text-[var(--el-text-color-secondary)]"
-          >备注</span
+        >备注</span
         >
         <el-input
           v-if="editingRemark"
@@ -118,7 +118,7 @@
         <div class="my-4 h-px bg-[var(--el-border-color-lighter)]"></div>
         <div v-if="friendInfo?.addSource" class="flex gap-5 items-center px-1.5 py-1.5 text-sm">
           <span class="flex-shrink-0 w-16 whitespace-nowrap text-[var(--el-text-color-secondary)]"
-            >来源</span
+          >来源</span
           >
           <span class="flex-1 min-w-0 truncate text-[var(--el-text-color-primary)]">
             {{ getDictLabel(DICT_TYPE.IM_FRIEND_ADD_SOURCE, friendInfo.addSource) }}
@@ -126,7 +126,7 @@
         </div>
         <div v-if="friendInfo?.addTime" class="flex gap-5 items-center px-1.5 py-1.5 text-sm">
           <span class="flex-shrink-0 w-16 whitespace-nowrap text-[var(--el-text-color-secondary)]"
-            >添加时间</span
+          >添加时间</span
           >
           <span class="flex-1 min-w-0 truncate text-[var(--el-text-color-primary)]">
             {{ formatDate(new Date(friendInfo.addTime), 'YYYY-MM-DD') }}

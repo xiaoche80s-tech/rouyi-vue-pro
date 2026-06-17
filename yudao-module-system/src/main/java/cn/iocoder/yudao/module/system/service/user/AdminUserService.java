@@ -221,6 +221,14 @@ public interface AdminUserService {
     List<AdminUserDO> getDeptUsers(Collection<Long> deptIds);
 
     /**
+     * 根据角色编码获取已启用的用户列表
+     *
+     * @param roleCode 角色编码
+     * @return 用户列表
+     */
+    List<AdminUserDO> getUserListByRoleCode(String roleCode);
+
+    /**
      * 判断密码是否匹配
      *
      * @param rawPassword 未加密的密码

@@ -7,3 +7,6 @@ source_files: []
 depends_on: []
 related_to:
     - path: infra/db_management
+    - path: framework/starter_biz_tenant
+    - path: infra/demo_examples
+    - path: ui_admin/infra_platform/data_source

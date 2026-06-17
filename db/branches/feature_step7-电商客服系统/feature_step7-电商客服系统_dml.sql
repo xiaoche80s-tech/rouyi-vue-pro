@@ -397,3 +397,14 @@ INSERT INTO ops_cs_attachment (
  '202', '2026-06-08 10:30:00', '202', '2026-06-08 10:30:00', 0, 123),
 (108, 'message', 58, NULL, '质量问题照片2.jpg', '/files/quality_issue_2.jpg', 1800000, 'image/jpeg', '质量问题照片',
  '202', '2026-06-08 10:30:00', '202', '2026-06-08 10:30:00', 0, 123);
+
+-- =============================================
+-- 八、同步序列值（防止应用插入时主键冲突）
+-- DML 手动指定了 id，必须推进对应序列
+-- =============================================
+
+SELECT setval('system_role_menu_seq',        (SELECT COALESCE(MAX(id), 0) FROM system_role_menu));
+SELECT setval('system_notify_template_seq',  (SELECT COALESCE(MAX(id), 0) FROM system_notify_template));
+SELECT setval('ops_cs_session_seq',          (SELECT COALESCE(MAX(id), 0) FROM ops_cs_session));
+SELECT setval('ops_cs_message_seq',          (SELECT COALESCE(MAX(id), 0) FROM ops_cs_message));
+SELECT setval('ops_cs_attachment_seq',       (SELECT COALESCE(MAX(id), 0) FROM ops_cs_attachment));

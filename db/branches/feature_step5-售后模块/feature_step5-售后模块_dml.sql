@@ -335,3 +335,13 @@ INSERT INTO ops_aftersale_progress (
 (93, 19, 'SO20260615-020', 'returned',   '商品退回', '2026-06-10 14:00:00', TRUE,  3, '中通快递 ZT5333800', '1', '2026-06-06 09:00:00', '1', '2026-06-10 14:00:00', 0, 123),
 (94, 19, 'SO20260615-020', 'refund_done','退款完成', NULL,                  FALSE, 4, NULL, '1', '2026-06-06 09:00:00', '1', '2026-06-06 09:00:00', 0, 123),
 (95, 19, 'SO20260615-020', 'red_invoice','红字发票', NULL,                  FALSE, 5, NULL, '1', '2026-06-06 09:00:00', '1', '2026-06-06 09:00:00', 0, 123);
+
+-- =============================================
+-- 六、同步序列值（防止应用插入时主键冲突）
+-- DML 手动指定了 id，必须推进对应序列
+-- =============================================
+
+SELECT setval('system_menu_seq',            (SELECT COALESCE(MAX(id), 0) FROM system_menu));
+SELECT setval('system_role_menu_seq',       (SELECT COALESCE(MAX(id), 0) FROM system_role_menu));
+SELECT setval('ops_aftersale_info_seq',     (SELECT COALESCE(MAX(id), 0) FROM ops_aftersale_info));
+SELECT setval('ops_aftersale_progress_seq', (SELECT COALESCE(MAX(id), 0) FROM ops_aftersale_progress));

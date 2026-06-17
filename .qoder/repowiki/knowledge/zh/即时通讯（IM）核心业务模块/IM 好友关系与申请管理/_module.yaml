@@ -14,3 +14,7 @@ depends_on: []
 related_to:
     - path: im/group
     - path: ui_admin/im_chat/admin_im
+    - path: im/message
+    - path: ui_admin/im_chat/user_im
+    - path: im/websocket
+    - path: im/rtc

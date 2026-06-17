@@ -28,7 +28,7 @@
         <el-text
           v-if="
             (!startUserIds || startUserIds.length === 0) &&
-            (!startDeptIds || startDeptIds.length === 0)
+              (!startDeptIds || startDeptIds.length === 0)
           "
         >
           全部成员可以发起流程

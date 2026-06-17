@@ -19,8 +19,8 @@ export interface UserVO {
 }
 
 // 获取用户精简信息列表
-export const getSimpleUserList = (): Promise<UserVO[]> => {
-  return request.get({ url: '/system/user/simple-list' })
+export const getSimpleUserList = (roleCode?: string): Promise<UserVO[]> => {
+  return request.get({ url: '/system/user/simple-list', params: roleCode ? { roleCode } : {} })
 }
 
 // 按用户编号查询用户精简信息（点头像弹名片）

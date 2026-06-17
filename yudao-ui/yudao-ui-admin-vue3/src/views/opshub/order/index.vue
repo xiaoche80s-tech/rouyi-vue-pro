@@ -79,6 +79,9 @@
   <ApplyPaymentModal ref="paymentModalRef" @success="handleOperationSuccess" />
   <ApplyInvoiceModal ref="invoiceModalRef" @success="handleOperationSuccess" />
   <ApplyReturnModal ref="returnModalRef" @success="handleOperationSuccess" />
+
+  <!-- 咨询聊天窗口 -->
+  <ChatWindow v-model="chatVisible" :session-id="currentSessionId" mode="dealer" />
 </template>
 
 <script lang="ts" setup>
@@ -91,10 +94,15 @@ import OrderDetailModal from './components/OrderDetailModal.vue'
 import ApplyPaymentModal from './components/ApplyPaymentModal.vue'
 import ApplyInvoiceModal from './components/ApplyInvoiceModal.vue'
 import ApplyReturnModal from './components/ApplyReturnModal.vue'
+import ChatWindow from '@/components/CsChatWindow/ChatWindow.vue'
+import { useCsConsult } from '@/hooks/useCsConsult'
 
 defineOptions({ name: 'OpshubOrder' })
 
 const message = useMessage()
+
+// ========== 咨询集成 ==========
+const { chatVisible, currentSessionId, openConsult, openBatchConsult } = useCsConsult()
 
 // ========== 数据 ==========
 const loading = ref(false)
@@ -190,8 +198,18 @@ const handleApplyReturn = async (row: OrderApi.OrderSimpleVO) => {
   }
 }
 
-const handleConsult = (_row: OrderApi.OrderSimpleVO) => {
-  message.info('咨询功能开发中，将对接客户服务模块')
+const handleConsult = (row: OrderApi.OrderSimpleVO) => {
+  openConsult({
+    consultType: 'order',
+    sourceModule: 'order',
+    context: `订单 ${row.orderCode} 咨询`,
+    contextId: row.id,
+    contextCode: row.orderCode,
+    productLineCode: row.productLineCode,
+    productLineName: row.productLineName,
+    dealerCode: row.dealerCode,
+    dealerName: row.dealerName
+  })
 }
 
 const handleUpdateProgress = async (row: OrderApi.OrderSimpleVO) => {
@@ -271,14 +289,17 @@ const handleBatchReturn = async () => {
 }
 
 const handleBatchConsult = async () => {
-  try {
-    await message.confirm(`确认批量咨询 ${selectedRows.value.length} 条订单？`)
-    const ids = selectedRows.value.map((r) => r.id)
-    await OrderApi.batchConsult(ids)
-    message.success('批量咨询已提交')
-  } catch (e: any) {
-    if (e !== 'cancel') message.error('批量咨询失败')
-  }
+  await openBatchConsult(selectedRows.value, (row) => ({
+    consultType: 'order',
+    sourceModule: 'order',
+    context: `订单 ${row.orderCode} 咨询`,
+    contextId: row.id,
+    contextCode: row.orderCode,
+    productLineCode: row.productLineCode,
+    productLineName: row.productLineName,
+    dealerCode: row.dealerCode,
+    dealerName: row.dealerName
+  }))
 }
 
 // ========== 刷新 ==========

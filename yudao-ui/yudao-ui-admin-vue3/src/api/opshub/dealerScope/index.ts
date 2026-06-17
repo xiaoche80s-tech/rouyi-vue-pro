@@ -1,5 +1,29 @@
 import request from '@/config/axios'
 
+// ========== 授权用户响应类型 ==========
+
+export interface ProductLineItemVO {
+  productLineCode: string
+  productLineName: string
+}
+
+export interface DealerItemVO {
+  dealerCode: string
+  dealerName: string
+}
+
+export interface ExecutorScopeUserRespVO {
+  userId: number
+  nickname: string
+  productLines: ProductLineItemVO[]
+}
+
+export interface DealerScopeUserRespVO {
+  userId: number
+  nickname: string
+  dealers: DealerItemVO[]
+}
+
 // ========== 用户经销商授权 ==========
 
 // 查看用户授权的经销商
@@ -10,6 +34,11 @@ export const getDealerCodesByUserId = async (userId: number) => {
 // 分配用户经销商授权
 export const assignDealerScope = async (userId: number, dealerCodes: string[]) => {
   return await request.post({ url: '/opshub/dealer-scope/assign', data: { userId, dealerCodes } })
+}
+
+// 获取所有有经销商授权的用户列表
+export const getDealerScopeUsers = async (): Promise<DealerScopeUserRespVO[]> => {
+  return await request.get({ url: '/opshub/dealer-scope/scope-users' })
 }
 
 // ========== 执行员产品线授权 ==========
@@ -25,4 +54,9 @@ export const assignProductLineScope = async (userId: number, productLineCodes: s
     url: '/opshub/product-line-scope/assign',
     data: { userId, productLineCodes }
   })
+}
+
+// 获取所有有产品线授权的用户列表
+export const getExecutorScopeUsers = async (): Promise<ExecutorScopeUserRespVO[]> => {
+  return await request.get({ url: '/opshub/product-line-scope/scope-users' })
 }
