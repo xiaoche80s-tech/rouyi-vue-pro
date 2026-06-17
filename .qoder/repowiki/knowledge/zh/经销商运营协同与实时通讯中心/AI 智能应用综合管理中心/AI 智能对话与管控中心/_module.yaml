@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: ui_admin/ai_assistant/chat
+title: AI 智能对话与管控中心
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/ai/chat/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/ai/chat/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/ai/utils/
+source_files: []
+depends_on: []
+related_to:
+    - path: ui_admin/ai_assistant/model_config

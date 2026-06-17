@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: ui_admin/system_management/user_management
+title: 系统用户管理模块
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/system/user/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/system/user/
+source_files: []
+depends_on: []
+related_to:
+    - path: ui_admin/bpm_workflow/task_management
+    - path: system/user_identity

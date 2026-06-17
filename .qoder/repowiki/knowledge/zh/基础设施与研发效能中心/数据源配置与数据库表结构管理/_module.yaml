@@ -11,4 +11,4 @@ depends_on: []
 related_to:
     - path: infra/codegen
     - path: ui_admin/infra_platform/data_source
-    - path: ui_admin/infra_platform/codegen
+    - path: ui_admin/report_designer

@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: decisions/49bb62d2fb70_34e07c479aac
+title: 采用共享 Composable 实现全模块客服咨询入口集成
+scope: []
+source_files: []
+depends_on: []
+related_to:
+    - path: ui_admin/opshub/customer_service

@@ -1,0 +1,17 @@
+schema_version: 1
+module_path: system/tenant_management
+title: 多租户管理与套餐配置
+scope:
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/api/tenant/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/controller/admin/tenant/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/controller/app/tenant/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/convert/tenant/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/dal/dataobject/tenant/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/dal/mysql/tenant/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/service/tenant/
+source_files: []
+depends_on: []
+related_to:
+    - path: opshub/dealer
+    - path: ui_admin/system_management/tenant_management
+    - path: framework/starter_biz_tenant

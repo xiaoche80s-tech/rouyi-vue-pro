@@ -1,0 +1,9 @@
+schema_version: 1
+module_path: ui_admin/system_management
+title: 系统管理模块
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/system/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/system/
+source_files: []
+depends_on: []
+related_to: []

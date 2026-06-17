@@ -14,18 +14,5 @@ scope:
 source_files: []
 depends_on: []
 related_to:
-    - path: ui_admin/opshub/order
     - path: opshub/aftersale
     - path: system/message_center
-    - path: opshub/dealer
-    - path: opshub/cs
-    - path: system/tenant_management
-    - path: opshub/signing
-    - path: infra/file_storage
-    - path: ui_admin/opshub/customer_service
-    - path: framework/starter_excel
-    - path: framework/starter_redis
-    - path: framework/starter_mq
-    - path: framework/starter_protection
-    - path: framework/starter_mybatis
-    - path: framework/starter_web

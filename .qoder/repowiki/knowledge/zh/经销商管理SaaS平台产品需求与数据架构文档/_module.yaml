@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: docs
+title: 经销商管理SaaS平台产品需求与数据架构文档
+scope:
+    - docs/
+source_files: []
+depends_on: []
+related_to: []

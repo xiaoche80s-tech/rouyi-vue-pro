@@ -7,11 +7,8 @@ scope:
 source_files: []
 depends_on: []
 related_to:
-    - path: ui_admin/bpm_workflow/model_design
-    - path: bpm/flowable_framework
-    - path: bpm/bpm_api
-    - path: ui_admin/bpm_workflow/form_category_group
     - path: bpm/oa_leave
-    - path: ui_admin/bpm_workflow/supporting_features
-    - path: system/tenant_management
-    - path: bpm/task_management
+    - path: ui_admin/bpm_workflow/model_design
+    - path: ui_admin/bpm_workflow/form_category_group
+    - path: ui_admin/ai_assistant/workflow
+    - path: infra/file_storage

@@ -13,5 +13,3 @@ depends_on: []
 related_to:
     - path: infra/file_storage
     - path: ui_admin/opshub/basedata
-    - path: decisions/11502cccfbad_aa5cf4b91dcc
-    - path: opshub/signing

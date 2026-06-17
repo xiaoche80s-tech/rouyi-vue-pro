@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: framework/starter_websocket
+title: WebSocket 通信与多节点广播框架
+scope:
+    - yudao-framework/yudao-spring-boot-starter-websocket/
+source_files: []
+depends_on: []
+related_to:
+    - path: framework/starter_mq
+    - path: im/websocket
+    - path: infra/websocket_push

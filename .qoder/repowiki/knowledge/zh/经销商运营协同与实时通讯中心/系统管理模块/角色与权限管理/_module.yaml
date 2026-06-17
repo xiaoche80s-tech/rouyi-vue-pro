@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: ui_admin/system_management/role_permission
+title: 角色与权限管理
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/system/role/
+    - yudao-ui/yudao-ui-admin-vue3/src/api/system/permission/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/system/role/
+source_files: []
+depends_on: []
+related_to:
+    - path: ui_admin/system_management/menu_management

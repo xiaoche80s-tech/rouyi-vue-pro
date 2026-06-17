@@ -9,5 +9,5 @@ scope:
 source_files: []
 depends_on: []
 related_to:
-    - path: framework/starter_excel
-    - path: framework/starter_web
+    - path: infra/codegen
+    - path: ui_admin/infra_platform/demo_examples

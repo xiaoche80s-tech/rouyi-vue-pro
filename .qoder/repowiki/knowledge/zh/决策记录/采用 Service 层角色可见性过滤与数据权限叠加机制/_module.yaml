@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: decisions/11502cccfbad_300fba8a5da1
+title: 采用 Service 层角色可见性过滤与数据权限叠加机制
+scope: []
+source_files: []
+depends_on: []
+related_to:
+    - path: opshub/dealer

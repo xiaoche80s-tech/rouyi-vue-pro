@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: framework/starter_excel
+title: Excel 导入导出与数据字典集成
+scope:
+    - yudao-framework/yudao-spring-boot-starter-excel/
+source_files: []
+depends_on: []
+related_to: []

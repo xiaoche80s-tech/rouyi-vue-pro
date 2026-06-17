@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: bpm/oa_leave
+title: OA请假申请管理
+scope:
+    - yudao-module-bpm/src/main/java/cn/iocoder/yudao/module/bpm/controller/admin/oa/
+    - yudao-module-bpm/src/main/java/cn/iocoder/yudao/module/bpm/service/oa/
+source_files: []
+depends_on: []
+related_to:
+    - path: bpm/process_definition
+    - path: ui_admin/bpm_workflow/supporting_features

@@ -1,0 +1,15 @@
+schema_version: 1
+module_path: ui_admin/bpm_workflow/form_category_group
+title: BPM 基础配置管理
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/bpm/form/
+    - yudao-ui/yudao-ui-admin-vue3/src/api/bpm/category/
+    - yudao-ui/yudao-ui-admin-vue3/src/api/bpm/userGroup/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/bpm/form/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/bpm/category/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/bpm/group/
+source_files: []
+depends_on: []
+related_to:
+    - path: bpm/process_definition
+    - path: ui_admin/bpm_workflow/model_design

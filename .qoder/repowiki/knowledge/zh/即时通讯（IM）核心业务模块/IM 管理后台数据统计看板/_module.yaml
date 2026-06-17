@@ -8,17 +8,5 @@ scope:
 source_files: []
 depends_on: []
 related_to:
-    - path: ui_admin/im_chat/admin_im
     - path: im/message
-    - path: im/group
-    - path: im/friend
-    - path: im/rtc
-    - path: im/channel
-    - path: system/tenant_management
-    - path: ui_admin/im_chat/user_im
-    - path: infra/api_logging
-    - path: framework/starter_mybatis
-    - path: framework/starter_redis
-    - path: framework/starter_mq
-    - path: framework/starter_protection
-    - path: framework/starter_web
+    - path: ui_admin/im_chat/admin_im

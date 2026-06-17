@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: ui_admin/infra_platform/api_logs
+title: API 访问与错误日志管理
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/infra/apiAccessLog/
+    - yudao-ui/yudao-ui-admin-vue3/src/api/infra/apiErrorLog/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/infra/apiAccessLog/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/infra/apiErrorLog/
+source_files: []
+depends_on: []
+related_to: []

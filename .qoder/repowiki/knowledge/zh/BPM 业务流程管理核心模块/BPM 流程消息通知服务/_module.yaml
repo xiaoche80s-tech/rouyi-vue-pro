@@ -1,0 +1,9 @@
+schema_version: 1
+module_path: bpm/message_integration
+title: BPM 流程消息通知服务
+scope:
+    - yudao-module-bpm/src/main/java/cn/iocoder/yudao/module/bpm/service/message/
+source_files: []
+depends_on: []
+related_to:
+    - path: system/message_center

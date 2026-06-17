@@ -1,0 +1,15 @@
+schema_version: 1
+module_path: im/group
+title: IM群组与成员管理
+scope:
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/controller/admin/group/
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/controller/admin/manager/group/
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/service/group/
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/dal/dataobject/group/
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/dal/mysql/group/
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/enums/group/
+source_files: []
+depends_on: []
+related_to:
+    - path: im/friend
+    - path: ui_admin/im_chat/admin_im

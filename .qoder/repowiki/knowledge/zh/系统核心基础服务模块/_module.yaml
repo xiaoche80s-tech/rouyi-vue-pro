@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: system
+title: 系统核心基础服务模块
+scope:
+    - yudao-module-system/
+source_files: []
+depends_on: []
+related_to: []

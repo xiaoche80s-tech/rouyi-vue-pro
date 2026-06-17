@@ -22,23 +22,8 @@ scope:
 source_files: []
 depends_on: []
 related_to:
-    - path: bpm/message_integration
-    - path: ui_admin/system_management/sms_notify_mail
-    - path: opshub/cs
-    - path: opshub/order
-    - path: decisions/3722ab296d3b_708ca796e6e9
-    - path: framework/starter_mq
-    - path: system/tenant_management
-    - path: opshub/aftersale
-    - path: ui_admin/opshub/customer_service
-    - path: system/access_control
-    - path: bpm/oa_leave
-    - path: infra/api_logging
     - path: bpm/task_management
-    - path: infra/job_scheduler
-    - path: system/authentication
-    - path: infra/redis_monitor
-    - path: framework/starter_redis
-    - path: framework/starter_protection
-    - path: framework/starter_mybatis
-    - path: framework/starter_web
+    - path: ui_admin/system_management/sms_notify_mail
+    - path: opshub/order
+    - path: bpm/message_integration
+    - path: decisions/3722ab296d3b_708ca796e6e9
