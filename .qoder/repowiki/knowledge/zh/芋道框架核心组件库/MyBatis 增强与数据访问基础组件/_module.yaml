@@ -6,7 +6,37 @@ scope:
 source_files: []
 depends_on: []
 related_to:
-    - path: infra/db_management
-    - path: framework/starter_biz_tenant
-    - path: infra/demo_examples
-    - path: ui_admin/infra_platform/data_source
+    - path: infra/codegen
+    - path: bpm/oa_leave
+    - path: im/statistics
+    - path: infra/api_logging
+    - path: ui_admin/infra_platform/codegen
+    - path: infra/job_scheduler
+    - path: ui_admin/infra_platform/job_scheduler
+    - path: ui_admin/system_management/dict_management
+    - path: im/face
+    - path: ui_admin/system_management/role_permission
+    - path: ui_admin/ai_assistant/chat/admin_manager
+    - path: bpm/task_management
+    - path: system/oauth_social
+    - path: ui_admin/bpm_workflow/supporting_features
+    - path: ui_admin/ai_assistant/image
+    - path: ui_admin/opshub/order
+    - path: bpm/bpm_api
+    - path: ui_admin/bpm_workflow/task_management
+    - path: system/message_center
+    - path: im/group
+    - path: system/authentication
+    - path: im/websocket
+    - path: ui_admin/infra_platform/file_management
+    - path: system/tenant_management
+    - path: opshub/cs
+    - path: im/message
+    - path: ui_admin/opshub/customer_service
+    - path: im/rtc
+    - path: opshub/order
+    - path: ui_admin/system_management/user_management
+    - path: opshub/signing
+    - path: ui_admin/app_shell
+    - path: opshub/dealer
+    - path: im/channel

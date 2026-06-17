@@ -1,0 +1,50 @@
+schema_version: 1
+module_path: infra/api_logging
+title: API 访问与错误日志管理
+scope:
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/api/logger/
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/controller/admin/logger/
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/dal/dataobject/logger/
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/dal/mysql/logger/
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/enums/logger/
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/job/logger/
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/service/logger/
+source_files: []
+depends_on: []
+related_to:
+    - path: system/system_support
+    - path: im/message
+    - path: framework/starter_web
+    - path: system/tenant_management
+    - path: infra/file_storage
+    - path: infra/job_scheduler
+    - path: system/message_center
+    - path: ui_admin/infra_platform/job_scheduler
+    - path: bpm/task_management
+    - path: infra/redis_monitor
+    - path: bpm/bpm_api
+    - path: opshub/aftersale
+    - path: ui_admin/bpm_workflow/task_management
+    - path: ui_admin/system_management/role_permission
+    - path: ui_admin/ai_assistant/workflow
+    - path: infra/codegen
+    - path: ui_admin/ai_assistant/chat/admin_manager
+    - path: bpm/oa_leave
+    - path: im/websocket
+    - path: opshub/signing
+    - path: ui_admin/app_shell
+    - path: im/statistics
+    - path: ui_admin/infra_platform/file_management
+    - path: system/oauth_social
+    - path: opshub/dealer
+    - path: ui_admin/ai_assistant/image
+    - path: im/channel
+    - path: ui_admin/system_management/dict_management
+    - path: ui_admin/infra_platform/codegen
+    - path: im/face
+    - path: ui_admin/system_management/menu_management
+    - path: im/group
+    - path: framework/starter_mybatis
+    - path: framework/starter_redis
+    - path: framework/starter_mq
+    - path: framework/starter_protection

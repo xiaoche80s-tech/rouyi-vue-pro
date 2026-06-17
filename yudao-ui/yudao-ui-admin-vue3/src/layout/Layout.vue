@@ -8,6 +8,7 @@ import { useDesign } from '@/hooks/web/useDesign'
 import { getLayoutRenderMode } from '@/utils/layout'
 import ChatFloatingButton from '@/components/CsChatWindow/ChatFloatingButton.vue'
 import ChatWindow from '@/components/CsChatWindow/ChatWindow.vue'
+import CsExecutorNotifier from '@/components/CsChatWindow/CsExecutorNotifier.vue'
 import { useCsConsult } from '@/hooks/useCsConsult'
 import { useUserStore } from '@/store/modules/user'
 
@@ -55,6 +56,8 @@ export default defineComponent({
     const userStore = useUserStore()
     /** 浮动按钮仅经销商角色可见 */
     const isDealer = computed(() => userStore.getRoles.includes('dealer'))
+    /** 执行员角色：全局通知组件可见 */
+    const isExecutor = computed(() => userStore.getRoles.includes('service_executor') || userStore.getRoles.includes('brand_admin'))
     const unreadCount = ref(0)
     const handleFloatingClick = () => {
       openByCategory('other')
@@ -92,6 +95,8 @@ export default defineComponent({
             />
           </>
         ) : undefined}
+
+        {isExecutor.value ? <CsExecutorNotifier /> : undefined}
       </section>
     )
   }

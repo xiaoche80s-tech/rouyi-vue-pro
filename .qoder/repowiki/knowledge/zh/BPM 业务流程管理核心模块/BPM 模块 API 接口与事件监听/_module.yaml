@@ -1,0 +1,20 @@
+schema_version: 1
+module_path: bpm/bpm_api
+title: BPM 模块 API 接口与事件监听
+scope:
+    - yudao-module-bpm/src/main/java/cn/iocoder/yudao/module/bpm/api/
+source_files: []
+depends_on: []
+related_to:
+    - path: bpm/flowable_framework
+    - path: ui_admin/bpm_workflow/process_instance
+    - path: bpm/process_definition
+    - path: ui_admin/bpm_workflow/model_design
+    - path: system/tenant_management
+    - path: infra/api_logging
+    - path: infra/redis_monitor
+    - path: framework/starter_protection
+    - path: framework/starter_redis
+    - path: framework/starter_mybatis
+    - path: framework/starter_mq
+    - path: framework/starter_web

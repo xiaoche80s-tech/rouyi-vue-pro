@@ -14,11 +14,17 @@ scope:
 source_files: []
 depends_on: []
 related_to:
-    - path: im/message
+    - path: im/framework
     - path: ui_admin/im_chat/user_im
-    - path: ui_admin/im_chat/admin_im
-    - path: framework/starter_websocket
     - path: im/websocket
     - path: im/group
-    - path: im/friend
-    - path: im/channel
+    - path: im/statistics
+    - path: system/tenant_management
+    - path: im/message
+    - path: infra/file_storage
+    - path: framework/starter_websocket
+    - path: framework/starter_redis
+    - path: framework/starter_mq
+    - path: framework/starter_protection
+    - path: framework/starter_mybatis
+    - path: framework/starter_web

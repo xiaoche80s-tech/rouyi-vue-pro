@@ -1,0 +1,17 @@
+schema_version: 1
+module_path: bpm/process_definition
+title: BPM流程定义与模型管理
+scope:
+    - yudao-module-bpm/src/main/java/cn/iocoder/yudao/module/bpm/controller/admin/definition/
+    - yudao-module-bpm/src/main/java/cn/iocoder/yudao/module/bpm/service/definition/
+source_files: []
+depends_on: []
+related_to:
+    - path: ui_admin/bpm_workflow/model_design
+    - path: bpm/flowable_framework
+    - path: bpm/bpm_api
+    - path: ui_admin/bpm_workflow/form_category_group
+    - path: bpm/oa_leave
+    - path: ui_admin/bpm_workflow/supporting_features
+    - path: system/tenant_management
+    - path: bpm/task_management

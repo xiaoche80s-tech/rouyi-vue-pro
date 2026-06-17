@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: ui_admin/opshub/dealer_management
+title: 经销商授权管理
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/opshub/dealer/
+    - yudao-ui/yudao-ui-admin-vue3/src/api/opshub/dealerScope/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/opshub/dealer/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/opshub/scope/
+source_files: []
+depends_on: []
+related_to: []

@@ -1,9 +1,0 @@
-schema_version: 1
-module_path: decisions/3722ab296d3b_708ca796e6e9
-title: 采用 WebSocket 实时推送与站内信异步通知并存的双通道策略
-scope: []
-source_files: []
-depends_on: []
-related_to:
-    - path: opshub/cs
-    - path: system/message_center

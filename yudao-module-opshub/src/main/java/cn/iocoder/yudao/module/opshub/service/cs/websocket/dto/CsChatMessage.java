@@ -64,6 +64,18 @@ public class CsChatMessage {
      * 消息创建时间
      */
     private LocalDateTime createTime;
+    /**
+     * 咨询类型（前端显示用）
+     */
+    private String consultType;
+    /**
+     * 经销商名称（前端显示用）
+     */
+    private String dealerName;
+    /**
+     * 咨询上下文（前端显示用）
+     */
+    private String context;
 
     // ========== 推送类型常量 ==========
 

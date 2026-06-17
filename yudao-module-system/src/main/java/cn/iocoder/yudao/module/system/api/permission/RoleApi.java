@@ -40,6 +40,14 @@ public interface RoleApi {
     List<RoleRespDTO> getRoleList(Collection<Long> ids);
 
     /**
+     * 根据角色编码获得角色信息
+     *
+     * @param code 角色编码
+     * @return 角色信息（不存在时返回 null）
+     */
+    RoleRespDTO getRoleByCode(String code);
+
+    /**
      * 获得指定编号的角色 Map
      *
      * @param ids 角色编号数组

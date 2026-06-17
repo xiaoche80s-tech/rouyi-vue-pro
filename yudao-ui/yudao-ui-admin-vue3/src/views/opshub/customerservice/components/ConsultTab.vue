@@ -109,6 +109,7 @@ import {
   getSessionStatistics
 } from '@/api/opshub/csSession'
 import ChatWindow from '@/components/CsChatWindow/ChatWindow.vue'
+import { useCsWebSocket } from '@/hooks/useCsWebSocket'
 
 // ========== 枚举常量 ==========
 const consultTypeOptions = [
@@ -185,6 +186,30 @@ const handleRowClick = (row: any) => {
   handleOpenChat(row)
 }
 
+// ========== WebSocket 实时监听 ==========
+useCsWebSocket(
+  // cs-chat-message: 更新对应行的 lastMessage
+  (msg) => {
+    const row = list.value.find((r: any) => r.id === msg.sessionId)
+    if (row) {
+      row.lastMessage = msg.content
+      row.lastMessageTime = msg.createTime
+      row.messageCount = (row.messageCount || 0) + 1
+    }
+  },
+  // cs-session-event: 接单/完成/关闭 → 刷新行状态 + 统计
+  () => {
+    getList()
+  },
+  // cs-new-consult: 新咨询到达 → 刷新列表 + 统计
+  () => {
+    getList()
+  }
+)
+
 // ========== 初始化 ==========
 onMounted(() => { getList() })
+
+// ========== 暴露给父组件（Tab 角标） ==========
+defineExpose({ statistics })
 </script>

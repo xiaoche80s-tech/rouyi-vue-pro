@@ -37,4 +37,12 @@ public interface CsWebSocketService {
      */
     void broadcastNewConsult(CsChatMessage consultNotify);
 
+    /**
+     * 精准推送新咨询通知给匹配的执行员（按角色 + 产品线交集，事务感知 + 异步）
+     *
+     * @param consultNotify    咨询通知消息
+     * @param productLineCode  产品线编码（为 null 时推送给所有执行员）
+     */
+    void notifyMatchingExecutors(CsChatMessage consultNotify, String productLineCode);
+
 }

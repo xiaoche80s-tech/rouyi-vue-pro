@@ -14,7 +14,7 @@ import cn.iocoder.yudao.module.opshub.service.cs.websocket.CsWebSocketService;
 import cn.iocoder.yudao.module.opshub.service.cs.websocket.dto.CsChatMessage;
 import cn.iocoder.yudao.module.system.api.notify.NotifyMessageSendApi;
 import cn.iocoder.yudao.module.system.api.notify.dto.NotifySendSingleToUserReqDTO;
-import cn.iocoder.yudao.framework.common.biz.system.permission.PermissionCommonApi;
+import cn.iocoder.yudao.module.system.api.permission.PermissionApi;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -55,7 +55,7 @@ public class CsSessionServiceImpl implements CsSessionService {
     private NotifyMessageSendApi notifyMessageSendApi;
 
     @Resource
-    private PermissionCommonApi permissionApi;
+    private PermissionApi permissionApi;
 
     @Resource
     @Lazy
@@ -97,9 +97,9 @@ public class CsSessionServiceImpl implements CsSessionService {
                 .setMessageType("system")
                 .setContent("咨询会话已创建"));
 
-        // 6. 广播新咨询通知给管理端 + 站内信
+        // 6. 精准推送新咨询通知给匹配的执行员 + 站内信
         CsChatMessage consultNotify = buildChatNotify(sessionDO, CsChatMessage.TYPE_NEW_CONSULT);
-        csWebSocketService.broadcastNewConsult(consultNotify);
+        csWebSocketService.notifyMatchingExecutors(consultNotify, sessionDO.getProductLineCode());
 
         return sessionDO.getId();
     }
@@ -220,7 +220,9 @@ public class CsSessionServiceImpl implements CsSessionService {
 
     @Override
     public CsConsultStatisticsRespVO getStatistics() {
-        Map<Integer, Long> countMap = csSessionMapper.selectCountGroupByStatus();
+        Long currentUserId = SecurityFrameworkUtils.getLoginUserId();
+        String viewScope = resolveViewScope(currentUserId);
+        Map<Integer, Long> countMap = csSessionMapper.selectCountGroupByStatusWithScope(viewScope, currentUserId);
         int pendingCount = countMap.getOrDefault(CsSessionStatusEnum.PENDING.getCode(), 0L).intValue();
         int processingCount = countMap.getOrDefault(CsSessionStatusEnum.PROCESSING.getCode(), 0L).intValue();
         int completedCount = countMap.getOrDefault(CsSessionStatusEnum.COMPLETED.getCode(), 0L).intValue();
@@ -285,7 +287,10 @@ public class CsSessionServiceImpl implements CsSessionService {
                 .setSessionNo(session.getSessionNo())
                 .setType(type)
                 .setSenderId(session.getInitiatorId())
-                .setSenderName(session.getInitiatorName());
+                .setSenderName(session.getInitiatorName())
+                .setConsultType(session.getConsultType())
+                .setDealerName(session.getDealerName())
+                .setContext(session.getContext());
     }
 
     private void sendNotify(Long userId, String templateCode, Map<String, Object> params) {

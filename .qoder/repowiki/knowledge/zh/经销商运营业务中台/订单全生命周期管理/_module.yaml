@@ -1,0 +1,31 @@
+schema_version: 1
+module_path: opshub/order
+title: 订单全生命周期管理
+scope:
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/controller/admin/order/
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/dal/dataobject/order/
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/dal/mysql/order/
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/service/order/
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/enums/OrderInvoiceRecordStatusEnum.java
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/enums/OrderInvoiceStatusEnum.java
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/enums/OrderPayStatusEnum.java
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/enums/OrderPaymentStatusEnum.java
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/enums/OrderProgressStatusEnum.java
+source_files: []
+depends_on: []
+related_to:
+    - path: ui_admin/opshub/order
+    - path: opshub/aftersale
+    - path: system/message_center
+    - path: opshub/dealer
+    - path: opshub/cs
+    - path: system/tenant_management
+    - path: opshub/signing
+    - path: infra/file_storage
+    - path: ui_admin/opshub/customer_service
+    - path: framework/starter_excel
+    - path: framework/starter_redis
+    - path: framework/starter_mq
+    - path: framework/starter_protection
+    - path: framework/starter_mybatis
+    - path: framework/starter_web

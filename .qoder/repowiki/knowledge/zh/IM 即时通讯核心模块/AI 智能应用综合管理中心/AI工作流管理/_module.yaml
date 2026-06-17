@@ -1,0 +1,16 @@
+schema_version: 1
+module_path: ui_admin/ai_assistant/workflow
+title: AI工作流管理
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/ai/workflow/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/ai/workflow/
+source_files: []
+depends_on: []
+related_to:
+    - path: ui_admin/ai_assistant/model_config
+    - path: ui_admin/ai_assistant/chat
+    - path: system/access_control
+    - path: infra/file_storage
+    - path: infra/api_logging
+    - path: infra/redis_monitor
+    - path: framework/starter_mq

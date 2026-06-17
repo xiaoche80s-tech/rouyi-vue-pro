@@ -88,6 +88,29 @@ public interface CsSessionMapper extends BaseMapperX<CsSessionDO> {
     }
 
     /**
+     * 按状态统计数量（角色可见性过滤）
+     *
+     * @param viewScope     可见范围：creator / assignee / all
+     * @param currentUserId 当前用户 ID
+     */
+    default Map<Integer, Long> selectCountGroupByStatusWithScope(String viewScope, Long currentUserId) {
+        LambdaQueryWrapper<CsSessionDO> wrapper = new LambdaQueryWrapper<CsSessionDO>()
+                .select(CsSessionDO::getStatus);
+
+        if ("creator".equals(viewScope)) {
+            wrapper.eq(CsSessionDO::getInitiatorId, currentUserId);
+        } else if ("assignee".equals(viewScope)) {
+            wrapper.and(w -> w
+                    .eq(CsSessionDO::getStatus, 0) // PENDING
+                    .or().eq(CsSessionDO::getAssigneeId, currentUserId));
+        }
+        // "all" 或其他 → 无额外过滤
+
+        List<CsSessionDO> list = selectList(wrapper);
+        return list.stream().collect(Collectors.groupingBy(CsSessionDO::getStatus, Collectors.counting()));
+    }
+
+    /**
      * 查询当天最大会话序号（用于编号自动生成）
      */
     default Integer selectMaxSeqToday(String datePrefix) {

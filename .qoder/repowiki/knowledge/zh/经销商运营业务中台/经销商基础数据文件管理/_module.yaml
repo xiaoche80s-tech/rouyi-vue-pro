@@ -1,0 +1,17 @@
+schema_version: 1
+module_path: opshub/basedata
+title: 经销商基础数据文件管理
+scope:
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/controller/admin/basedata/
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/dal/dataobject/basedata/
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/dal/mysql/basedata/
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/service/basedata/
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/enums/BasedataCategoryEnum.java
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/enums/BasedataFileTypeEnum.java
+source_files: []
+depends_on: []
+related_to:
+    - path: infra/file_storage
+    - path: ui_admin/opshub/basedata
+    - path: decisions/11502cccfbad_aa5cf4b91dcc
+    - path: opshub/signing

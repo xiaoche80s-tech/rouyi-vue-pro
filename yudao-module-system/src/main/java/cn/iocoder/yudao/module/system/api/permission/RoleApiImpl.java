@@ -37,4 +37,10 @@ public class RoleApiImpl implements RoleApi {
         List<RoleDO> list = roleService.getRoleList(ids);
         return BeanUtils.toBean(list, RoleRespDTO.class);
     }
+
+    @Override
+    public RoleRespDTO getRoleByCode(String code) {
+        RoleDO role = roleService.getRoleByCode(code);
+        return BeanUtils.toBean(role, RoleRespDTO.class);
+    }
 }

@@ -16,6 +16,12 @@ export interface CsChatMessagePayload {
   linkUrl: string
   linkTitle: string
   createTime: string
+  /** 咨询类型（前端显示用） */
+  consultType: string
+  /** 经销商名称（前端显示用） */
+  dealerName: string
+  /** 咨询上下文（前端显示用） */
+  context: string
 }
 
 /**
