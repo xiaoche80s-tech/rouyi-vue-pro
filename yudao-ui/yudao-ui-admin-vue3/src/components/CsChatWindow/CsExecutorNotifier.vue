@@ -33,7 +33,7 @@ useCsWebSocket(
       position: 'bottom-right',
       onClick: () => {
         // 点击跳转到咨询工作台
-        router.push('/opshub/cs-workbench')
+        router.push('/dealer/cs-workbench')
       }
     })
   }
