@@ -15,11 +15,11 @@
           <el-descriptions-item label="经销商">{{ detailData.dealerName || '-' }}</el-descriptions-item>
           <el-descriptions-item label="产品线">{{ detailData.productLineName || '-' }}</el-descriptions-item>
           <el-descriptions-item label="来源模块">{{ getSourceModuleLabel(detailData.sourceModule) }}</el-descriptions-item>
-          <el-descriptions-item label="SLA 截止时间">{{ detailData.slaDeadline || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="SLA 截止时间">{{ formatNullableDate(detailData.slaDeadline) }}</el-descriptions-item>
           <el-descriptions-item label="创建人">{{ detailData.creatorUserName || '-' }}</el-descriptions-item>
           <el-descriptions-item label="执行员">{{ detailData.assigneeName || '未分配' }}</el-descriptions-item>
-          <el-descriptions-item label="接单时间">{{ detailData.acceptTime || '-' }}</el-descriptions-item>
-          <el-descriptions-item label="交付时间">{{ detailData.deliverTime || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="接单时间">{{ formatNullableDate(detailData.acceptTime) }}</el-descriptions-item>
+          <el-descriptions-item label="交付时间">{{ formatNullableDate(detailData.deliverTime) }}</el-descriptions-item>
           <el-descriptions-item label="特殊备注" :span="2">{{ detailData.remark || '-' }}</el-descriptions-item>
         </el-descriptions>
 
@@ -56,6 +56,7 @@
 <script lang="ts" setup>
 import { propTypes } from '@/utils/propTypes'
 import * as CsTaskApi from '@/api/opshub/csTask'
+import { formatNullableDate } from '@/utils/formatTime'
 import * as ProcessInstanceApi from '@/api/bpm/processInstance'
 
 defineOptions({ name: 'OpsHubCsTaskDetail' })

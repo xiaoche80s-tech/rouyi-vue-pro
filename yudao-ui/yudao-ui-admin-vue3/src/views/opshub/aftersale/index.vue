@@ -473,7 +473,9 @@ const handleConsult = (row: AfterSaleApi.AfterSaleSimpleVO) => {
     context: `售后单 ${row.aftersaleCode} 咨询`,
     contextId: row.id,
     contextCode: row.aftersaleCode,
+    productLineCode: row.productLineCode,
     productLineName: row.productLineName,
+    dealerCode: row.dealerCode,
     dealerName: row.dealerName
   })
 }
@@ -485,7 +487,9 @@ const handleBatchConsult = async () => {
     context: `售后单 ${row.aftersaleCode} 咨询`,
     contextId: row.id,
     contextCode: row.aftersaleCode,
+    productLineCode: row.productLineCode,
     productLineName: row.productLineName,
+    dealerCode: row.dealerCode,
     dealerName: row.dealerName
   }))
 }

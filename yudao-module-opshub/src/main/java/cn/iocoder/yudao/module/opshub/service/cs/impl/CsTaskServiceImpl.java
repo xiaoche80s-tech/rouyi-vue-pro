@@ -30,8 +30,6 @@ import org.flowable.task.api.Task;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
@@ -121,9 +119,6 @@ public class CsTaskServiceImpl implements CsTaskService {
         // 回写 processInstanceId
         csTaskMapper.updateById(new CsTaskDO().setId(taskDO.getId()).setProcessInstanceId(processInstanceId));
 
-        // 事务提交后再同步 BPM 处理人，确保 BPM 引擎已完成 StartUserNode 自动流转
-        executeAfterTransaction(() -> syncBpmAssignee(taskDO.getId(), processInstanceId, true));
-
         // 5. WebSocket 推送 + 站内信通知处理人
         // csWebSocketService.sendTaskNotifyAsync(reqVO.getAssigneeId(),
         //         buildNotification(taskDO, CsTaskNotification.TYPE_TASK_CREATED, "您有新的工单待处理"));
@@ -186,9 +181,10 @@ public class CsTaskServiceImpl implements CsTaskService {
 
         // 校验状态：仅处理中可转单
         validateStatus(task, CsTaskStatusEnum.IN_PROGRESS);
-        // 权限校验：管理员可转单，执行员仅可转单自己的工单
+        // 权限校验：管理员（含流程管理员）可转单，执行员仅可转单自己的工单
         boolean isAdmin = permissionCommonApi.hasAnyRoles(currentUserId,
-                OpsRoleCodeConstants.BRAND_ADMIN, OpsRoleCodeConstants.SUPER_ADMIN);
+                OpsRoleCodeConstants.BRAND_ADMIN, OpsRoleCodeConstants.SUPER_ADMIN,
+                OpsRoleCodeConstants.PROCESS_ADMIN);
         if (!isAdmin) {
             // 校验当前操作人是处理人
             validateIsAssignee(task, currentUserId);
@@ -212,8 +208,8 @@ public class CsTaskServiceImpl implements CsTaskService {
                     bpmVO.setId(bpmTaskId);
                     bpmVO.setAssigneeUserId(reqVO.getNewAssigneeId());
                     bpmVO.setReason(reqVO.getReason() != null ? reqVO.getReason() : "工单转单");
-                    // 管理员转单时 currentUserId 非 BPM 任务执行人，需传入原处理人绕过 BPM validateTask 校验
-                    bpmTaskService.transferTask(task.getAssigneeId(), bpmVO);
+                    // 管理员转单时 currentUserId 非 BPM 任务执行人，传入当前用户 ID + BPM 层 isAdmin 校验绕过 assignee 检查
+                    bpmTaskService.transferTask(currentUserId, bpmVO);
                 }
             } catch (Exception e) {
                 log.warn("[transferTask][同步 BPM 转单失败 taskId={}]", reqVO.getId(), e);
@@ -240,8 +236,7 @@ public class CsTaskServiceImpl implements CsTaskService {
         // 推动 BPM 流程到审批节点（不直接改变业务状态，由 BPM 回调设置）
         approveCurrentBpmTask(task, currentUserId);
 
-        // BPM 推进后，同步下一岗处理人到工单表
-        syncBpmAssignee(id, task.getProcessInstanceId(), false);
+        // 下一岗处理人由 CsTaskBpmAssignedListener 监听 TASK_ASSIGNED 事件自动同步
 
         // 记录交付时间（即使 BPM 回调尚未到达，也记录提交时间）
         csTaskMapper.updateById(new CsTaskDO()
@@ -597,40 +592,6 @@ public class CsTaskServiceImpl implements CsTaskService {
     // ========== BPM 集成辅助方法 ==========
 
     /**
-     * 从 BPM 流程实例读取当前任务处理人，同步到工单表
-     *
-     * @param taskId            工单 ID
-     * @param processInstanceId BPM 流程实例 ID
-     * @param autoInProgress    true=创建工单时自动设为处理中，false=提交审批后仅更新处理人
-     */
-    private void syncBpmAssignee(Long taskId, String processInstanceId, boolean autoInProgress) {
-        if (processInstanceId == null) {
-            return;
-        }
-        try {
-            List<Task> bpmTasks = bpmTaskService.getTasksByProcessInstanceIds(
-                    Collections.singletonList(processInstanceId));
-            if (CollUtil.isEmpty(bpmTasks)) {
-                return;
-            }
-            String bpmAssignee = bpmTasks.get(0).getAssignee();
-            if (bpmAssignee == null) {
-                return;
-            }
-            Long bpmAssigneeId = Long.parseLong(bpmAssignee);
-            CsTaskDO updateDO = new CsTaskDO().setId(taskId).setAssigneeId(bpmAssigneeId);
-            if (autoInProgress) {
-                updateDO.setStatus(CsTaskStatusEnum.IN_PROGRESS.getCode())
-                        .setAcceptTime(LocalDateTime.now());
-            }
-            csTaskMapper.updateById(updateDO);
-        } catch (Exception e) {
-            log.warn("[syncBpmAssignee][同步 BPM 处理人失败 taskId={}, processInstanceId={}]",
-                    taskId, processInstanceId, e);
-        }
-    }
-
-    /**
      * 查找流程实例中当前运行的 BPM 任务 ID
      */
     private String findCurrentBpmTaskId(String processInstanceId) {
@@ -723,24 +684,6 @@ public class CsTaskServiceImpl implements CsTaskService {
                 .setNewStatus(newStatus.getCode())
                 .setDealerCode(task.getDealerCode())
                 .setProductLineCode(task.getProductLineCode()));
-    }
-
-    /**
-     * 事务提交后执行任务，确保 BPM 引擎已完成节点流转
-     * - 无活跃事务：直接执行
-     * - 有活跃事务：注册 afterCommit 回调
-     */
-    private void executeAfterTransaction(Runnable task) {
-        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
-            task.run();
-            return;
-        }
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                task.run();
-            }
-        });
     }
 
 }

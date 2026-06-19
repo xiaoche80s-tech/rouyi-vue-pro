@@ -14,4 +14,4 @@ depends_on: []
 related_to:
     - path: infra/file_storage
     - path: framework/starter_redis
-    - path: ui_admin/infra_platform/config_management
+    - path: infra/job_scheduler

@@ -87,8 +87,16 @@
       <el-table-column label="处理人" prop="assigneeName" min-width="100" />
       <el-table-column label="经销商" prop="dealerName" min-width="120" show-overflow-tooltip />
       <el-table-column label="产品线" prop="productLineName" min-width="100" />
-      <el-table-column label="SLA截止" prop="slaDeadline" min-width="160" />
-      <el-table-column label="创建时间" prop="createTime" min-width="160" />
+      <el-table-column label="SLA截止" prop="slaDeadline" min-width="160">
+        <template #default="{ row }">
+          {{ formatDate(row.slaDeadline) }}
+        </template>
+      </el-table-column>
+      <el-table-column label="创建时间" prop="createTime" min-width="160">
+        <template #default="{ row }">
+          {{ formatDate(row.createTime) }}
+        </template>
+      </el-table-column>
       <el-table-column label="操作" fixed="right" min-width="280" align="center">
         <template #default="{ row }">
           <el-button v-if="canAccept(row)" v-hasPermi="['dealer:cs-task:accept']" link type="primary" @click="handleAccept(row)">接单</el-button>
@@ -196,6 +204,7 @@
 import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from 'element-plus'
 import * as CsTaskApi from '@/api/opshub/csTask'
+import { formatDate } from '@/utils/formatTime'
 import { getSimpleUserList } from '@/api/system/user'
 import { useUserStore } from '@/store/modules/user'
 import { useCsWebSocket, type CsTaskEventPayload } from '@/hooks/useCsWebSocket'

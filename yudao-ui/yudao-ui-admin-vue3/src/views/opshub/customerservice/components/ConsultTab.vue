@@ -77,7 +77,7 @@
       </el-table-column>
       <el-table-column label="最后更新" prop="lastMessageTime" min-width="160">
         <template #default="{ row }">
-          {{ row.lastMessageTime || row.createTime }}
+          {{ formatDate(row.lastMessageTime || row.createTime) }}
         </template>
       </el-table-column>
       <el-table-column label="操作" fixed="right" min-width="120" align="center">
@@ -110,6 +110,7 @@ import {
 } from '@/api/opshub/csSession'
 import ChatWindow from '@/components/CsChatWindow/ChatWindow.vue'
 import { useCsWebSocket } from '@/hooks/useCsWebSocket'
+import { formatDate } from '@/utils/formatTime'
 
 // ========== 枚举常量 ==========
 const consultTypeOptions = [

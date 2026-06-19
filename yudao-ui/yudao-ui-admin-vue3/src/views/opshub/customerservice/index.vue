@@ -34,7 +34,7 @@ const activeTab = ref((route.query.tab as string) || 'task')
 
 // 管理员角色使用 side='admin'，拥有更多操作权限（如转单、取消任意工单）
 const userStore = useUserStore()
-const adminRoles = ['super_admin', 'brand_admin', 'tenant_admin']
+const adminRoles = ['super_admin', 'brand_admin', 'tenant_admin', 'process_admin']
 const isAdmin = computed(() => userStore.getRoles.some((r: string) => adminRoles.includes(r)))
 
 // 咨询队列 Tab 角标

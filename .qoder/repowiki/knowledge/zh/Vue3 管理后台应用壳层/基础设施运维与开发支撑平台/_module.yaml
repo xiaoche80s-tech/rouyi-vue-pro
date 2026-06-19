@@ -1,9 +1,0 @@
-schema_version: 1
-module_path: ui_admin/infra_platform
-title: 基础设施运维与开发支撑平台
-scope:
-    - yudao-ui/yudao-ui-admin-vue3/src/api/infra/
-    - yudao-ui/yudao-ui-admin-vue3/src/views/infra/
-source_files: []
-depends_on: []
-related_to: []

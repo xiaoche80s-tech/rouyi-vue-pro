@@ -24,8 +24,6 @@ scope:
 source_files: []
 depends_on: []
 related_to:
-    - path: system/user_identity
-    - path: ui_admin/system_management/operation_logs
-    - path: ui_admin/system_management/area_notice
-    - path: infra/job_scheduler
+    - path: infra/api_logging
+    - path: system/authentication
     - path: ui_admin/system_management/dict_management

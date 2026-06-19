@@ -15,6 +15,7 @@ public interface OpsRoleCodeConstants {
     String BRAND_SALES = "brand_sales";
     String SERVICE_EXECUTOR = "service_executor";
     String DEALER = "dealer";
+    String PROCESS_ADMIN = "process_admin";
 
     /** 基于产品线维度的角色集合（brand_admin / brand_sales / service_executor） */
     Set<String> PRODUCT_LINE_SCOPE_ROLES = Set.of(BRAND_ADMIN, BRAND_SALES, SERVICE_EXECUTOR);

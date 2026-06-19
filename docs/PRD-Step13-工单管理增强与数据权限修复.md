@@ -9,7 +9,7 @@ Step 13 对客服工单管理模块进行多项增强，涵盖 TaskTab 组件架
 工单管理在实际使用中存在以下问题：
 1. TaskTab 内部硬编码角色检测（useUserStore），扩展性差，新增角色需改动组件
 2. 工单列表"处理人"列始终为空，assigneeName 未被解析
-3. BPM 流程路由后工单表 assigneeId 未同步，状态停留在"待接单"
+3. `syncBpmAssignee` 误取 `StartUserNode`（发起人节点）的 assignee，导致创建工单后 `assignee_id` 被错误设置为创建人（经销商），而非实际执行人（执行员）
 4. 子标签（可领取/待办/已办）缺少任务数量角标
 5. 工单编号不可点击，无法快速查看详情
 6. 执行员提交审批后，下一岗处理人未同步到工单表
@@ -46,33 +46,48 @@ Step 13 对客服工单管理模块进行多项增强，涵盖 TaskTab 组件架
 ### 3. BPM 处理人同步（P0）
 
 **改动文件**：
-- `CsTaskServiceImpl.java` — 提取 `syncBpmAssignee()` 方法
+- `CsTaskBpmAssignedListener.java` — 新建 Flowable 原生事件监听器
+- `CsTaskServiceImpl.java` — 移除 `syncBpmAssignee()`，全部改由事件驱动
 
-**核心逻辑**：
+**背景与 Bug 修复**：
+- 原实现通过 `syncBpmAssignee()` 在事务提交后主动查询 BPM 任务，但 BPM 引擎的 `StartUserNode` 自动完成在另一个异步事务中，存在时序竞争：
+  - 若查询时 `StartUserNode` 尚未完成，取到的 `assignee` 是发起人（经销商）而非真正的执行员
+  - 若增加 `StartUserNode` 过滤后查询，下一节点尚未创建，导致 `assignee_id=null`
+- **根治方案**：改用 Flowable 原生 `TASK_ASSIGNED` 事件驱动，在 BPM 引擎分配处理人后立即更新工单，彻底消除时序竞争
+
+**核心实现**（新增 `CsTaskBpmAssignedListener.java`）：
 ```java
-private void syncBpmAssignee(Long taskId, String processInstanceId, boolean autoInProgress) {
-    List<Task> bpmTasks = bpmTaskService.getTasksByProcessInstanceIds(
-            Collections.singletonList(processInstanceId));
-    if (CollUtil.isNotEmpty(bpmTasks)) {
-        String bpmAssignee = bpmTasks.get(0).getAssignee();
-        if (bpmAssignee != null) {
-            Long bpmAssigneeId = Long.parseLong(bpmAssignee);
-            CsTaskDO updateDO = new CsTaskDO().setId(taskId).setAssigneeId(bpmAssigneeId);
-            if (autoInProgress) {
-                updateDO.setStatus(CsTaskStatusEnum.IN_PROGRESS.getCode())
-                        .setAcceptTime(LocalDateTime.now());
-            }
-            csTaskMapper.updateById(updateDO);
-        }
+@Component
+public class CsTaskBpmAssignedListener extends AbstractFlowableEngineEventListener {
+    public CsTaskBpmAssignedListener() {
+        super(ImmutableSet.of(FlowableEngineEventType.TASK_ASSIGNED));
+    }
+
+    @Override
+    protected void taskAssigned(FlowableEngineEntityEvent event) {
+        Task task = (Task) event.getEntity();
+        // 1. 过滤：跳过 StartUserNode（assignee=创建人/经销商）
+        if (BpmnModelConstants.START_USER_NODE_ID.equals(task.getTaskDefinitionKey())) return;
+        if (StrUtil.isEmpty(task.getAssignee())) return;
+        // 2. 查询流程实例获取 processDefinitionKey，仅处理 ops-cs-task
+        ProcessInstance pi = runtimeService.createProcessInstanceQuery()
+                .processInstanceId(task.getProcessInstanceId()).singleResult();
+        if (!"ops-cs-task".equals(pi.getProcessDefinitionKey())) return;
+        // 3. 在事务完成后（afterCompletion）更新工单 assignee_id
+        //    若工单状态仍为 PENDING，同时推进为 IN_PROGRESS 并记录接单时间
     }
 }
 ```
 
-**调用时机**：
-| 场景 | autoInProgress | 说明 |
-|------|---------------|------|
-| `createCsTask()` | true | 创建后自动设为处理中 + 接单时间 |
-| `submitForApproval()` | false | 提交审批后仅更新下一岗处理人 |
+**注册机制**：
+- `BpmFlowableConfiguration.bpmProcessEngineConfigurationConfigurer()` 通过 `ObjectProvider<FlowableEventListener>` 自动收集 Spring 容器中所有 `FlowableEventListener` Bean 注册到 Flowable 引擎
+- opshub 模块创建 Bean 即可，**零改动 BPM 模块**
+
+**触发时机**：
+| 场景 | 触发链路 | 效果 |
+|------|---------|------|
+| 创建工单 | `createCsTask()` → StartUserNode 自动完成 → 下一节点 `TASK_ASSIGNED` → 监听器回调 | `assignee_id` 写入 + `status=IN_PROGRESS` + `accept_time` |
+| 审批推进 | `submitForApproval()` → 当前节点完成 → 下一节点 `TASK_ASSIGNED` → 监听器回调 | `assignee_id` 更新（不改 status） |
 
 ### 4. 子标签角标计数（P1）
 
@@ -138,7 +153,8 @@ return p;
 |------|------|
 | `CsTaskController.java` | 新增 `fillUserNames()`、`/tab-counts` 端点 |
 | `CsTaskService.java` | 新增 `getTabCounts()` 接口 |
-| `CsTaskServiceImpl.java` | 提取 `syncBpmAssignee()`、实现 `getTabCounts()`、`submitForApproval()` 增加同步 |
+| `CsTaskBpmAssignedListener.java` | 新建：监听 Flowable TASK_ASSIGNED 事件，事件驱动更新工单处理人 |
+| `CsTaskServiceImpl.java` | 移除 `syncBpmAssignee()` 及 `findNonStartUserTask()`（全部改由 `CsTaskBpmAssignedListener` 事件驱动）；实现 `getTabCounts()` |
 | `CsTaskMapper.java` | 新增 `selectCountByTab()` 方法 |
 | `DealerDataPermissionRule.java` | Parenthesis 修复 + EqualsTo 安全替代 |
 
@@ -154,3 +170,4 @@ return p;
 
 1. `Parenthesis` 类在 JSqlParser 5.2 中标记为 `@Deprecated(since = "5.1")`，但 `add()` 方法仍可正常工作；若后续 JSqlParser 移除此类，需改用 `ParenthesedExpressionList` 替代
 2. 角标计数与列表查询为两次独立请求，极端并发下数字可能与实际列表条数有短暂不一致
+3. `CsTaskBpmAssignedListener` 通过 Flowable `TASK_ASSIGNED` 事件更新工单处理人，依赖 BPM 节点配置了具体处理人（指定人/角色/岗位）；若角色/岗位下无任何用户，`assignee` 为 null，事件不会触发，工单将停留在 `PENDING` 状态且无人处理

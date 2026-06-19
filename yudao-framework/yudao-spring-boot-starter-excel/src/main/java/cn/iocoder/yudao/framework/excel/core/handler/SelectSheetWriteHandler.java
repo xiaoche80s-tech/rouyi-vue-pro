@@ -56,6 +56,11 @@ public class SelectSheetWriteHandler implements SheetWriteHandler {
      */
     private final Map<Integer, List<String>> selectMap = new HashMap<>();
 
+    /**
+     * 字典 sheet + Named Range 是否已初始化（多 Sheet 写入时避免重复创建）
+     */
+    private boolean dictSheetInitialized = false;
+
     public SelectSheetWriteHandler(Class<?> head) {
         // 解析下拉数据
         int colIndex = 0;
@@ -125,7 +130,7 @@ public class SelectSheetWriteHandler implements SheetWriteHandler {
 
     @Override
     public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
-        if (CollUtil.isEmpty(selectMap)) {
+        if (CollUtil.isEmpty(selectMap) || dictSheetInitialized) {
             return;
         }
 
@@ -153,6 +158,8 @@ public class SelectSheetWriteHandler implements SheetWriteHandler {
             // 2.2 设置单元格下拉选择
             setColumnSelect(writeSheetHolder, workbook, helper, keyValue);
         }
+        // 标记已初始化，后续 sheet 不再重复创建字典数据
+        dictSheetInitialized = true;
     }
 
     /**

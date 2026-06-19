@@ -6,8 +6,10 @@ import cn.iocoder.yudao.framework.test.core.ut.BaseMockitoUnitTest;
 import cn.iocoder.yudao.module.bpm.api.task.BpmProcessInstanceApi;
 import cn.iocoder.yudao.module.bpm.controller.admin.task.vo.task.BpmTaskApproveReqVO;
 import cn.iocoder.yudao.module.bpm.controller.admin.task.vo.task.BpmTaskRejectReqVO;
+import cn.iocoder.yudao.module.bpm.controller.admin.task.vo.task.BpmTaskTransferReqVO;
 import cn.iocoder.yudao.module.bpm.enums.task.BpmProcessInstanceStatusEnum;
 import cn.iocoder.yudao.module.bpm.service.task.BpmTaskService;
+import cn.iocoder.yudao.module.opshub.controller.admin.cs.vo.CsTaskTransferReqVO;
 import cn.iocoder.yudao.module.opshub.controller.admin.cs.vo.CsTaskVerifyReqVO;
 import cn.iocoder.yudao.module.opshub.dal.dataobject.cs.CsTaskDO;
 import cn.iocoder.yudao.module.opshub.dal.mysql.cs.CsTaskMapper;
@@ -441,6 +443,59 @@ class CsTaskServiceImplTest extends BaseMockitoUnitTest {
 
             assertThatThrownBy(() -> csTaskService.cancelTask(TASK_ID, "test"))
                     .message().contains("非提单人");
+        }
+    }
+
+    // ========== 转单测试 ==========
+
+    @Nested
+    @DisplayName("transferTask - 转单")
+    class TransferTaskTests {
+
+        @Test
+        @DisplayName("流程管理员 - 可转派非自己的工单")
+        void testProcessAdminCanTransferAnyTask() {
+            CsTaskDO task = buildTask(CsTaskStatusEnum.IN_PROGRESS);
+            task.setProcessInstanceId(PROCESS_INSTANCE_ID);
+            when(csTaskMapper.selectById(TASK_ID)).thenReturn(task);
+            mockLoginUserId(OTHER_USER_ID); // 非处理人
+            when(permissionCommonApi.hasAnyRoles(eq(OTHER_USER_ID),
+                    eq(OpsRoleCodeConstants.BRAND_ADMIN), eq(OpsRoleCodeConstants.SUPER_ADMIN),
+                    eq(OpsRoleCodeConstants.PROCESS_ADMIN)))
+                    .thenReturn(true);
+            mockBpmTask(PROCESS_INSTANCE_ID, BPM_TASK_ID);
+
+            CsTaskTransferReqVO reqVO = new CsTaskTransferReqVO();
+            reqVO.setId(TASK_ID);
+            reqVO.setNewAssigneeId(300L);
+            reqVO.setReason("流程管理员转派");
+
+            csTaskService.transferTask(reqVO);
+
+            // 验证：处理人被更新
+            verify(csTaskMapper).updateById(ArgumentMatchers.<CsTaskDO>argThat(update ->
+                    TASK_ID.equals(update.getId()) && Long.valueOf(300L).equals(update.getAssigneeId())));
+            // 验证：BPM 同步转派
+            verify(bpmTaskService).transferTask(eq(OTHER_USER_ID), any(BpmTaskTransferReqVO.class));
+        }
+
+        @Test
+        @DisplayName("执行员 - 仅可转派自己的工单")
+        void testExecutorCanOnlyTransferOwnTask() {
+            CsTaskDO task = buildTask(CsTaskStatusEnum.IN_PROGRESS);
+            when(csTaskMapper.selectById(TASK_ID)).thenReturn(task);
+            mockLoginUserId(OTHER_USER_ID); // 非处理人
+            when(permissionCommonApi.hasAnyRoles(eq(OTHER_USER_ID),
+                    eq(OpsRoleCodeConstants.BRAND_ADMIN), eq(OpsRoleCodeConstants.SUPER_ADMIN),
+                    eq(OpsRoleCodeConstants.PROCESS_ADMIN)))
+                    .thenReturn(false);
+
+            CsTaskTransferReqVO reqVO = new CsTaskTransferReqVO();
+            reqVO.setId(TASK_ID);
+            reqVO.setNewAssigneeId(300L);
+
+            assertThatThrownBy(() -> csTaskService.transferTask(reqVO))
+                    .message().contains("非当前处理人");
         }
     }
 

@@ -106,6 +106,15 @@ const urgencyOptions = [
   { value: 3, label: '低 (SLA: 72小时)', hours: 72 }
 ]
 
+// ========== sourceModule → category 映射 ==========
+const sourceModuleCategoryMap: Record<string, number> = {
+  signing: 0,    // 签约
+  policy: 1,     // 政策
+  aftersale: 2,  // 售后
+  order: 3,      // 订单
+  basedata: 4    // 数据
+}
+
 // ========== 表单 ==========
 const formRef = ref<FormInstance>()
 const submitting = ref(false)
@@ -158,7 +167,7 @@ const handleSubmit = async () => {
     await createCsTask({
       content: formData.content,
       urgency: formData.urgency,
-      category: 0, // 签约
+      category: sourceModuleCategoryMap[props.session?.sourceModule || ''] ?? 5, // 按来源模块动态分类，默认"其他"
       slaDeadline: formData.slaDeadline,
       remark: formData.remark || undefined,
       // 从 session 自动填充

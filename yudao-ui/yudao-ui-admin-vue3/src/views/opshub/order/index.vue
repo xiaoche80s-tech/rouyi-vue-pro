@@ -61,9 +61,7 @@
       @view-detail="handleViewDetail"
       @apply-payment="handleApplyPayment"
       @apply-invoice="handleApplyInvoice"
-      @apply-return="handleApplyReturn"
       @consult="handleConsult"
-      @update-progress="handleUpdateProgress"
     />
 
     <Pagination
@@ -78,7 +76,6 @@
   <OrderDetailModal ref="detailModalRef" />
   <ApplyPaymentModal ref="paymentModalRef" @success="handleOperationSuccess" />
   <ApplyInvoiceModal ref="invoiceModalRef" @success="handleOperationSuccess" />
-  <ApplyReturnModal ref="returnModalRef" @success="handleOperationSuccess" />
 
   <!-- 咨询聊天窗口 -->
   <ChatWindow v-model="chatVisible" :session-id="currentSessionId" mode="dealer" />
@@ -93,7 +90,6 @@ import OrderTable from './components/OrderTable.vue'
 import OrderDetailModal from './components/OrderDetailModal.vue'
 import ApplyPaymentModal from './components/ApplyPaymentModal.vue'
 import ApplyInvoiceModal from './components/ApplyInvoiceModal.vue'
-import ApplyReturnModal from './components/ApplyReturnModal.vue'
 import ChatWindow from '@/components/CsChatWindow/ChatWindow.vue'
 import { useCsConsult } from '@/hooks/useCsConsult'
 
@@ -187,17 +183,6 @@ const handleApplyInvoice = (row: OrderApi.OrderSimpleVO) => {
   invoiceModalRef.value.open(row.id, row.orderCode)
 }
 
-const returnModalRef = ref()
-const handleApplyReturn = async (row: OrderApi.OrderSimpleVO) => {
-  // 先获取详情拿到可退货商品
-  try {
-    const detail = await OrderApi.getOrderDetail(row.id)
-    returnModalRef.value.open(row.id, row.orderCode, detail.returnableProducts)
-  } catch (e) {
-    message.error('获取订单详情失败')
-  }
-}
-
 const handleConsult = (row: OrderApi.OrderSimpleVO) => {
   openConsult({
     consultType: 'order',
@@ -210,28 +195,6 @@ const handleConsult = (row: OrderApi.OrderSimpleVO) => {
     dealerCode: row.dealerCode,
     dealerName: row.dealerName
   })
-}
-
-const handleUpdateProgress = async (row: OrderApi.OrderSimpleVO) => {
-  const nextStatusMap: Record<string, string> = {
-    pending: 'confirmed', confirmed: 'shipped', shipped: 'signed', signed: 'completed'
-  }
-  const nextStatus = nextStatusMap[row.progressStatus]
-  if (!nextStatus) {
-    message.warning('当前状态无法继续推进')
-    return
-  }
-  const nextLabel: Record<string, string> = {
-    confirmed: '已确认', shipped: '已发货', signed: '已签收', completed: '已完成'
-  }
-  try {
-    await message.confirm(`确认将订单 ${row.orderCode} 进度更新为「${nextLabel[nextStatus]}」？`)
-    await OrderApi.updateOrderProgress(row.id, nextStatus)
-    message.success('进度更新成功')
-    await refreshAll()
-  } catch (e: any) {
-    if (e !== 'cancel') message.error('操作失败')
-  }
 }
 
 // ========== 批量操作 ==========

@@ -17,8 +17,14 @@ public class AfterSaleInfoSimpleRespVO {
     @Schema(description = "售后单号")
     private String aftersaleCode;
 
+    @Schema(description = "经销商编码")
+    private String dealerCode;
+
     @Schema(description = "经销商名称")
     private String dealerName;
+
+    @Schema(description = "产品线编码")
+    private String productLineCode;
 
     @Schema(description = "产品线名称")
     private String productLineName;

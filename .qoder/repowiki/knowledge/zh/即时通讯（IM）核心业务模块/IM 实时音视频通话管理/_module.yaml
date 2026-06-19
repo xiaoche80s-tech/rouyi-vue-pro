@@ -15,11 +15,5 @@ source_files: []
 depends_on: []
 related_to:
     - path: im/message
-    - path: im/framework
-    - path: ui_admin/im_chat/admin_im
+    - path: im/websocket
     - path: ui_admin/im_chat/user_im
-    - path: im/group
-    - path: framework/starter_websocket
-    - path: im/statistics
-    - path: ui_admin/system_management/user_management
-    - path: ui_admin/system_management/dict_management

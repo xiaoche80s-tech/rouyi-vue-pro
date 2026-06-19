@@ -94,7 +94,7 @@ const props = withDefaults(defineProps<{
   sessionId?: number
   /** 'dealer' 经销商视图 | 'agent' 客服执行员视图 | 'auto' 自动检测 */
   mode?: 'dealer' | 'agent' | 'auto'
-  /** 是否启用下发任务功能（仅签约模块经销商视图生效） */
+  /** 是否启用下发任务功能 */
   enableTaskDispatch?: boolean
 }>(), {
   mode: 'auto',
@@ -191,7 +191,7 @@ const canSend = computed(() => {
 const showTaskDispatch = computed(() =>
   props.enableTaskDispatch
   && effectiveMode.value === 'dealer'
-  && session.value?.sourceModule === 'signing'
+  && ['signing', 'aftersale', 'order'].includes(session.value?.sourceModule || '')
 )
 
 const loadSession = async () => {

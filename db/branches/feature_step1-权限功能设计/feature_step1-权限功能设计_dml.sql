@@ -179,6 +179,52 @@ SELECT setval('system_menu_seq',      (SELECT COALESCE(MAX(id), 0) FROM system_m
 SELECT setval('system_role_menu_seq', (SELECT COALESCE(MAX(id), 0) FROM system_role_menu));
 
 -- =============================================
+-- 流程管理员角色 (process_admin) - ID 161
+-- 在 BPM 和 OpsHub 模块中拥有管理员级转派权限
+-- =============================================
+
+UPDATE system_role SET code = 'process_admin', sort = 50, data_scope = 1, data_scope_dept_ids = '', status = 0, type = 1, remark = '业务角色-流程转派', deleted = 0 WHERE id = 161 AND tenant_id = 123;
+
+-- OpsHub 菜单授权
+INSERT INTO system_role_menu (id, role_id, menu_id, tenant_id)
+SELECT (SELECT COALESCE(MAX(id),0) FROM system_role_menu) + row_number() OVER (), role_id, menu_id, 123 FROM (
+  SELECT 161 AS role_id, 6000 AS menu_id
+  UNION ALL SELECT 161, 6008
+  UNION ALL SELECT 161, 6080
+  UNION ALL SELECT 161, 6097
+  UNION ALL SELECT 161, 6219
+) t;
+
+-- BPM 菜单授权
+INSERT INTO system_role_menu (id, role_id, menu_id, tenant_id)
+SELECT (SELECT COALESCE(MAX(id),0) FROM system_role_menu) + row_number() OVER (), role_id, menu_id, 123 FROM (
+  SELECT 161 AS role_id, 1185 AS menu_id
+  UNION ALL SELECT 161, 1200
+  UNION ALL SELECT 161, 2724
+  UNION ALL SELECT 161, 2725
+  UNION ALL SELECT 161, 1222
+) t;
+
+SELECT setval('system_role_seq',      (SELECT COALESCE(MAX(id), 0) FROM system_role));
+SELECT setval('system_role_menu_seq', (SELECT COALESCE(MAX(id), 0) FROM system_role_menu));
+
+-- 2026-06-19 修正 TASK-20260619-007 工单（syncBpmAssignee 重试机制缺失，BPM 引擎未完成 StartUserNode 自动流转时未找到下一节点）
+UPDATE ops_cs_task
+SET assignee_id = 205,
+    status = 1,
+    accept_time = NOW(),
+    update_time = NOW()
+WHERE task_no = 'TASK-20260619-007'
+  AND deleted = 0;
+
+-- 2026-06-19 修正 TASK-20260619-003 工单 assignee_id（syncBpmAssignee 误取 StartUserNode assignee 导致错误）
+UPDATE ops_cs_task
+SET assignee_id = 205,
+    update_time = NOW()
+WHERE task_no = 'TASK-20260619-003'
+  AND deleted = 0;
+
+-- =============================================
 -- 菜单重命名：将"经销商管理 SaaS"改为"聚院通"
 -- =============================================
 UPDATE system_menu SET name = '聚院通' WHERE id = 6000;

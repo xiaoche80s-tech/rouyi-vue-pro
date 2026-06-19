@@ -68,43 +68,28 @@
         ¥{{ formatAmount(row.invoicedAmount) }}
       </template>
     </el-table-column>
-    <el-table-column align="center" label="操作" width="180" fixed="right">
+    <el-table-column align="center" label="操作" width="140" fixed="right">
       <template #default="{ row }">
-        <el-dropdown trigger="click" @command="(cmd: string) => handleCommand(cmd, row)">
-          <el-button link type="primary">
-            操作<Icon class="ml-4px" icon="ep:arrow-down" />
-          </el-button>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item command="detail">查看详情</el-dropdown-item>
-              <!-- 付款：dealer:order:pay + 未付款 -->
-              <el-dropdown-item
-                v-if="row.payStatus === 'unpaid' && checkPermi(['dealer:order:pay'])"
-                command="pay"
-              >申请付款</el-dropdown-item>
-              <!-- 开票：dealer:order:invoice + 未全部开票 -->
-              <el-dropdown-item
-                v-if="row.invStatus !== 'invoiced' && checkPermi(['dealer:order:invoice'])"
-                command="invoice"
-              >申请开票</el-dropdown-item>
-              <!-- 退货：dealer:order:return + 已签收/已完成 -->
-              <el-dropdown-item
-                v-if="['signed', 'completed'].includes(row.progressStatus) && checkPermi(['dealer:order:return'])"
-                command="return"
-              >申请退货</el-dropdown-item>
-              <!-- 咨询 -->
-              <el-dropdown-item
-                v-if="checkPermi(['dealer:order:consult'])"
-                command="consult"
-              >咨询</el-dropdown-item>
-              <!-- 更新进度：dealer:order:update + 非已完成 -->
-              <el-dropdown-item
-                v-if="row.progressStatus !== 'completed' && checkPermi(['dealer:order:update'])"
-                command="progress"
-              >更新进度</el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
+        <el-button
+          v-if="row.payStatus === 'unpaid' && checkPermi(['dealer:order:pay'])"
+          link type="primary" @click="emit('applyPayment', row)"
+        >申请付款</el-button>
+        <span
+          v-if="((row.payStatus === 'unpaid' && checkPermi(['dealer:order:pay'])) || (row.payStatus === 'paid' && row.invStatus !== 'invoiced' && checkPermi(['dealer:order:invoice']))) && checkPermi(['dealer:order:consult'])"
+          class="action-sep"
+        >/</span>
+        <el-button
+          v-if="row.payStatus === 'paid' && row.invStatus !== 'invoiced' && checkPermi(['dealer:order:invoice'])"
+          link type="primary" @click="emit('applyInvoice', row)"
+        >申请开票</el-button>
+        <span
+          v-if="row.payStatus === 'paid' && row.invStatus !== 'invoiced' && checkPermi(['dealer:order:invoice']) && checkPermi(['dealer:order:consult'])"
+          class="action-sep"
+        >/</span>
+        <el-button
+          v-if="checkPermi(['dealer:order:consult'])"
+          link type="primary" @click="emit('consult', row)"
+        >客服</el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -124,9 +109,7 @@ const emit = defineEmits<{
   (e: 'viewDetail', row: OrderSimpleVO): void
   (e: 'applyPayment', row: OrderSimpleVO): void
   (e: 'applyInvoice', row: OrderSimpleVO): void
-  (e: 'applyReturn', row: OrderSimpleVO): void
   (e: 'consult', row: OrderSimpleVO): void
-  (e: 'updateProgress', row: OrderSimpleVO): void
 }>()
 
 // ========== 格式化 ==========
@@ -157,18 +140,6 @@ const invLabel = (status: string) => {
   return map[status] || status
 }
 
-// ========== 操作分发 ==========
-const handleCommand = (cmd: string, row: OrderSimpleVO) => {
-  switch (cmd) {
-    case 'detail': emit('viewDetail', row); break
-    case 'pay': emit('applyPayment', row); break
-    case 'invoice': emit('applyInvoice', row); break
-    case 'return': emit('applyReturn', row); break
-    case 'consult': emit('consult', row); break
-    case 'progress': emit('updateProgress', row); break
-  }
-}
-
 // ========== 合计行 ==========
 const getSummary = (param: { columns: any[]; data: OrderSimpleVO[] }) => {
   const { columns, data } = param
@@ -186,3 +157,12 @@ const getSummary = (param: { columns: any[]; data: OrderSimpleVO[] }) => {
   return sums
 }
 </script>
+
+<style scoped>
+.action-sep {
+  color: #dcdfe6;
+  margin: 0 4px;
+  font-size: 13px;
+  user-select: none;
+}
+</style>

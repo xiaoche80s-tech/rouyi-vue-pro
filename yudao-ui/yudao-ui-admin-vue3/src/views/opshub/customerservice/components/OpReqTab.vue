@@ -50,7 +50,11 @@
           <el-tag :type="getStatusTagType(row.status)" size="small">{{ getStatusLabel(row.status) }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" prop="createTime" min-width="160" />
+      <el-table-column label="创建时间" prop="createTime" min-width="160">
+        <template #default="{ row }">
+          {{ formatDate(row.createTime) }}
+        </template>
+      </el-table-column>
       <el-table-column label="操作" fixed="right" min-width="200" align="center">
         <template #default="{ row }">
           <!-- 待处理：执行员可接单 -->
@@ -126,13 +130,13 @@
       <el-descriptions-item label="产品线">{{ detailData.productLineName || '-' }}</el-descriptions-item>
       <el-descriptions-item label="来源模块">{{ getSourceModuleLabel(detailData.sourceModule) }}</el-descriptions-item>
       <el-descriptions-item label="来源编号">{{ detailData.sourceCode || '-' }}</el-descriptions-item>
-      <el-descriptions-item label="创建时间">{{ detailData.createTime }}</el-descriptions-item>
+      <el-descriptions-item label="创建时间">{{ formatNullableDate(detailData.createTime) }}</el-descriptions-item>
       <el-descriptions-item label="内容" :span="2">{{ detailData.content }}</el-descriptions-item>
-      <el-descriptions-item label="接单时间">{{ detailData.acceptTime || '-' }}</el-descriptions-item>
-      <el-descriptions-item label="提交时间">{{ detailData.submitTime || '-' }}</el-descriptions-item>
+      <el-descriptions-item label="接单时间">{{ formatNullableDate(detailData.acceptTime) }}</el-descriptions-item>
+      <el-descriptions-item label="提交时间">{{ formatNullableDate(detailData.submitTime) }}</el-descriptions-item>
       <el-descriptions-item label="处理留言" :span="2">{{ detailData.submitRemark || '-' }}</el-descriptions-item>
-      <el-descriptions-item label="验收时间">{{ detailData.verifyTime || '-' }}</el-descriptions-item>
-      <el-descriptions-item label="完成时间">{{ detailData.completedTime || '-' }}</el-descriptions-item>
+      <el-descriptions-item label="验收时间">{{ formatNullableDate(detailData.verifyTime) }}</el-descriptions-item>
+      <el-descriptions-item label="完成时间">{{ formatNullableDate(detailData.completedTime) }}</el-descriptions-item>
       <el-descriptions-item label="备注" :span="2">{{ detailData.remark || '-' }}</el-descriptions-item>
     </el-descriptions>
   </el-dialog>
@@ -142,6 +146,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from 'element-plus'
 import * as CsOpReqApi from '@/api/opshub/csOpReq'
+import { formatDate, formatNullableDate } from '@/utils/formatTime'
 
 // ========== 枚举常量 ==========
 const statusOptions = [

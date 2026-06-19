@@ -5,7 +5,10 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.opshub.controller.admin.cs.vo.*;
 import cn.iocoder.yudao.module.opshub.dal.dataobject.cs.CsSessionDO;
+import cn.iocoder.yudao.module.opshub.dal.dataobject.dealer.DealerInfoDO;
 import cn.iocoder.yudao.module.opshub.dal.mysql.cs.CsSessionMapper;
+import cn.iocoder.yudao.module.opshub.dal.mysql.dealer.DealerInfoMapper;
+import cn.iocoder.yudao.module.opshub.dal.mysql.dealer.DealerUserScopeMapper;
 import cn.iocoder.yudao.module.opshub.enums.CsSessionStatusEnum;
 import cn.iocoder.yudao.module.opshub.enums.OpsRoleCodeConstants;
 import cn.iocoder.yudao.module.opshub.service.cs.CsMessageService;
@@ -27,6 +30,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.opshub.enums.ErrorCodeConstants.*;
@@ -61,6 +65,12 @@ public class CsSessionServiceImpl implements CsSessionService {
     @Lazy
     private CsMessageService csMessageService;
 
+    @Resource
+    private DealerUserScopeMapper dealerUserScopeMapper;
+
+    @Resource
+    private DealerInfoMapper dealerInfoMapper;
+
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
 
     @Override
@@ -87,6 +97,21 @@ public class CsSessionServiceImpl implements CsSessionService {
         sessionDO.setInitiatorId(currentUserId);
         sessionDO.setInitiatorName(currentUserName);
         sessionDO.setMessageCount(0);
+
+        // 3.1 自动补全经销商信息（浮动按钮等场景不传 dealerCode）
+        if (sessionDO.getDealerCode() == null || sessionDO.getDealerCode().isBlank()) {
+            Set<String> dealerCodes = dealerUserScopeMapper.selectDealerCodesByUserId(currentUserId);
+            if (!dealerCodes.isEmpty()) {
+                String dealerCode = dealerCodes.iterator().next();
+                sessionDO.setDealerCode(dealerCode);
+                if (sessionDO.getDealerName() == null || sessionDO.getDealerName().isBlank()) {
+                    DealerInfoDO dealer = dealerInfoMapper.selectByDealerCode(dealerCode);
+                    if (dealer != null) {
+                        sessionDO.setDealerName(dealer.getDealerName());
+                    }
+                }
+            }
+        }
 
         // 4. 插入
         csSessionMapper.insert(sessionDO);

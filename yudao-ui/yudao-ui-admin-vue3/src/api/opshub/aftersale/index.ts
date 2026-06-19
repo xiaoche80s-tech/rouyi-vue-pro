@@ -5,7 +5,9 @@ import request from '@/config/axios'
 export interface AfterSaleSimpleVO {
   id: number
   aftersaleCode: string
+  dealerCode: string
   dealerName: string
+  productLineCode: string
   productLineName: string
   orderCode: string
   handlingMethod: string

@@ -36,6 +36,7 @@ import cn.iocoder.yudao.module.bpm.service.message.BpmMessageService;
 import cn.iocoder.yudao.module.bpm.service.message.dto.BpmMessageSendWhenTaskTimeoutReqDTO;
 import cn.iocoder.yudao.module.system.api.dept.DeptApi;
 import cn.iocoder.yudao.module.system.api.dept.dto.DeptRespDTO;
+import cn.iocoder.yudao.module.system.api.permission.PermissionApi;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import jakarta.annotation.Resource;
@@ -108,6 +109,8 @@ public class BpmTaskServiceImpl implements BpmTaskService {
     private AdminUserApi adminUserApi;
     @Resource
     private DeptApi deptApi;
+    @Resource
+    private PermissionApi permissionApi;
 
     @Resource
     private BpmTaskCandidateInvoker taskCandidateInvoker;
@@ -1078,8 +1081,17 @@ public class BpmTaskServiceImpl implements BpmTaskService {
     @DataPermission(enable = false) // 关闭数据权限，避免查询不到用户数据。相关案例：https://gitee.com/zhijiantianya/yudao-cloud/issues/ID1UYA
     public void transferTask(Long userId, BpmTaskTransferReqVO reqVO) {
         String taskId = reqVO.getId();
-        // 1.1 校验任务
-        Task task = validateTask(userId, reqVO.getId());
+        // 1.1 校验任务：管理员角色可转派任意任务，普通用户仅可转派自己的任务
+        boolean isAdmin = permissionApi.hasAnyRoles(userId, "process_admin", "super_admin");
+        Task task;
+        if (isAdmin) {
+            task = getTask(taskId);
+            if (task == null) {
+                throw exception(TASK_NOT_EXISTS);
+            }
+        } else {
+            task = validateTask(userId, reqVO.getId());
+        }
         if (task.getAssignee().equals(reqVO.getAssigneeUserId().toString())) { // 校验当前审批人和被转派人不是同一人
             throw exception(TASK_TRANSFER_FAIL_USER_REPEAT);
         }

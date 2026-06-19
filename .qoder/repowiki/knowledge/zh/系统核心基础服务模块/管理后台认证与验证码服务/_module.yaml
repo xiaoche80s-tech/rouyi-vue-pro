@@ -11,8 +11,12 @@ source_files: []
 depends_on: []
 related_to:
     - path: system/oauth_social
-    - path: ui_admin/system_management/oauth2_social
-    - path: system/access_control
-    - path: ui_admin/system_management/user_management
     - path: framework/starter_security
-    - path: bpm/message_integration
+    - path: ui_admin/app_shell
+    - path: system/system_support
+    - path: framework/starter_protection
+    - path: ui_admin/system_management/user_management
+    - path: ui_admin/system_management/oauth2_social
+    - path: system/user_identity
+    - path: framework/starter_redis
+    - path: system/message_center
