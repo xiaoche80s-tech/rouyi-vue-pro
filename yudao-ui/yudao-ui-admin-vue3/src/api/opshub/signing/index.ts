@@ -19,11 +19,23 @@ export interface SigningContractVO {
   summary: string
   policyAnalysis: string
   indicators: string
-  fileIds: string
+  attachmentCount: number
   signProofUrl: string
   remark: string
   createTime: Date
   updateTime: Date
+}
+
+// 合同附件 VO
+export interface ContractAttachmentVO {
+  id: number
+  fileName: string
+  fileType: string
+  fileTypeName: string
+  fileNo: string
+  fileSize: number
+  description: string
+  createTime: Date
 }
 
 // 统计 VO
@@ -98,4 +110,9 @@ export const signContract = async (id: number) => {
 // 执行员上传盖章文件
 export const uploadSignProof = async (id: number, signProofUrl: string) => {
   return await request.post({ url: '/opshub/signing/upload-sign-proof', params: { id, signProofUrl } })
+}
+
+// 获取合同附件列表
+export const getContractAttachments = async (contractId: number): Promise<ContractAttachmentVO[]> => {
+  return await request.get({ url: '/opshub/signing/attachments', params: { contractId } })
 }

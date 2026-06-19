@@ -15,6 +15,10 @@ export interface FileClientConfig {
   enablePublicAccess?: boolean
   region?: string
   domain: string
+  // Azure Blob Storage
+  accountName?: string
+  accountKey?: string
+  container?: string
 }
 
 export interface FileConfigVO {

@@ -73,6 +73,11 @@ public class DealerInfoServiceImpl implements DealerInfoService {
         return dealerInfoMapper.selectListByStatus(CommonStatusEnum.ENABLE.getStatus());
     }
 
+    @Override
+    public List<DealerInfoDO> getDealerList() {
+        return dealerInfoMapper.selectList();
+    }
+
     // ========== 校验方法 ==========
 
     private void validateDealerExists(Long id) {

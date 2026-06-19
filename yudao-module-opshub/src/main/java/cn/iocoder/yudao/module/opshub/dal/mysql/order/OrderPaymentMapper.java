@@ -28,4 +28,9 @@ public interface OrderPaymentMapper extends BaseMapperX<OrderPaymentDO> {
                 .eq(OrderPaymentDO::getStatus, "pending"));
     }
 
+    default OrderPaymentDO selectByOrderCodeAndVoucherNo(String orderCode, String voucherNo) {
+        return selectOne(OrderPaymentDO::getOrderCode, orderCode,
+                OrderPaymentDO::getVoucherNo, voucherNo);
+    }
+
 }

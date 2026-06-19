@@ -107,12 +107,43 @@
         <!-- 选填，无需参数校验 -->
         <el-input v-model="formData.config.region" placeholder="请填写区域，一般仅 AWS 需要填写" />
       </el-form-item>
+      <!-- Azure Blob Storage -->
+      <el-form-item v-if="formData.storage === 30" label="服务端点" prop="config.endpoint">
+        <el-input
+          v-model="formData.config.endpoint"
+          placeholder="例如：https://myaccount.blob.core.windows.net"
+        />
+      </el-form-item>
+      <el-form-item v-if="formData.storage === 30" label="存储账户名" prop="config.accountName">
+        <el-input v-model="formData.config.accountName" placeholder="请输入 Azure 存储账户名" />
+      </el-form-item>
+      <el-form-item v-if="formData.storage === 30" label="存储账户密钥" prop="config.accountKey">
+        <el-input
+          v-model="formData.config.accountKey"
+          type="password"
+          show-password
+          placeholder="请输入 Azure 存储账户密钥"
+        />
+      </el-form-item>
+      <el-form-item v-if="formData.storage === 30" label="容器名称" prop="config.container">
+        <el-input v-model="formData.config.container" placeholder="请输入 Blob 容器名称" />
+      </el-form-item>
+      <el-form-item
+        v-if="formData.storage === 30"
+        label="公开访问"
+        prop="config.enablePublicAccess"
+      >
+        <el-radio-group v-model="formData.config.enablePublicAccess">
+          <el-radio key="true" :value="true">公开</el-radio>
+          <el-radio key="false" :value="false">私有</el-radio>
+        </el-radio-group>
+      </el-form-item>
       <!-- 通用 -->
-      <el-form-item v-if="formData.storage === 20" label="自定义域名">
+      <el-form-item v-if="formData.storage === 20 || formData.storage === 30" label="自定义域名">
         <!-- 无需参数校验，所以去掉 prop -->
         <el-input v-model="formData.config.domain" placeholder="请输入自定义域名" />
       </el-form-item>
-      <el-form-item v-else-if="formData.storage" label="自定义域名" prop="config.domain">
+      <el-form-item v-else-if="formData.storage && formData.storage !== 30" label="自定义域名" prop="config.domain">
         <el-input v-model="formData.config.domain" placeholder="请输入自定义域名" />
       </el-form-item>
     </el-form>
@@ -157,6 +188,9 @@ const formRules = reactive<FormRules>({
     bucket: [{ required: true, message: '存储 bucket 不能为空', trigger: 'blur' }],
     accessKey: [{ required: true, message: 'accessKey 不能为空', trigger: 'blur' }],
     accessSecret: [{ required: true, message: 'accessSecret 不能为空', trigger: 'blur' }],
+    accountName: [{ required: true, message: '存储账户名不能为空', trigger: 'blur' }],
+    accountKey: [{ required: true, message: '存储账户密钥不能为空', trigger: 'blur' }],
+    container: [{ required: true, message: '容器名称不能为空', trigger: 'blur' }],
     enablePathStyleAccess: [
       { required: true, message: '是否 PathStyle 访问不能为空', trigger: 'change' }
     ],

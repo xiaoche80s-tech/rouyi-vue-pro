@@ -21,18 +21,89 @@
         <a :href="contract.signProofUrl" target="_blank" class="text-blue-600">查看盖章文件</a>
       </el-descriptions-item>
     </el-descriptions>
+
+    <!-- 附件区块 -->
+    <div class="mt-16px" v-loading="attachmentLoading">
+      <div class="text-14px font-bold mb-8px flex items-center gap-4px">
+        <Icon icon="ep:paperclip" />
+        <span>合同附件 ({{ attachments.length }})</span>
+      </div>
+
+      <div v-if="!attachmentLoading && attachments.length === 0" class="text-13px text-gray-400 py-12px text-center bg-gray-50 rounded">
+        暂无合同附件
+      </div>
+
+      <div v-else-if="attachments.length > 0" class="border border-gray-200 rounded divide-y divide-gray-100">
+        <div
+          v-for="file in attachments"
+          :key="file.id"
+          class="flex items-center justify-between px-12px py-8px hover:bg-gray-50 transition-colors"
+        >
+          <div class="flex items-center gap-8px min-w-0 flex-1">
+            <Icon icon="ep:document" class="text-blue-500 text-14px flex-shrink-0" />
+            <span class="text-13px truncate" :title="file.fileName">{{ file.fileName }}</span>
+            <el-tag size="small" type="info">{{ file.fileType }}</el-tag>
+            <span class="text-12px text-gray-400 flex-shrink-0">{{ formatFileSize(file.fileSize) }}</span>
+          </div>
+          <el-button link type="primary" class="flex-shrink-0 ml-8px" @click="handleDownload(file.id)">
+            <Icon icon="ep:download" class="mr-2px" />下载
+          </el-button>
+        </div>
+      </div>
+    </div>
   </el-dialog>
 </template>
 
 <script lang="ts" setup>
-import type { SigningContractVO } from '@/api/opshub/signing'
+import type { SigningContractVO, ContractAttachmentVO } from '@/api/opshub/signing'
+import * as SigningApi from '@/api/opshub/signing'
+import * as BasedataApi from '@/api/opshub/basedata'
 
 const visible = ref(false)
 const contract = ref<SigningContractVO | null>(null)
+const attachments = ref<ContractAttachmentVO[]>([])
+const attachmentLoading = ref(false)
 
-const open = (row: SigningContractVO) => {
+const formatFileSize = (bytes: number) => {
+  if (!bytes || bytes === 0) return '0 B'
+  const units = ['B', 'KB', 'MB', 'GB']
+  let idx = 0
+  let size = bytes
+  while (size >= 1024 && idx < units.length - 1) {
+    size /= 1024
+    idx++
+  }
+  return size.toFixed(idx > 0 ? 1 : 0) + ' ' + units[idx]
+}
+
+const handleDownload = async (fileId: number) => {
+  try {
+    const url = await BasedataApi.getDownloadUrl(fileId)
+    if (url) {
+      window.open(url, '_blank')
+    } else {
+      ElMessage.warning('文件地址为空，无法下载')
+    }
+  } catch {
+    ElMessage.error('获取下载链接失败')
+  }
+}
+
+const loadAttachments = async (contractId: number) => {
+  attachmentLoading.value = true
+  try {
+    attachments.value = await SigningApi.getContractAttachments(contractId)
+  } catch {
+    attachments.value = []
+  } finally {
+    attachmentLoading.value = false
+  }
+}
+
+const open = async (row: SigningContractVO) => {
   contract.value = row
   visible.value = true
+  await loadAttachments(row.id)
 }
 
 defineExpose({ open })

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 /**
  * 客服工单 BPM 流程状态监听器
  * <p>
- * 监听 processDefinitionKey = "cs_task" 的流程实例状态变更事件，
+ * 监听 processDefinitionKey = "ops-cs-task" 的流程实例状态变更事件，
  * 回调更新工单业务状态。
  */
 @Component

@@ -1,7 +1,9 @@
 <template>
   <Teleport to="body">
     <Transition name="chat-slide">
-      <div v-if="visible" class="cs-chat-modal fixed z-[2000] flex flex-col bg-white rounded-t-xl shadow-2xl border border-gray-200 overflow-hidden"
+      <div
+        v-if="visible"
+        class="cs-chat-modal fixed z-[2000] flex flex-col bg-white rounded-t-xl shadow-2xl border border-gray-200 overflow-hidden"
         style="right: 24px; bottom: 24px; width: 420px; height: 600px;">
         <!-- 标题栏 -->
         <div class="flex items-center justify-between px-4 py-3 bg-blue-600 text-white shrink-0">
@@ -22,11 +24,14 @@
         />
 
         <!-- 经销商视图：待处理时显示转接等待 -->
-        <div v-if="effectiveMode === 'dealer' && session?.status === 0"
+        <div
+          v-if="effectiveMode === 'dealer' && session?.status === 0"
           class="flex-1 flex flex-col items-center justify-center px-6">
           <el-icon class="is-loading text-amber-400 text-4xl mb-4"><Loading /></el-icon>
           <div class="text-base font-medium text-gray-700 mb-1">正在为您转接人工客服</div>
-          <div class="text-sm text-gray-400 text-center">系统已收到您的咨询，正在分配客服人员<br/>请耐心等待...</div>
+          <div class="text-sm text-gray-400 text-center">
+            系统已收到您的咨询，正在分配客服人员<br />请耐心等待...
+          </div>
         </div>
 
         <!-- 正常消息列表 -->
@@ -41,14 +46,24 @@
         <ChatInputBar
           v-if="canSend"
           :sending="sending"
+          :show-task-dispatch="showTaskDispatch"
           @send="handleSend"
+          @task-dispatch="taskModalVisible = true"
         />
 
         <!-- 经销商：已完成/已关闭底部提示 -->
-        <div v-if="effectiveMode === 'dealer' && (session?.status === 2 || session?.status === 3)"
+        <div
+          v-if="effectiveMode === 'dealer' && (session?.status === 2 || session?.status === 3)"
           class="px-4 py-3 border-t border-gray-100 bg-gray-50 text-center text-sm text-gray-500 shrink-0">
           {{ session?.status === 2 ? '该咨询已完成处理，感谢您的咨询' : '该咨询已关闭' }}
         </div>
+
+        <!-- 下发任务弹窗 -->
+        <AssignTaskModal
+          v-model="taskModalVisible"
+          :session="session"
+          @success="handleTaskCreated"
+        />
       </div>
     </Transition>
   </Teleport>
@@ -70,6 +85,7 @@ import {
 import ChatHeader from './ChatHeader.vue'
 import ChatMessageList from './ChatMessageList.vue'
 import ChatInputBar from './ChatInputBar.vue'
+import AssignTaskModal from './AssignTaskModal.vue'
 import { useCsWebSocket, type CsChatMessagePayload } from '@/hooks/useCsWebSocket'
 import { getCurrentUserId } from '@/utils/auth'
 
@@ -78,8 +94,11 @@ const props = withDefaults(defineProps<{
   sessionId?: number
   /** 'dealer' 经销商视图 | 'agent' 客服执行员视图 | 'auto' 自动检测 */
   mode?: 'dealer' | 'agent' | 'auto'
+  /** 是否启用下发任务功能（仅签约模块经销商视图生效） */
+  enableTaskDispatch?: boolean
 }>(), {
-  mode: 'auto'
+  mode: 'auto',
+  enableTaskDispatch: true
 })
 
 const emit = defineEmits<{
@@ -97,6 +116,7 @@ const messages = ref<CsMessageVO[]>([])
 const loadingMessages = ref(false)
 const sending = ref(false)
 const messageListRef = ref()
+const taskModalVisible = ref(false)
 
 // ========== WebSocket 实时监听（方案二：HTTP 上行 + WebSocket 下行）==========
 const wsConnected = ref(false)
@@ -167,6 +187,12 @@ const modalTitle = computed(() => {
 const canSend = computed(() => {
   return session.value?.status === 1
 })
+
+const showTaskDispatch = computed(() =>
+  props.enableTaskDispatch
+  && effectiveMode.value === 'dealer'
+  && session.value?.sourceModule === 'signing'
+)
 
 const loadSession = async () => {
   if (!props.sessionId) return
@@ -267,6 +293,10 @@ const appendMessage = (msg: CsMessageVO) => {
 const handleSessionEvent = (_eventType: string) => {
   loadSession()
   emit('session-updated')
+}
+
+const handleTaskCreated = () => {
+  // 工单创建成功后的处理（可选：在消息列表中插入系统提示）
 }
 
 defineExpose({ appendMessage, handleSessionEvent, loadSession })

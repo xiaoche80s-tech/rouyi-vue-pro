@@ -22,4 +22,11 @@ public interface OrderLogisticsMapper extends BaseMapperX<OrderLogisticsDO> {
                 .orderByAsc(OrderLogisticsDO::getSortOrder));
     }
 
+    default OrderLogisticsDO selectByOrderCodeAndTrackingNoAndSortOrder(String orderCode, String trackingNo, Integer sortOrder) {
+        return selectOne(new LambdaQueryWrapperX<OrderLogisticsDO>()
+                .eq(OrderLogisticsDO::getOrderCode, orderCode)
+                .eq(OrderLogisticsDO::getTrackingNo, trackingNo)
+                .eq(OrderLogisticsDO::getSortOrder, sortOrder));
+    }
+
 }

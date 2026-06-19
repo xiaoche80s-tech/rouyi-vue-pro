@@ -34,6 +34,10 @@ public interface AfterSaleInfoMapper extends BaseMapperX<AfterSaleInfoDO> {
 
     // ========== 辅助方法 ==========
 
+    default AfterSaleInfoDO selectByAftersaleCode(String aftersaleCode) {
+        return selectOne(AfterSaleInfoDO::getAftersaleCode, aftersaleCode);
+    }
+
     private void applyKeywordFilter(LambdaQueryWrapperX<AfterSaleInfoDO> wrapper, String keyword) {
         if (StrUtil.isEmpty(keyword)) {
             return;

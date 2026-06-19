@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +75,19 @@ public class BasedataFileServiceImpl implements BasedataFileService {
             countMap.merge(file.getCategory(), 1L, Long::sum);
         }
         return countMap;
+    }
+
+    @Override
+    public List<BasedataFileDO> getContractAttachments(String dealerCode, String contractCode) {
+        return basedataFileMapper.selectByContractCode(dealerCode, contractCode);
+    }
+
+    @Override
+    public List<BasedataFileDO> getContractFilesByDealerCodes(Collection<String> dealerCodes) {
+        if (CollUtil.isEmpty(dealerCodes)) {
+            return List.of();
+        }
+        return basedataFileMapper.selectContractFilesByDealerCodes(dealerCodes);
     }
 
     /**

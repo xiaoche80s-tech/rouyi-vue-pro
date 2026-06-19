@@ -22,4 +22,9 @@ public interface OrderTimelineMapper extends BaseMapperX<OrderTimelineDO> {
                 .orderByAsc(OrderTimelineDO::getSortOrder));
     }
 
+    default OrderTimelineDO selectByOrderCodeAndNodeCode(String orderCode, String nodeCode) {
+        return selectOne(OrderTimelineDO::getOrderCode, orderCode,
+                OrderTimelineDO::getNodeCode, nodeCode);
+    }
+
 }

@@ -88,6 +88,10 @@ public interface OrderInfoMapper extends BaseMapperX<OrderInfoDO> {
 
     // ========== 辅助方法 ==========
 
+    default OrderInfoDO selectByOrderCode(String orderCode) {
+        return selectOne(OrderInfoDO::getOrderCode, orderCode);
+    }
+
     private void applyQuickTimeFilter(LambdaQueryWrapperX<OrderInfoDO> wrapper, String quickTime) {
         if (StrUtil.isEmpty(quickTime) || "all".equals(quickTime)) {
             return;

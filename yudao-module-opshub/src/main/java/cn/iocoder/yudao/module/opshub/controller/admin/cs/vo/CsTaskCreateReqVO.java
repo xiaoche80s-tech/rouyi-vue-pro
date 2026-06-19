@@ -19,8 +19,7 @@ public class CsTaskCreateReqVO {
     @NotNull(message = "紧急程度不能为空")
     private Integer urgency;
 
-    @Schema(description = "指定处理人用户ID", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "处理人不能为空")
+    @Schema(description = "指定处理人用户ID（可选，为空则进入抢单模式）")
     private Long assigneeId;
 
     @Schema(description = "分类：0=签约 1=政策 2=售后 3=订单 4=数据 5=其他", requiredMode = Schema.RequiredMode.REQUIRED)

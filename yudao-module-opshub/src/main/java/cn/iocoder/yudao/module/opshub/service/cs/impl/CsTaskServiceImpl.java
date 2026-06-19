@@ -1,24 +1,32 @@
 package cn.iocoder.yudao.module.opshub.service.cs.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.bpm.api.task.BpmProcessInstanceApi;
 import cn.iocoder.yudao.module.bpm.api.task.dto.BpmProcessInstanceCreateReqDTO;
+import cn.iocoder.yudao.module.bpm.controller.admin.task.vo.task.BpmTaskApproveReqVO;
+import cn.iocoder.yudao.module.bpm.controller.admin.task.vo.task.BpmTaskRejectReqVO;
 import cn.iocoder.yudao.module.bpm.enums.task.BpmProcessInstanceStatusEnum;
+import cn.iocoder.yudao.module.bpm.service.task.BpmTaskService;
 import cn.iocoder.yudao.module.opshub.controller.admin.cs.vo.*;
 import cn.iocoder.yudao.module.opshub.dal.dataobject.cs.CsTaskDO;
 import cn.iocoder.yudao.module.opshub.dal.mysql.cs.CsTaskMapper;
 import cn.iocoder.yudao.module.opshub.enums.CsTaskStatusEnum;
 import cn.iocoder.yudao.module.opshub.enums.OpsRoleCodeConstants;
 import cn.iocoder.yudao.module.opshub.service.cs.CsTaskService;
+import cn.iocoder.yudao.module.opshub.service.cs.event.CsTaskStatusChangeEvent;
 import cn.iocoder.yudao.module.opshub.service.cs.websocket.CsWebSocketService;
 import cn.iocoder.yudao.module.opshub.service.cs.websocket.dto.CsTaskNotification;
 import cn.iocoder.yudao.module.system.api.notify.NotifyMessageSendApi;
 import cn.iocoder.yudao.module.system.api.notify.dto.NotifySendSingleToUserReqDTO;
 import cn.iocoder.yudao.framework.common.biz.system.permission.PermissionCommonApi;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.flowable.task.api.Task;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -26,7 +34,9 @@ import org.springframework.validation.annotation.Validated;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -43,7 +53,7 @@ public class CsTaskServiceImpl implements CsTaskService {
     /**
      * BPM 流程定义 Key
      */
-    public static final String PROCESS_KEY = "cs_task";
+    public static final String PROCESS_KEY = "ops-cs-task";
 
     // ========== 站内信模板编码 ==========
     private static final String NOTIFY_TASK_CREATED = "cs-task-created";
@@ -63,10 +73,16 @@ public class CsTaskServiceImpl implements CsTaskService {
     private BpmProcessInstanceApi processInstanceApi;
 
     @Resource
+    private BpmTaskService bpmTaskService;
+
+    @Resource
     private NotifyMessageSendApi notifyMessageSendApi;
 
     @Resource
     private PermissionCommonApi permissionCommonApi;
+
+    @Resource
+    private ApplicationEventPublisher applicationEventPublisher;
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
 
@@ -100,10 +116,13 @@ public class CsTaskServiceImpl implements CsTaskService {
         // 回写 processInstanceId
         csTaskMapper.updateById(new CsTaskDO().setId(taskDO.getId()).setProcessInstanceId(processInstanceId));
 
+        // 从 BPM 流程读取当前任务处理人，同步到工单表
+        syncBpmAssignee(taskDO.getId(), processInstanceId, true);
+
         // 5. WebSocket 推送 + 站内信通知处理人
-        csWebSocketService.sendTaskNotifyAsync(reqVO.getAssigneeId(),
-                buildNotification(taskDO, CsTaskNotification.TYPE_TASK_CREATED, "您有新的工单待处理"));
-        sendNotify(reqVO.getAssigneeId(), NOTIFY_TASK_CREATED, buildNotifyParams(taskDO));
+        // csWebSocketService.sendTaskNotifyAsync(reqVO.getAssigneeId(),
+        //         buildNotification(taskDO, CsTaskNotification.TYPE_TASK_CREATED, "您有新的工单待处理"));
+        // sendNotify(reqVO.getAssigneeId(), NOTIFY_TASK_CREATED, buildNotifyParams(taskDO));
 
         return taskDO.getId();
     }
@@ -118,7 +137,10 @@ public class CsTaskServiceImpl implements CsTaskService {
         // 按角色注入可见性过滤
         Long currentUserId = SecurityFrameworkUtils.getLoginUserId();
         reqVO.setCurrentUserId(currentUserId);
-        reqVO.setViewScope(resolveViewScope(currentUserId));
+        String viewScope = resolveViewScope(currentUserId);
+        reqVO.setViewScope(viewScope);
+        // 解析子标签过滤
+        applyTabFilter(reqVO, viewScope, currentUserId);
         return csTaskMapper.selectPage(reqVO);
     }
 
@@ -130,6 +152,13 @@ public class CsTaskServiceImpl implements CsTaskService {
 
         // 校验状态：仅待接单可接单
         validateStatus(task, CsTaskStatusEnum.PENDING);
+
+        // 混合接单模式校验
+        if (task.getAssigneeId() != null) {
+            // 指定模式：仅指定处理人可接单
+            validateIsAssignee(task, currentUserId);
+        }
+        // 抢单模式（assigneeId=null）：任何执行员可接单
 
         // 更新状态
         csTaskMapper.updateById(new CsTaskDO()
@@ -172,24 +201,29 @@ public class CsTaskServiceImpl implements CsTaskService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void deliverTask(Long id) {
+    public void submitForApproval(Long id) {
         CsTaskDO task = validateTaskExists(id);
         Long currentUserId = SecurityFrameworkUtils.getLoginUserId();
 
-        // 校验状态：仅处理中可交付
+        // 校验状态：仅处理中可提交审批
         validateStatus(task, CsTaskStatusEnum.IN_PROGRESS);
         // 校验当前操作人是处理人
         validateIsAssignee(task, currentUserId);
 
-        // 更新状态
+        // 推动 BPM 流程到审批节点（不直接改变业务状态，由 BPM 回调设置）
+        approveCurrentBpmTask(task, currentUserId);
+
+        // BPM 推进后，同步下一岗处理人到工单表
+        syncBpmAssignee(id, task.getProcessInstanceId(), false);
+
+        // 记录交付时间（即使 BPM 回调尚未到达，也记录提交时间）
         csTaskMapper.updateById(new CsTaskDO()
                 .setId(id)
-                .setStatus(CsTaskStatusEnum.DELIVERED.getCode())
                 .setDeliverTime(LocalDateTime.now()));
 
         // 推送给提单人（经销商验收）+ 站内信
         csWebSocketService.sendTaskNotifyAsync(task.getCreatorUserId(),
-                buildNotification(task, CsTaskNotification.TYPE_TASK_DELIVERED, "工单已交付，请验收"));
+                buildNotification(task, CsTaskNotification.TYPE_TASK_DELIVERED, "工单已提交审批，请验收"));
         sendNotify(task.getCreatorUserId(), NOTIFY_TASK_DELIVERED, buildNotifyParams(task));
     }
 
@@ -204,27 +238,18 @@ public class CsTaskServiceImpl implements CsTaskService {
         // 校验当前操作人是提单人
         validateIsCreator(task, currentUserId);
 
+        // 记录退回原因和验收时间
+        csTaskMapper.updateById(new CsTaskDO()
+                .setId(reqVO.getId())
+                .setRejectReason(Boolean.FALSE.equals(reqVO.getPassed()) ? reqVO.getRejectReason() : null)
+                .setVerifyTime(LocalDateTime.now()));
+
         if (Boolean.TRUE.equals(reqVO.getPassed())) {
-            // 验收通过 → 已关闭
-            csTaskMapper.updateById(new CsTaskDO()
-                    .setId(reqVO.getId())
-                    .setStatus(CsTaskStatusEnum.CLOSED.getCode())
-                    .setVerifyTime(LocalDateTime.now()));
-
-            csWebSocketService.sendTaskNotifyAsync(task.getAssigneeId(),
-                    buildNotification(task, CsTaskNotification.TYPE_TASK_VERIFIED, "工单验收通过"));
-            sendNotify(task.getAssigneeId(), NOTIFY_TASK_VERIFIED, buildNotifyParams(task));
+            // 验收通过 → 推动 BPM 验收到结束节点 → BPM 回调设 CLOSED
+            approveCurrentBpmTask(task, currentUserId);
         } else {
-            // 验收不通过 → 已退回
-            csTaskMapper.updateById(new CsTaskDO()
-                    .setId(reqVO.getId())
-                    .setStatus(CsTaskStatusEnum.REJECTED.getCode())
-                    .setRejectReason(reqVO.getRejectReason())
-                    .setVerifyTime(LocalDateTime.now()));
-
-            csWebSocketService.sendTaskNotifyAsync(task.getAssigneeId(),
-                    buildNotification(task, CsTaskNotification.TYPE_TASK_REJECTED, "工单验收不通过，已退回"));
-            sendNotify(task.getAssigneeId(), NOTIFY_TASK_REJECTED, buildNotifyParams(task));
+            // 验收不通过 → 推动 BPM 退回 → BPM 回调设 REJECTED
+            rejectCurrentBpmTask(task, currentUserId, reqVO.getRejectReason());
         }
     }
 
@@ -245,9 +270,10 @@ public class CsTaskServiceImpl implements CsTaskService {
                 .setStatus(CsTaskStatusEnum.IN_PROGRESS.getCode())
                 .setRejectReason(null));
 
-        // 推送给提单人
+        // 推送给提单人（使用正确类型）
         csWebSocketService.sendTaskNotifyAsync(task.getCreatorUserId(),
-                buildNotification(task, CsTaskNotification.TYPE_TASK_ACCEPTED, "工单已重新处理"));
+                buildNotification(task, CsTaskNotification.TYPE_TASK_REPROCESS, "工单已重新处理"));
+        sendNotify(task.getCreatorUserId(), NOTIFY_TASK_CREATED, buildNotifyParams(task));
     }
 
     @Override
@@ -262,6 +288,61 @@ public class CsTaskServiceImpl implements CsTaskService {
         // 推送催办通知给处理人
         csWebSocketService.sendTaskNotifyAsync(task.getAssigneeId(),
                 buildNotification(task, CsTaskNotification.TYPE_TASK_URGING, "工单被催办，请尽快处理"));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void cancelTask(Long id, String reason) {
+        CsTaskDO task = validateTaskExists(id);
+        Long currentUserId = SecurityFrameworkUtils.getLoginUserId();
+
+        // 已关闭不可取消
+        if (CsTaskStatusEnum.CLOSED.getCode().equals(task.getStatus())) {
+            throw exception(CS_TASK_ALREADY_CLOSED);
+        }
+
+        // 权限校验：经销商仅 PENDING + 仅提单人；管理员任意非 CLOSED
+        boolean isCreator = currentUserId.equals(task.getCreatorUserId());
+        boolean isAdmin = permissionCommonApi.hasAnyRoles(currentUserId,
+                OpsRoleCodeConstants.BRAND_ADMIN, OpsRoleCodeConstants.SUPER_ADMIN);
+        if (!isAdmin) {
+            // 非管理员：仅 PENDING + 仅提单人
+            validateStatus(task, CsTaskStatusEnum.PENDING);
+            if (!isCreator) {
+                throw exception(CS_TASK_NOT_CREATOR);
+            }
+        }
+
+        // 取消 BPM 流程实例
+        if (task.getProcessInstanceId() != null) {
+            try {
+                String bpmTaskId = findCurrentBpmTaskId(task.getProcessInstanceId());
+                if (bpmTaskId != null) {
+                    BpmTaskRejectReqVO rejectReqVO = new BpmTaskRejectReqVO();
+                    rejectReqVO.setId(bpmTaskId);
+                    rejectReqVO.setReason(reason != null ? reason : "工单取消");
+                    bpmTaskService.rejectTask(currentUserId, rejectReqVO);
+                }
+            } catch (Exception e) {
+                log.warn("[cancelTask][取消 BPM 流程失败 taskId={}]", id, e);
+            }
+        }
+
+        // 直接设置 CLOSED（BPM 回调可能不会再触发）
+        csTaskMapper.updateById(new CsTaskDO()
+                .setId(id)
+                .setStatus(CsTaskStatusEnum.CLOSED.getCode()));
+
+        // 通知相关方
+        csWebSocketService.sendTaskNotifyAsync(task.getCreatorUserId(),
+                buildNotification(task, CsTaskNotification.TYPE_TASK_VERIFIED, "工单已关闭"));
+        if (task.getAssigneeId() != null) {
+            csWebSocketService.sendTaskNotifyAsync(task.getAssigneeId(),
+                    buildNotification(task, CsTaskNotification.TYPE_TASK_VERIFIED, "工单已关闭"));
+        }
+
+        // 发布状态变更事件
+        publishStatusChangeEvent(task, CsTaskStatusEnum.CLOSED);
     }
 
     // ========== 辅助方法 ==========
@@ -302,8 +383,19 @@ public class CsTaskServiceImpl implements CsTaskService {
 
     private String generateTaskNo() {
         String dateStr = LocalDate.now().format(DATE_FORMATTER);
-        Integer maxSeq = csTaskMapper.selectMaxSeqToday(dateStr);
-        return String.format("TASK-%s-%03d", dateStr, maxSeq + 1);
+        int maxRetries = 3;
+        for (int i = 0; i < maxRetries; i++) {
+            Integer maxSeq = csTaskMapper.selectMaxSeqToday(dateStr);
+            String taskNo = String.format("TASK-%s-%03d", dateStr, maxSeq + 1);
+            // 检查是否已存在（防御唯一索引冲突）
+            Long existCount = csTaskMapper.selectCount(
+                    new LambdaQueryWrapper<CsTaskDO>().eq(CsTaskDO::getTaskNo, taskNo));
+            if (existCount == null || existCount == 0) {
+                return taskNo;
+            }
+            log.warn("[generateTaskNo][工单号 {} 已存在，重试 {}/{}]", taskNo, i + 1, maxRetries);
+        }
+        throw new IllegalStateException("无法生成唯一工单编号，请稍后重试");
     }
 
     private CsTaskNotification buildNotification(CsTaskDO task, String type, String message) {
@@ -341,6 +433,51 @@ public class CsTaskServiceImpl implements CsTaskService {
     }
 
     /**
+     * 解析子标签过滤，将 tabFilter 翻译为具体的 statusList / assigneeId / unassigned
+     */
+    private void applyTabFilter(CsTaskPageReqVO reqVO, String viewScope, Long currentUserId) {
+        String tabFilter = reqVO.getTabFilter();
+        if (tabFilter == null || "all".equals(tabFilter)) {
+            return;
+        }
+        switch (viewScope) {
+            case "creator" -> {
+                if ("pending".equals(tabFilter)) {
+                    // 经销商待办：已交付待验收(2) + 已退回(4)
+                    reqVO.setStatusList(List.of(
+                            CsTaskStatusEnum.DELIVERED.getCode(),
+                            CsTaskStatusEnum.REJECTED.getCode()));
+                }
+            }
+            case "assignee" -> {
+                switch (tabFilter) {
+                    case "claimable" -> {
+                        // 执行员可领取：状态=待接单(0) 且未分配
+                        reqVO.setStatusList(List.of(CsTaskStatusEnum.PENDING.getCode()));
+                        reqVO.setUnassigned(true);
+                    }
+                    case "pending" -> {
+                        // 执行员待办：处理人是我 且 状态∈{待接单(0), 处理中(1), 已退回(4)}
+                        reqVO.setAssigneeId(currentUserId);
+                        reqVO.setStatusList(List.of(
+                                CsTaskStatusEnum.PENDING.getCode(),
+                                CsTaskStatusEnum.IN_PROGRESS.getCode(),
+                                CsTaskStatusEnum.REJECTED.getCode()));
+                    }
+                    case "done" -> {
+                        // 执行员已办：处理人是我 且 状态∈{已交付(2), 已关闭(3)}
+                        reqVO.setAssigneeId(currentUserId);
+                        reqVO.setStatusList(List.of(
+                                CsTaskStatusEnum.DELIVERED.getCode(),
+                                CsTaskStatusEnum.CLOSED.getCode()));
+                    }
+                }
+            }
+            // "all" viewScope → 管理员不显示子标签，不做额外过滤
+        }
+    }
+
+    /**
      * 根据当前用户角色解析可见范围
      */
     private String resolveViewScope(Long userId) {
@@ -357,32 +494,192 @@ public class CsTaskServiceImpl implements CsTaskService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateCsTaskStatusByBpm(Long id, Integer bpmStatus) {
-        CsTaskDO task = validateTaskExists(id);
+        CsTaskDO task = csTaskMapper.selectById(id);
+        if (task == null) {
+            return;
+        }
         // 已关闭的工单不再更新
         if (CsTaskStatusEnum.CLOSED.getCode().equals(task.getStatus())) {
             return;
         }
 
-        CsTaskStatusEnum newStatus;
+        CsTaskStatusEnum newStatus = null;
         if (BpmProcessInstanceStatusEnum.APPROVE.getStatus().equals(bpmStatus)) {
-            newStatus = CsTaskStatusEnum.DELIVERED;
+            // APPROVE 根据当前业务状态推进：IN_PROGRESS→DELIVERED, DELIVERED→CLOSED
+            if (CsTaskStatusEnum.IN_PROGRESS.getCode().equals(task.getStatus())) {
+                newStatus = CsTaskStatusEnum.DELIVERED;
+            } else if (CsTaskStatusEnum.DELIVERED.getCode().equals(task.getStatus())) {
+                newStatus = CsTaskStatusEnum.CLOSED;
+            }
         } else if (BpmProcessInstanceStatusEnum.REJECT.getStatus().equals(bpmStatus)) {
             newStatus = CsTaskStatusEnum.REJECTED;
         } else if (BpmProcessInstanceStatusEnum.CANCEL.getStatus().equals(bpmStatus)) {
             newStatus = CsTaskStatusEnum.CLOSED;
-        } else {
-            // RUNNING 等状态不干预业务
+        }
+
+        if (newStatus == null || newStatus.getCode().equals(task.getStatus())) {
             return;
         }
 
-        // 状态相同则跳过
-        if (newStatus.getCode().equals(task.getStatus())) {
-            return;
-        }
-
+        // CAS 原子更新状态
         csTaskMapper.updateById(new CsTaskDO().setId(id).setStatus(newStatus.getCode()));
         log.info("[updateCsTaskStatusByBpm][工单 {} 状态由 BPM 回调更新为 {}]", id, newStatus.getName());
+
+        // BPM 回调补充通知
+        sendBpmCallbackNotification(task, newStatus);
+
+        // 发布工单状态变更事件（各业务模块按需监听）
+        publishStatusChangeEvent(task, newStatus);
+    }
+
+    @Override
+    public Map<String, Long> getTabCounts() {
+        Long loginUserId = SecurityFrameworkUtils.getLoginUserId();
+        String viewScope = resolveViewScope(loginUserId);
+        Map<String, Long> counts = new java.util.HashMap<>();
+
+        // 全部
+        counts.put("all", csTaskMapper.selectCountByTab(null, viewScope, loginUserId));
+        // 待办
+        counts.put("pending", csTaskMapper.selectCountByTab("pending", viewScope, loginUserId));
+        // 可领取
+        counts.put("claimable", csTaskMapper.selectCountByTab("claimable", viewScope, loginUserId));
+        // 已办
+        counts.put("done", csTaskMapper.selectCountByTab("done", viewScope, loginUserId));
+        return counts;
+    }
+
+    // ========== BPM 集成辅助方法 ==========
+
+    /**
+     * 从 BPM 流程实例读取当前任务处理人，同步到工单表
+     *
+     * @param taskId            工单 ID
+     * @param processInstanceId BPM 流程实例 ID
+     * @param autoInProgress    true=创建工单时自动设为处理中，false=提交审批后仅更新处理人
+     */
+    private void syncBpmAssignee(Long taskId, String processInstanceId, boolean autoInProgress) {
+        if (processInstanceId == null) {
+            return;
+        }
+        try {
+            List<Task> bpmTasks = bpmTaskService.getTasksByProcessInstanceIds(
+                    Collections.singletonList(processInstanceId));
+            if (CollUtil.isEmpty(bpmTasks)) {
+                return;
+            }
+            String bpmAssignee = bpmTasks.get(0).getAssignee();
+            if (bpmAssignee == null) {
+                return;
+            }
+            Long bpmAssigneeId = Long.parseLong(bpmAssignee);
+            CsTaskDO updateDO = new CsTaskDO().setId(taskId).setAssigneeId(bpmAssigneeId);
+            if (autoInProgress) {
+                updateDO.setStatus(CsTaskStatusEnum.IN_PROGRESS.getCode())
+                        .setAcceptTime(LocalDateTime.now());
+            }
+            csTaskMapper.updateById(updateDO);
+        } catch (Exception e) {
+            log.warn("[syncBpmAssignee][同步 BPM 处理人失败 taskId={}, processInstanceId={}]",
+                    taskId, processInstanceId, e);
+        }
+    }
+
+    /**
+     * 查找流程实例中当前运行的 BPM 任务 ID
+     */
+    private String findCurrentBpmTaskId(String processInstanceId) {
+        if (processInstanceId == null) {
+            return null;
+        }
+        try {
+            List<Task> tasks = bpmTaskService.getTasksByProcessInstanceIds(
+                    Collections.singletonList(processInstanceId));
+            if (CollUtil.isEmpty(tasks)) {
+                return null;
+            }
+            return tasks.get(0).getId();
+        } catch (Exception e) {
+            log.warn("[findCurrentBpmTaskId][查找 BPM 任务失败 processInstanceId={}]", processInstanceId, e);
+            return null;
+        }
+    }
+
+    /**
+     * 审批当前 BPM 任务（推动流程前进）
+     */
+    private void approveCurrentBpmTask(CsTaskDO task, Long userId) {
+        String bpmTaskId = findCurrentBpmTaskId(task.getProcessInstanceId());
+        if (bpmTaskId != null) {
+            try {
+                BpmTaskApproveReqVO approveReqVO = new BpmTaskApproveReqVO();
+                approveReqVO.setId(bpmTaskId);
+                bpmTaskService.approveTask(userId, approveReqVO);
+            } catch (Exception e) {
+                log.warn("[approveCurrentBpmTask][BPM 审批失败 taskId={}, bpmTaskId={}]", task.getId(), bpmTaskId, e);
+            }
+        }
+    }
+
+    /**
+     * 退回当前 BPM 任务
+     */
+    private void rejectCurrentBpmTask(CsTaskDO task, Long userId, String reason) {
+        String bpmTaskId = findCurrentBpmTaskId(task.getProcessInstanceId());
+        if (bpmTaskId != null) {
+            try {
+                BpmTaskRejectReqVO rejectReqVO = new BpmTaskRejectReqVO();
+                rejectReqVO.setId(bpmTaskId);
+                rejectReqVO.setReason(reason);
+                bpmTaskService.rejectTask(userId, rejectReqVO);
+            } catch (Exception e) {
+                log.warn("[rejectCurrentBpmTask][BPM 退回失败 taskId={}, bpmTaskId={}]", task.getId(), bpmTaskId, e);
+            }
+        }
+    }
+
+    /**
+     * BPM 回调后发送通知
+     */
+    private void sendBpmCallbackNotification(CsTaskDO task, CsTaskStatusEnum newStatus) {
+        switch (newStatus) {
+            case DELIVERED -> {
+                // 审批通过 → 通知经销商验收
+                csWebSocketService.sendTaskNotifyAsync(task.getCreatorUserId(),
+                        buildNotification(task, CsTaskNotification.TYPE_TASK_DELIVERED, "工单审批通过，请验收"));
+                sendNotify(task.getCreatorUserId(), NOTIFY_TASK_DELIVERED, buildNotifyParams(task));
+            }
+            case REJECTED -> {
+                // 退回 → 通知处理人
+                csWebSocketService.sendTaskNotifyAsync(task.getAssigneeId(),
+                        buildNotification(task, CsTaskNotification.TYPE_TASK_REJECTED, "工单被退回"));
+                sendNotify(task.getAssigneeId(), NOTIFY_TASK_REJECTED, buildNotifyParams(task));
+            }
+            case CLOSED -> {
+                // 验收通过/取消 → 通知双方
+                csWebSocketService.sendTaskNotifyAsync(task.getAssigneeId(),
+                        buildNotification(task, CsTaskNotification.TYPE_TASK_VERIFIED, "工单已关闭"));
+                sendNotify(task.getAssigneeId(), NOTIFY_TASK_VERIFIED, buildNotifyParams(task));
+                sendNotify(task.getCreatorUserId(), NOTIFY_TASK_VERIFIED, buildNotifyParams(task));
+            }
+            default -> { /* no-op */ }
+        }
+    }
+
+    /**
+     * 发布工单状态变更事件（供各业务模块按需监听）
+     */
+    private void publishStatusChangeEvent(CsTaskDO task, CsTaskStatusEnum newStatus) {
+        applicationEventPublisher.publishEvent(new CsTaskStatusChangeEvent(this)
+                .setTaskId(task.getId())
+                .setTaskNo(task.getTaskNo())
+                .setCategory(task.getCategory())
+                .setSourceModule(task.getSourceModule())
+                .setNewStatus(newStatus.getCode())
+                .setDealerCode(task.getDealerCode())
+                .setProductLineCode(task.getProductLineCode()));
     }
 
 }

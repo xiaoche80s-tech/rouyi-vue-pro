@@ -1,6 +1,6 @@
 ---
 name: database-operation-rules
-description: 规范 MCP 数据库写操作（DDL）的安全规则与 SQL 归档。当通过 MCP 工具（postgres-write 的 execute_sql 等）执行数据库写操作（CREATE TABLE、ALTER TABLE、DROP TABLE、CREATE INDEX、TRUNCATE 等 DDL 语句）时，自动触发此规则：根据表前缀判断是否允许执行，并在执行后自动归档 SQL 到 docs/sql/branches/{branchName}/ 目录。
+description: 规范 MCP 数据库写操作（DDL）的安全规则与 SQL 归档。当通过 MCP 工具（postgres-write 的 execute_sql 等）执行数据库写操作（CREATE TABLE、ALTER TABLE、DROP TABLE、CREATE INDEX、TRUNCATE 等 DDL 语句,以及 INSERT、UPDATE、DELETE 等 DML）时，自动触发此规则：根据表前缀判断是否允许执行，并在执行后自动归档 SQL 到 db/branches/{branchName}/ 目录。
 ---
 
 # 数据库 DDL 操作规范
@@ -56,7 +56,7 @@ description: 规范 MCP 数据库写操作（DDL）的安全规则与 SQL 归档
 将本次执行的完整 DDL SQL 写入历史文件：
 
 ```
-docs/sql/branches/{branchName}/history/yyyy-MM-dd_HHmmss.sql
+db/branches/{branchName}/history/yyyy-MM-dd_HHmmss.sql
 ```
 
 - `{branchName}`：当前 Git 分支名（通过 `git branch --show-current` 获取），**分支名中的 `/` 替换为 `_`**（如 `feature/add-dealer-module` → `feature_add-dealer-module`）
@@ -83,8 +83,8 @@ docs/sql/branches/{branchName}/history/yyyy-MM-dd_HHmmss.sql
 文件路径：
 
 ```
-docs/sql/branches/{branchName}/{branchName}_ddl.sql
-docs/sql/branches/{branchName}/{branchName}_dml.sql
+db/branches/{branchName}/{branchName}_ddl.sql
+db/branches/{branchName}/{branchName}_dml.sql
 ```
 
 - 如果文件不存在，创建并写入文件头注释：
@@ -113,7 +113,7 @@ docs/sql/branches/{branchName}/{branchName}_dml.sql
 > 分支名中的 `/` 在目录和文件名中统一替换为 `_`。例如 Git 分支 `feature/add-dealer-module` → 目录名和文件名均使用 `feature_add-dealer-module`。
 
 ```
-docs/sql/branches/
+db/branches/
   └── feature_add-dealer-module/
       ├── feature_add-dealer-module_ddl.sql    ← DDL 汇总（建表、改表、索引）
       ├── feature_add-dealer-module_dml.sql    ← DML 汇总（INSERT/UPDATE/DELETE）
@@ -138,10 +138,10 @@ docs/sql/branches/
     ↓
 执行成功后（无论哪个分支）
     ↓
-1. 写入历史文件: docs/sql/branches/{branchName}/history/yyyy-MM-dd_HHmmss.sql
+1. 写入历史文件: db/branches/{branchName}/history/yyyy-MM-dd_HHmmss.sql
 2. 判断 SQL 类型：
-   ├── DDL → 追加到 docs/sql/branches/{branchName}/{branchName}_ddl.sql
-   └── DML → 追加到 docs/sql/branches/{branchName}/{branchName}_dml.sql
+   ├── DDL → 追加到 db/branches/{branchName}/{branchName}_ddl.sql
+   └── DML → 追加到 db/branches/{branchName}/{branchName}_dml.sql
 ```
 
 ## 示例
@@ -169,12 +169,12 @@ ALTER TABLE system_users ADD COLUMN remark VARCHAR(500);
 
 归档操作:
 1. 写入历史文件（每次执行各一个文件）:
-   docs/sql/branches/feature_dealer-product-line/history/2026-06-13_233000.sql  ← DDL
-   docs/sql/branches/feature_dealer-product-line/history/2026-06-13_233100.sql  ← DML
+   db/branches/feature_dealer-product-line/history/2026-06-13_233000.sql  ← DDL
+   db/branches/feature_dealer-product-line/history/2026-06-13_233100.sql  ← DML
 
 2. DDL 追加到:
-   docs/sql/branches/feature_dealer-product-line/feature_dealer-product-line_ddl.sql
+   db/branches/feature_dealer-product-line/feature_dealer-product-line_ddl.sql
 
 3. DML 追加到:
-   docs/sql/branches/feature_dealer-product-line/feature_dealer-product-line_dml.sql
+   db/branches/feature_dealer-product-line/feature_dealer-product-line_dml.sql
 ```

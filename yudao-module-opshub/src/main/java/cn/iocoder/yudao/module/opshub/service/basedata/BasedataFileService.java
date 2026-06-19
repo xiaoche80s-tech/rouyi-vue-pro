@@ -34,4 +34,21 @@ public interface BasedataFileService {
      */
     java.util.Map<String, Long> getCategoryCount();
 
+    /**
+     * 获取合同附件列表
+     *
+     * @param dealerCode   经销商编码
+     * @param contractCode 合同编码
+     * @return 附件文件列表
+     */
+    java.util.List<BasedataFileDO> getContractAttachments(String dealerCode, String contractCode);
+
+    /**
+     * 批量查询合同类附件（用于统计 attachmentCount）
+     *
+     * @param dealerCodes 经销商编码集合
+     * @return category='contract' 的文件列表
+     */
+    java.util.List<BasedataFileDO> getContractFilesByDealerCodes(java.util.Collection<String> dealerCodes);
+
 }

@@ -23,7 +23,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.opshub.enums.ErrorCodeConstants.*;
@@ -72,13 +71,8 @@ public class SigningContractServiceImpl implements SigningContractService {
             throw exception(SIGNING_CONTRACT_NOT_EXISTS);
         }
 
-        // 2. 更新（fileIds 列表转逗号分隔字符串）
+        // 2. 更新
         SigningContractDO updateDO = BeanUtils.toBean(reqVO, SigningContractDO.class);
-        if (reqVO.getFileIds() != null) {
-            updateDO.setFileIds(reqVO.getFileIds().stream()
-                    .map(String::valueOf)
-                    .collect(Collectors.joining(",")));
-        }
         signingContractMapper.updateById(updateDO);
     }
 

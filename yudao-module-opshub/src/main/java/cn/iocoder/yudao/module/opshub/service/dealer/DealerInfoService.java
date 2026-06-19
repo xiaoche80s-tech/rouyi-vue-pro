@@ -29,4 +29,9 @@ public interface DealerInfoService {
      */
     List<DealerInfoDO> getSimpleList();
 
+    /**
+     * 获得全部经销商列表（导入校验用）
+     */
+    List<DealerInfoDO> getDealerList();
+
 }

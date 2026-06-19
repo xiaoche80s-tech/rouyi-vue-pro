@@ -146,6 +146,10 @@ public interface SigningContractMapper extends BaseMapperX<SigningContractDO> {
         }
     }
 
+    default SigningContractDO selectByContractCode(String contractCode) {
+        return selectOne(SigningContractDO::getContractCode, contractCode);
+    }
+
     private void applyKeywordFilter(LambdaQueryWrapperX<SigningContractDO> wrapper, String keyword) {
         if (StrUtil.isEmpty(keyword)) {
             return;

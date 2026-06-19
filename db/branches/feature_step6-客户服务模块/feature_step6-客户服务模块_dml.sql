@@ -255,3 +255,14 @@ SELECT setval('system_role_menu_seq',        (SELECT COALESCE(MAX(id), 0) FROM s
 SELECT setval('system_notify_template_seq',  (SELECT COALESCE(MAX(id), 0) FROM system_notify_template));
 SELECT setval('ops_cs_opreq_seq',           (SELECT COALESCE(MAX(id), 0) FROM ops_cs_opreq));
 SELECT setval('ops_cs_task_seq',            (SELECT COALESCE(MAX(id), 0) FROM ops_cs_task));
+
+-- =============================================
+-- 补丁: 经销商角色授权"创建工单"按钮
+-- 背景: ChatWindow 内下发任务功能需要经销商直接调用 /cs-task/create
+--       原 step1 设计中 dealer(160) 未包含 menu_id=6081，需补授
+-- =============================================
+INSERT INTO system_role_menu (id, role_id, menu_id, tenant_id)
+SELECT (SELECT COALESCE(MAX(id),0) FROM system_role_menu) + 1, 160, 6081, 123
+WHERE NOT EXISTS (
+  SELECT 1 FROM system_role_menu WHERE role_id = 160 AND menu_id = 6081 AND tenant_id = 123
+);

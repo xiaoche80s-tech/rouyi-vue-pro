@@ -86,10 +86,6 @@ public class SigningContractDO extends TenantBaseDO {
      */
     private String indicators;
     /**
-     * 关联附件文件 ID 列表（逗号分隔）
-     */
-    private String fileIds;
-    /**
      * 签署凭证 URL（执行员上传盖章文件）
      */
     private String signProofUrl;

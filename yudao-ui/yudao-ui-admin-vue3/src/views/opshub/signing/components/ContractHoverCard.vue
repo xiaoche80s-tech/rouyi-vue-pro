@@ -16,6 +16,10 @@
       <div class="font-bold mb-4px">政策指标：</div>
       <pre class="text-11px bg-gray-50 p-4px rounded">{{ formatIndicators(contract.indicators) }}</pre>
     </div>
+    <div v-if="contract.attachmentCount" class="text-12px text-gray-500 mt-8px flex items-center gap-4px">
+      <Icon icon="ep:paperclip" />
+      <span>{{ contract.attachmentCount }} 个附件</span>
+    </div>
   </div>
 </template>
 

@@ -29,12 +29,49 @@ public interface BasedataFileMapper extends BaseMapperX<BasedataFileDO> {
     }
 
     /**
+     * 按合同编码查询附件列表
+     *
+     * @param dealerCode   经销商编码
+     * @param contractCode 合同编码（= file_no）
+     * @return 附件文件列表
+     */
+    default List<BasedataFileDO> selectByContractCode(String dealerCode, String contractCode) {
+        return selectList(new LambdaQueryWrapperX<BasedataFileDO>()
+                .eq(BasedataFileDO::getDealerCode, dealerCode)
+                .eq(BasedataFileDO::getCategory, "contract")
+                .eq(BasedataFileDO::getFileNo, contractCode)
+                .orderByAsc(BasedataFileDO::getId));
+    }
+
+    /**
+     * 按经销商编码批量查询合同类附件（用于 attachmentCount 统计）
+     *
+     * @param dealerCodes 经销商编码集合
+     * @return category='contract' 的文件列表
+     */
+    default List<BasedataFileDO> selectContractFilesByDealerCodes(java.util.Collection<String> dealerCodes) {
+        return selectList(new LambdaQueryWrapperX<BasedataFileDO>()
+                .in(BasedataFileDO::getDealerCode, dealerCodes)
+                .eq(BasedataFileDO::getCategory, "contract"));
+    }
+
+    /**
      * 按分类统计文件数量
      */
     default List<Map<String, Object>> selectCountByCategory() {
         return selectMaps(new LambdaQueryWrapperX<BasedataFileDO>()
                 .select(BasedataFileDO::getCategory)
                 .groupBy(BasedataFileDO::getCategory));
+    }
+
+    /**
+     * 按经销商编码 + 文件名称 + 文件分类查询
+     */
+    default BasedataFileDO selectByDealerCodeAndFileNameAndCategory(String dealerCode, String fileName, String category) {
+        return selectOne(new LambdaQueryWrapperX<BasedataFileDO>()
+                .eq(BasedataFileDO::getDealerCode, dealerCode)
+                .eq(BasedataFileDO::getFileName, fileName)
+                .eq(BasedataFileDO::getCategory, category));
     }
 
     /**

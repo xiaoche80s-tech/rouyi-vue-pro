@@ -64,8 +64,8 @@ public class SigningContractRespVO {
     @Schema(description = "政策指标JSON")
     private String indicators;
 
-    @Schema(description = "附件文件ID列表(逗号分隔)")
-    private String fileIds;
+    @Schema(description = "附件数量")
+    private Integer attachmentCount;
 
     @Schema(description = "签署凭证URL")
     private String signProofUrl;

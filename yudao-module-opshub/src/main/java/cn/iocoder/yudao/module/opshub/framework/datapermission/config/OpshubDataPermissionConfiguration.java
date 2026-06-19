@@ -39,15 +39,15 @@ public class OpshubDataPermissionConfiguration {
         rule.addDealerColumn("ops_aftersale_info");
         rule.addProductLineColumn("ops_aftersale_info");
 
-        // Step 6：注册客服工单表和操作请求表
-        rule.addDealerColumn("ops_cs_task");
-        rule.addProductLineColumn("ops_cs_task");
-        rule.addDealerColumn("ops_cs_opreq");
-        rule.addProductLineColumn("ops_cs_opreq");
+        // Step 6：注册客服工单表和操作请求表 —— 允许产品线/经销商为空
+        rule.addDealerColumn("ops_cs_task", true);
+        rule.addProductLineColumn("ops_cs_task", true);
+        rule.addDealerColumn("ops_cs_opreq", true);
+        rule.addProductLineColumn("ops_cs_opreq", true);
 
-        // Step 7：注册咨询会话表
-        rule.addDealerColumn("ops_cs_session");
-        rule.addProductLineColumn("ops_cs_session");
+        // Step 7：注册咨询会话表 —— 允许产品线/经销商为空
+        rule.addDealerColumn("ops_cs_session", true);
+        rule.addProductLineColumn("ops_cs_session", true);
 
         return rule;
     }

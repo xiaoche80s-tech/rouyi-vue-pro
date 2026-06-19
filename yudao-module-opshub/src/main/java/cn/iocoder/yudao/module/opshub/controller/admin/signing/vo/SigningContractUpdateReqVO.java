@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Schema(description = "管理后台 - 更新签约合同 Request VO")
 @Data
@@ -47,9 +46,6 @@ public class SigningContractUpdateReqVO {
 
     @Schema(description = "政策指标JSON")
     private String indicators;
-
-    @Schema(description = "附件文件ID列表")
-    private List<Long> fileIds;
 
     @Schema(description = "备注")
     private String remark;

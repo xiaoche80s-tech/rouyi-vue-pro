@@ -10,6 +10,7 @@ import java.util.Set;
  */
 public interface OpsRoleCodeConstants {
 
+    String SUPER_ADMIN = "super_admin";
     String BRAND_ADMIN = "brand_admin";
     String BRAND_SALES = "brand_sales";
     String SERVICE_EXECUTOR = "service_executor";

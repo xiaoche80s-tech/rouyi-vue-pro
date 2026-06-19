@@ -28,4 +28,9 @@ public interface OrderInvoiceMapper extends BaseMapperX<OrderInvoiceDO> {
                 .eq(OrderInvoiceDO::getStatus, "pending"));
     }
 
+    default OrderInvoiceDO selectByOrderCodeAndInvoiceNo(String orderCode, String invoiceNo) {
+        return selectOne(OrderInvoiceDO::getOrderCode, orderCode,
+                OrderInvoiceDO::getInvoiceNo, invoiceNo);
+    }
+
 }

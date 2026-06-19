@@ -8,6 +8,13 @@
       <el-button size="small" @click="showLinkInput = false">取消</el-button>
     </div>
 
+    <!-- 工具栏：下发任务（条件显示） -->
+    <div v-if="showTaskDispatch" class="mb-2 flex items-center">
+      <el-button size="small" type="warning" plain @click="$emit('taskDispatch')">
+        <el-icon class="mr-1"><Tickets /></el-icon>下发任务
+      </el-button>
+    </div>
+
     <!-- 文本输入 -->
     <div class="flex gap-2">
       <el-input
@@ -32,13 +39,16 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
+import { Tickets } from '@element-plus/icons-vue'
 
 defineProps<{
   sending: boolean
+  showTaskDispatch?: boolean
 }>()
 
 const emit = defineEmits<{
   send: [payload: { messageType: string; content: string; linkUrl?: string; linkTitle?: string }]
+  taskDispatch: []
 }>()
 
 const text = ref('')

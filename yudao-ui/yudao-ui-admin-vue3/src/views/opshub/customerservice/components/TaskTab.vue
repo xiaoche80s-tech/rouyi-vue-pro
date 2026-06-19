@@ -1,4 +1,21 @@
 <template>
+  <!-- 角色感知子标签 -->
+  <ContentWrap v-if="showSubTabs" class="!pb-0">
+    <el-tabs v-model="activeSubTab" @tab-change="handleSubTabChange">
+      <el-tab-pane
+        v-for="tab in subTabs"
+        :key="tab.value"
+        :name="tab.value"
+      >
+        <template #label>
+          {{ tab.label }}
+          <el-badge v-if="tabCounts[tab.value] !== undefined && tabCounts[tab.value] > 0"
+            :value="tabCounts[tab.value]" :max="999" class="ml-4px" />
+        </template>
+      </el-tab-pane>
+    </el-tabs>
+  </ContentWrap>
+
   <!-- 筛选栏 -->
   <ContentWrap>
     <el-form :model="queryParams" inline>
@@ -35,13 +52,17 @@
   <!-- 操作栏 + 表格 -->
   <ContentWrap>
     <div class="mb-10px flex items-center gap-10px">
-      <el-button v-hasPermi="['dealer:cs-task:create']" type="primary" plain @click="handleCreate">
+      <el-button v-if="side !== 'handler'" v-hasPermi="['dealer:cs-task:create']" type="primary" plain @click="handleCreate">
         <Icon class="mr-5px" icon="ep:plus" />提工单
       </el-button>
     </div>
 
     <el-table v-loading="loading" :data="list" border stripe>
-      <el-table-column label="工单编号" prop="taskNo" min-width="180" />
+      <el-table-column label="工单编号" prop="taskNo" min-width="180">
+        <template #default="{ row }">
+          <el-button link type="primary" @click="handleDetail(row)">{{ row.taskNo }}</el-button>
+        </template>
+      </el-table-column>
       <el-table-column label="内容" prop="content" min-width="200" show-overflow-tooltip />
       <el-table-column label="分类" prop="category" min-width="80" align="center">
         <template #default="{ row }">
@@ -68,19 +89,20 @@
       <el-table-column label="产品线" prop="productLineName" min-width="100" />
       <el-table-column label="SLA截止" prop="slaDeadline" min-width="160" />
       <el-table-column label="创建时间" prop="createTime" min-width="160" />
-      <el-table-column label="操作" fixed="right" min-width="240" align="center">
+      <el-table-column label="操作" fixed="right" min-width="280" align="center">
         <template #default="{ row }">
-          <el-button v-if="row.status === 0" v-hasPermi="['dealer:cs-task:accept']" link type="primary" @click="handleAccept(row)">接单</el-button>
+          <el-button v-if="canAccept(row)" v-hasPermi="['dealer:cs-task:accept']" link type="primary" @click="handleAccept(row)">接单</el-button>
           <template v-if="row.status === 1">
-            <el-button v-hasPermi="['dealer:cs-task:deliver']" link type="success" @click="handleDeliver(row)">交付</el-button>
-            <el-button v-hasPermi="['dealer:cs-task:transfer']" link type="warning" @click="handleTransfer(row)">转单</el-button>
+            <el-button v-if="canSubmitApproval(row)" v-hasPermi="['dealer:cs-task:deliver']" link type="success" @click="handleSubmitApproval(row)">提交审批</el-button>
+            <el-button v-if="canTransfer(row)" v-hasPermi="['dealer:cs-task:transfer']" link type="warning" @click="handleTransfer(row)">转单</el-button>
           </template>
           <template v-if="row.status === 2">
-            <el-button v-hasPermi="['dealer:cs-task:verify']" link type="success" @click="handleVerify(row, true)">验收通过</el-button>
-            <el-button v-hasPermi="['dealer:cs-task:verify']" link type="danger" @click="handleRejectDialog(row)">退回</el-button>
+            <el-button v-if="canVerify(row)" v-hasPermi="['dealer:cs-task:verify']" link type="success" @click="handleVerify(row)">验收通过</el-button>
+            <el-button v-if="canVerify(row)" v-hasPermi="['dealer:cs-task:verify']" link type="danger" @click="handleRejectDialog(row)">退回</el-button>
           </template>
-          <el-button v-if="row.status === 4" v-hasPermi="['dealer:cs-task:reprocess']" link type="primary" @click="handleReprocess(row)">重新处理</el-button>
-          <el-button v-if="row.status !== 3" v-hasPermi="['dealer:cs-task:urge']" link type="info" @click="handleUrge(row)">催办</el-button>
+          <el-button v-if="canReprocess(row)" v-hasPermi="['dealer:cs-task:reprocess']" link type="primary" @click="handleReprocess(row)">重新处理</el-button>
+          <el-button v-if="canCancel(row)" v-hasPermi="['dealer:cs-task:cancel']" link type="danger" @click="handleCancel(row)">取消</el-button>
+          <el-button v-if="canUrge(row)" v-hasPermi="['dealer:cs-task:urge']" link type="info" @click="handleUrge(row)">催办</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -104,8 +126,8 @@
           <el-option v-for="c in categoryOptions" :key="c.value" :label="c.label" :value="c.value" />
         </el-select>
       </el-form-item>
-      <el-form-item label="处理人" prop="assigneeId">
-        <el-select v-model="createForm.assigneeId" filterable placeholder="请选择执行员" style="width: 100%">
+      <el-form-item label="处理人">
+        <el-select v-model="createForm.assigneeId" filterable clearable placeholder="可选，不选则进入抢单模式" style="width: 100%">
           <el-option v-for="u in userList" :key="u.id" :label="u.nickname" :value="u.id" />
         </el-select>
       </el-form-item>
@@ -163,13 +185,20 @@
       <el-button type="danger" :loading="rejectLoading" @click="submitReject">确认退回</el-button>
     </template>
   </el-dialog>
+
+  <!-- 工单详情弹窗 -->
+  <el-dialog v-model="detailDialogVisible" title="工单详情" width="800px" destroy-on-close>
+    <TaskDetail v-if="detailDialogVisible" :id="detailTaskId" />
+  </el-dialog>
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from 'element-plus'
 import * as CsTaskApi from '@/api/opshub/csTask'
 import { getSimpleUserList } from '@/api/system/user'
+import { useUserStore } from '@/store/modules/user'
+import TaskDetail from '../task-detail.vue'
 
 // ========== 枚举常量 ==========
 const statusOptions = [
@@ -189,11 +218,38 @@ const sourceModuleOptions = [
 ]
 
 const getStatusLabel = (val: number) => statusOptions.find(s => s.value === val)?.label || ''
-const getStatusTagType = (val: number) => ['warning', 'primary', 'success', 'info', 'danger'][val] || ''
+const getStatusTagType = (val: number) => (['warning', 'primary', 'success', 'info', 'danger'] as const)[val] || ''
 const getUrgencyLabel = (val: number) => urgencyOptions.find(u => u.value === val)?.label || ''
 const getUrgencyTagType = (val: number) => (['danger', 'warning', '', 'info'] as any)[val] || ''
 const getCategoryLabel = (val: number) => categoryOptions.find(c => c.value === val)?.label || ''
 const getSourceModuleLabel = (val: string) => sourceModuleOptions.find(m => m.value === val)?.label || val || ''
+
+// ========== Props ==========
+const props = defineProps<{
+  side: 'initiator' | 'handler' | 'admin'
+}>()
+
+// ========== 当前用户 ==========
+const userStore = useUserStore()
+const currentUserId = computed(() => userStore.getUser?.id)
+
+// ========== 子标签配置（基于 side prop） ==========
+const subTabsMap: Record<string, Array<{ value: string; label: string }>> = {
+  initiator: [
+    { value: 'all', label: '全部' },
+    { value: 'pending', label: '待办' }
+  ],
+  handler: [
+    { value: 'claimable', label: '可领取' },
+    { value: 'pending', label: '待办' },
+    { value: 'done', label: '已办' }
+  ],
+  admin: []
+}
+
+const defaultTabFilter = computed(() =>
+  props.side === 'initiator' ? 'all' : props.side === 'handler' ? 'claimable' : undefined
+)
 
 // ========== 列表查询 ==========
 const loading = ref(false)
@@ -205,7 +261,8 @@ const queryParams = reactive({
   urgency: undefined as number | undefined,
   category: undefined as number | undefined,
   sourceModule: undefined as string | undefined,
-  keyword: ''
+  keyword: '',
+  tabFilter: defaultTabFilter.value as string | undefined
 })
 
 const getList = async () => {
@@ -215,6 +272,8 @@ const getList = async () => {
     list.value = data.list
     total.value = data.total
   } finally { loading.value = false }
+  // 同步刷新角标计数
+  loadTabCounts()
 }
 
 const handleSearch = () => { queryParams.pageNo = 1; getList() }
@@ -223,6 +282,38 @@ const handleReset = () => {
   queryParams.category = undefined; queryParams.sourceModule = undefined
   queryParams.keyword = ''; handleSearch()
 }
+
+// ========== 子标签 ========== 
+const showSubTabs = computed(() => props.side !== 'admin')
+const subTabs = computed(() => subTabsMap[props.side] || [])
+const activeSubTab = ref(defaultTabFilter.value)
+const tabCounts = ref<Record<string, number>>({})
+
+const loadTabCounts = async () => {
+  try {
+    const counts = await CsTaskApi.getTabCounts()
+    tabCounts.value = counts || {}
+  } catch (e) { /* ignore */ }
+}
+
+const handleSubTabChange = (tab: string) => {
+  queryParams.tabFilter = tab
+  queryParams.pageNo = 1
+  getList()
+}
+
+// 操作按钮可见性计算
+const canAccept = (row: any) => row.status === 0 && props.side === 'handler' && (row.assigneeId === null || row.assigneeId === currentUserId.value)
+const canSubmitApproval = (row: any) => row.status === 1 && row.assigneeId === currentUserId.value
+const canTransfer = (row: any) => row.status === 1 && row.assigneeId === currentUserId.value
+const canVerify = (row: any) => row.status === 2 && row.creatorUserId === currentUserId.value
+const canReprocess = (row: any) => row.status === 4 && row.assigneeId === currentUserId.value
+const canCancel = (row: any) => {
+  if (row.status === 3) return false
+  if (props.side === 'admin') return true
+  return row.status === 0 && row.creatorUserId === currentUserId.value
+}
+const canUrge = (row: any) => row.status !== 3
 
 // ========== 用户列表 ==========
 const userList = ref<any[]>([])
@@ -242,7 +333,6 @@ const createRules: FormRules = {
   content: [{ required: true, message: '请输入工单内容', trigger: 'blur' }],
   urgency: [{ required: true, message: '请选择紧急程度', trigger: 'change' }],
   category: [{ required: true, message: '请选择分类', trigger: 'change' }],
-  assigneeId: [{ required: true, message: '请选择处理人', trigger: 'change' }],
   slaDeadline: [{ required: true, message: '请选择SLA截止时间', trigger: 'change' }]
 }
 
@@ -266,10 +356,10 @@ const handleAccept = async (row: any) => {
   await CsTaskApi.acceptTask(row.id); ElMessage.success('接单成功'); getList()
 }
 
-// ========== 交付 ==========
-const handleDeliver = async (row: any) => {
-  await ElMessageBox.confirm('确认交付此工单？', '提示', { type: 'info' })
-  await CsTaskApi.deliverTask(row.id); ElMessage.success('交付成功'); getList()
+// ========== 提交审批 ==========
+const handleSubmitApproval = async (row: any) => {
+  await ElMessageBox.confirm('确认提交审批？', '提示', { type: 'info' })
+  await CsTaskApi.submitForApproval(row.id); ElMessage.success('已提交审批'); getList()
 }
 
 // ========== 转单 ==========
@@ -288,7 +378,7 @@ const submitTransfer = async () => {
 }
 
 // ========== 验收 ==========
-const handleVerify = async (row: any, passed: boolean) => {
+const handleVerify = async (row: any) => {
   await ElMessageBox.confirm('确认验收通过？', '提示', { type: 'success' })
   await CsTaskApi.verifyTask({ id: row.id, passed: true }); ElMessage.success('验收通过'); getList()
 }
@@ -318,6 +408,25 @@ const handleUrge = async (row: any) => {
   await CsTaskApi.urgeTask(row.id); ElMessage.success('催办成功')
 }
 
+// ========== 取消/关闭 ==========
+const handleCancel = async (row: any) => {
+  const { value: reason } = await ElMessageBox.prompt('请输入取消原因（可选）', '取消工单', {
+    confirmButtonText: '确认取消', cancelButtonText: '返回', inputType: 'textarea'
+  }).catch(() => { throw new Error('cancel') })
+  try {
+    await CsTaskApi.cancelTask(row.id, reason || undefined)
+    ElMessage.success('工单已关闭'); getList()
+  } catch (e) { /* 已处理 */ }
+}
+
+// ========== 工单详情 ==========
+const detailDialogVisible = ref(false)
+const detailTaskId = ref<number>(0)
+const handleDetail = (row: any) => {
+  detailTaskId.value = row.id
+  detailDialogVisible.value = true
+}
+
 // ========== 初始化 ==========
-onMounted(() => { getList(); loadUserList() })
+onMounted(() => { getList(); loadUserList(); loadTabCounts() })
 </script>

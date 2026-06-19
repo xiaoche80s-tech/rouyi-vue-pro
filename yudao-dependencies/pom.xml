@@ -76,6 +76,8 @@
         <j2mod.version>3.3.0</j2mod.version>
         <!-- 三方云服务相关 -->
         <awssdk.version>2.44.0</awssdk.version>
+        <!-- Azure Blob Storage -->
+        <azure-storage-blob.version>12.34.0</azure-storage-blob.version>
         <justauth.version>1.16.7</justauth.version>
         <justauth-starter.version>1.4.0</justauth-starter.version>
         <jimureport.version>2.3.4</jimureport.version>
@@ -635,6 +637,12 @@
                 <groupId>software.amazon.awssdk</groupId>
                 <artifactId>s3</artifactId>
                 <version>${awssdk.version}</version>
+            </dependency>
+            <!-- Azure Blob Storage -->
+            <dependency>
+                <groupId>com.azure</groupId>
+                <artifactId>azure-storage-blob</artifactId>
+                <version>${azure-storage-blob.version}</version>
             </dependency>
 
             <dependency>

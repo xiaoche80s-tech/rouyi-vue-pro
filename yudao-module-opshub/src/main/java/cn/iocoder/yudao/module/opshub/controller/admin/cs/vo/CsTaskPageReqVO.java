@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import java.util.List;
+
 @Schema(description = "管理后台 - 客服工单分页 Request VO")
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -46,5 +48,16 @@ public class CsTaskPageReqVO extends PageParam {
 
     @Schema(description = "当前用户 ID（Service 层自动填充）", hidden = true)
     private Long currentUserId;
+
+    // ========== 子标签过滤字段 ==========
+
+    @Schema(description = "状态列表（多状态 IN 查询）", example = "[0,1,4]")
+    private List<Integer> statusList;
+
+    @Schema(description = "仅查询未分配工单（可领取）", hidden = true)
+    private Boolean unassigned;
+
+    @Schema(description = "子标签过滤: all/pending/done/claimable", example = "pending")
+    private String tabFilter;
 
 }

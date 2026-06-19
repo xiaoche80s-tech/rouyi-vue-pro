@@ -2,7 +2,7 @@
   <el-tabs v-model="activeTab" type="border-card">
     <!-- Tab 1: 工单管理 -->
     <el-tab-pane label="工单管理" name="task">
-      <TaskTab />
+      <TaskTab side="handler" />
     </el-tab-pane>
 
     <!-- Tab 2: 操作请求 -->

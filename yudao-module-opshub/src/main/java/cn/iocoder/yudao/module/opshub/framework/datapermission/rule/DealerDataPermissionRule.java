@@ -18,11 +18,15 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.expression.Alias;
 import net.sf.jsqlparser.expression.Expression;
+import net.sf.jsqlparser.expression.LongValue;
+import net.sf.jsqlparser.expression.Parenthesis;
 import net.sf.jsqlparser.expression.StringValue;
 import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
 import net.sf.jsqlparser.expression.operators.relational.ExpressionList;
 import net.sf.jsqlparser.expression.operators.relational.InExpression;
+import net.sf.jsqlparser.expression.operators.relational.IsNullExpression;
 import net.sf.jsqlparser.expression.operators.relational.ParenthesedExpressionList;
+import net.sf.jsqlparser.expression.operators.conditional.OrExpression;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -66,6 +70,17 @@ public class DealerDataPermissionRule implements DataPermissionRule {
      * key：表名，value：字段名
      */
     private final Map<String, String> productLineColumns = new HashMap<>();
+
+    /**
+     * 需要包含 NULL 值的表名集合（产品线维度）
+     * 注册了 includeNull 的表，其 WHERE 条件会追加 OR column IS NULL
+     */
+    private final Set<String> productLineIncludeNull = new HashSet<>();
+
+    /**
+     * 需要包含 NULL 值的表名集合（经销商维度）
+     */
+    private final Set<String> dealerIncludeNull = new HashSet<>();
 
     /**
      * 所有表名集合
@@ -156,39 +171,55 @@ public class DealerDataPermissionRule implements DataPermissionRule {
     }
 
     /**
-     * 构建经销商维度 WHERE 条件：WHERE dealer_code IN ('HK', 'ZS')
+     * 构建经销商维度 WHERE 条件：WHERE dealer_code IN ('HK', 'ZS') [OR dealer_code IS NULL]
      */
     private Expression buildDealerExpression(String tableName, Alias tableAlias, Set<String> dealerCodes) {
         String columnName = dealerColumns.get(tableName);
         if (StrUtil.isEmpty(columnName)) {
             return null;
         }
-        // 经销商 Code 为空 → 无权查看任何数据
+        // 经销商 Code 为空 → 无权查看任何数据，使用 column = -1 永假条件
         if (CollUtil.isEmpty(dealerCodes)) {
-            return new EqualsTo(null, null);
+            var column = MyBatisUtils.buildColumn(tableName, tableAlias, columnName);
+            return new EqualsTo(column, new StringValue("__NO_ACCESS__"));
         }
-        return new InExpression(
-                MyBatisUtils.buildColumn(tableName, tableAlias, columnName),
+        var column = MyBatisUtils.buildColumn(tableName, tableAlias, columnName);
+        InExpression inExpr = new InExpression(column,
                 new ParenthesedExpressionList(new ExpressionList<StringValue>(
                         CollectionUtils.convertList(dealerCodes, StringValue::new))));
+        // 条件性追加 OR IS NULL（需用括号包裹，避免与外层 AND 产生优先级问题）
+        if (dealerIncludeNull.contains(tableName)) {
+            Parenthesis p = new Parenthesis();
+            p.add(new OrExpression(inExpr, new IsNullExpression(column)));
+            return p;
+        }
+        return inExpr;
     }
 
     /**
-     * 构建产品线维度 WHERE 条件：WHERE product_line_code IN ('GK', 'FK')
+     * 构建产品线维度 WHERE 条件：WHERE product_line_code IN ('GK', 'FK') [OR product_line_code IS NULL]
      */
     private Expression buildProductLineExpression(String tableName, Alias tableAlias, Set<String> productLineCodes) {
         String columnName = productLineColumns.get(tableName);
         if (StrUtil.isEmpty(columnName)) {
             return null;
         }
-        // 产品线 Code 为空 → 无权查看任何数据
+        // 产品线 Code 为空 → 无权查看任何数据，使用 column = -1 永假条件
         if (CollUtil.isEmpty(productLineCodes)) {
-            return new EqualsTo(null, null);
+            var column = MyBatisUtils.buildColumn(tableName, tableAlias, columnName);
+            return new EqualsTo(column, new StringValue("__NO_ACCESS__"));
         }
-        return new InExpression(
-                MyBatisUtils.buildColumn(tableName, tableAlias, columnName),
+        var column = MyBatisUtils.buildColumn(tableName, tableAlias, columnName);
+        InExpression inExpr = new InExpression(column,
                 new ParenthesedExpressionList(new ExpressionList<StringValue>(
                         CollectionUtils.convertList(productLineCodes, StringValue::new))));
+        // 条件性追加 OR IS NULL（需用括号包裹，避免与外层 AND 产生优先级问题）
+        if (productLineIncludeNull.contains(tableName)) {
+            Parenthesis p = new Parenthesis();
+            p.add(new OrExpression(inExpr, new IsNullExpression(column)));
+            return p;
+        }
+        return inExpr;
     }
 
     // ==================== 添加配置 ====================
@@ -209,6 +240,19 @@ public class DealerDataPermissionRule implements DataPermissionRule {
     }
 
     /**
+     * 添加经销商 Code 列的过滤配置（含 includeNull 标记）
+     *
+     * @param tableName   表名
+     * @param includeNull 是否包含 NULL 值（OR column IS NULL）
+     */
+    public void addDealerColumn(String tableName, boolean includeNull) {
+        addDealerColumn(tableName);
+        if (includeNull) {
+            dealerIncludeNull.add(tableName);
+        }
+    }
+
+    /**
      * 添加产品线 Code 列的过滤配置
      *
      * @param tableName  表名
@@ -221,6 +265,19 @@ public class DealerDataPermissionRule implements DataPermissionRule {
 
     public void addProductLineColumn(String tableName) {
         addProductLineColumn(tableName, PRODUCT_LINE_COLUMN_NAME);
+    }
+
+    /**
+     * 添加产品线 Code 列的过滤配置（含 includeNull 标记）
+     *
+     * @param tableName   表名
+     * @param includeNull 是否包含 NULL 值（OR column IS NULL）
+     */
+    public void addProductLineColumn(String tableName, boolean includeNull) {
+        addProductLineColumn(tableName);
+        if (includeNull) {
+            productLineIncludeNull.add(tableName);
+        }
     }
 
     // ==================== 内部缓存 DTO ====================

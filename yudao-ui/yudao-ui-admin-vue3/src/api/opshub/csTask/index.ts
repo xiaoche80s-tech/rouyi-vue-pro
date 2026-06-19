@@ -32,6 +32,11 @@ export const getCsTaskPage = async (params: any) => {
   return await request.get({ url: '/opshub/cs-task/page', params })
 }
 
+// 获取各子标签工单数量
+export const getTabCounts = async () => {
+  return await request.get({ url: '/opshub/cs-task/tab-counts' })
+}
+
 // 查询工单详情
 export const getCsTask = async (id: number) => {
   return await request.get({ url: '/opshub/cs-task/get?id=' + id })
@@ -52,9 +57,14 @@ export const transferTask = async (data: any) => {
   return await request.post({ url: '/opshub/cs-task/transfer', data })
 }
 
-// 执行员交付工单
-export const deliverTask = async (id: number) => {
-  return await request.post({ url: '/opshub/cs-task/deliver?id=' + id })
+// 执行员提交审批
+export const submitForApproval = async (id: number) => {
+  return await request.post({ url: '/opshub/cs-task/submit-for-approval?id=' + id })
+}
+
+// 取消/关闭工单
+export const cancelTask = async (id: number, reason?: string) => {
+  return await request.post({ url: '/opshub/cs-task/cancel?id=' + id + (reason ? '&reason=' + encodeURIComponent(reason) : '') })
 }
 
 // 经销商验收工单

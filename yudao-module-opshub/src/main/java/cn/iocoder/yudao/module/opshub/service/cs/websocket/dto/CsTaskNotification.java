@@ -51,6 +51,7 @@ public class CsTaskNotification {
     public static final String TYPE_TASK_DELIVERED = "cs-task-delivered";
     public static final String TYPE_TASK_VERIFIED = "cs-task-verified";
     public static final String TYPE_TASK_REJECTED = "cs-task-rejected";
+    public static final String TYPE_TASK_REPROCESS = "cs-task-reprocessed";
     public static final String TYPE_TASK_URGING = "cs-task-urging";
     public static final String TYPE_SLA_WARNING = "cs-sla-warning";
     public static final String TYPE_SLA_ALERT = "cs-sla-alert";

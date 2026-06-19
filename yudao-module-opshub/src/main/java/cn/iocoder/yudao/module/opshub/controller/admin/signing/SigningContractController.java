@@ -5,9 +5,12 @@ import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.opshub.controller.admin.signing.vo.*;
+import cn.iocoder.yudao.module.opshub.dal.dataobject.basedata.BasedataFileDO;
 import cn.iocoder.yudao.module.opshub.dal.dataobject.dealer.DealerInfoDO;
 import cn.iocoder.yudao.module.opshub.dal.dataobject.dealer.DealerProductLineDO;
 import cn.iocoder.yudao.module.opshub.dal.dataobject.signing.SigningContractDO;
+import cn.iocoder.yudao.module.opshub.enums.BasedataFileTypeEnum;
+import cn.iocoder.yudao.module.opshub.service.basedata.BasedataFileService;
 import cn.iocoder.yudao.module.opshub.service.dealer.DealerInfoService;
 import cn.iocoder.yudao.module.opshub.service.dealer.DealerProductLineService;
 import cn.iocoder.yudao.module.opshub.service.signing.SigningContractService;
@@ -42,6 +45,9 @@ public class SigningContractController {
     @Resource
     private DealerProductLineService dealerProductLineService;
 
+    @Resource
+    private BasedataFileService basedataFileService;
+
     @GetMapping("/page")
     @Operation(summary = "获得签约合同分页")
     @PreAuthorize("@ss.hasPermission('dealer:signing:query')")
@@ -50,6 +56,7 @@ public class SigningContractController {
         PageResult<SigningContractRespVO> voPageResult = BeanUtils.toBean(pageResult, SigningContractRespVO.class);
         fillDealerNames(voPageResult.getList());
         fillProductLineNames(voPageResult.getList());
+        fillAttachmentCounts(voPageResult.getList());
         return success(voPageResult);
     }
 
@@ -72,6 +79,10 @@ public class SigningContractController {
                         .findFirst()
                         .ifPresent(pl -> vo.setProductLineName(pl.getProductLineName()));
             }
+            // 回填附件数量
+            List<BasedataFileDO> attachments = basedataFileService.getContractAttachments(
+                    contract.getDealerCode(), contract.getContractCode());
+            vo.setAttachmentCount(attachments.size());
         }
         return success(vo);
     }
@@ -125,6 +136,26 @@ public class SigningContractController {
         return success(true);
     }
 
+    @GetMapping("/attachments")
+    @Operation(summary = "获取合同附件列表")
+    @Parameter(name = "contractId", description = "合同ID", required = true)
+    @PreAuthorize("@ss.hasPermission('dealer:signing:query')")
+    public CommonResult<List<ContractAttachmentRespVO>> getContractAttachments(
+            @RequestParam("contractId") Long contractId) {
+        SigningContractDO contract = signingContractService.getSigningContract(contractId);
+        if (contract == null) {
+            return success(List.of());
+        }
+        List<BasedataFileDO> files = basedataFileService.getContractAttachments(
+                contract.getDealerCode(), contract.getContractCode());
+        List<ContractAttachmentRespVO> voList = BeanUtils.toBean(files, ContractAttachmentRespVO.class);
+        // 填充文件子类型名称
+        for (ContractAttachmentRespVO vo : voList) {
+            vo.setFileTypeName(getFileTypeName(vo.getFileType()));
+        }
+        return success(voList);
+    }
+
     // ========== 辅助方法 ==========
 
     private void fillDealerNames(List<SigningContractRespVO> list) {
@@ -157,6 +188,41 @@ public class SigningContractController {
                 vo.setProductLineName(plNameMap.getOrDefault(vo.getProductLineCode(), ""));
             }
         }
+    }
+
+    /**
+     * 批量填充附件数量（避免 N+1）
+     * 收集所有 dealerCode，一次性查出 category='contract' 的文件，按 file_no 分组计数
+     */
+    private void fillAttachmentCounts(List<SigningContractRespVO> list) {
+        if (list == null || list.isEmpty()) return;
+        Set<String> dealerCodes = list.stream()
+                .map(SigningContractRespVO::getDealerCode)
+                .filter(StrUtil::isNotBlank)
+                .collect(Collectors.toSet());
+        if (dealerCodes.isEmpty()) return;
+
+        List<BasedataFileDO> contractFiles = basedataFileService.getContractFilesByDealerCodes(dealerCodes);
+        // 按 file_no 分组计数
+        Map<String, Integer> countMap = contractFiles.stream()
+                .collect(Collectors.groupingBy(
+                        f -> f.getFileNo() != null ? f.getFileNo() : "",
+                        Collectors.summingInt(e -> 1)));
+
+        for (SigningContractRespVO vo : list) {
+            vo.setAttachmentCount(countMap.getOrDefault(
+                    vo.getContractCode() != null ? vo.getContractCode() : "", 0));
+        }
+    }
+
+    private String getFileTypeName(String fileType) {
+        if (fileType == null) return null;
+        for (BasedataFileTypeEnum typeEnum : BasedataFileTypeEnum.values()) {
+            if (typeEnum.getCode().equals(fileType)) {
+                return typeEnum.getName();
+            }
+        }
+        return fileType;
     }
 
 }

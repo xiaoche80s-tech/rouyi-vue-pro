@@ -65,11 +65,13 @@
           @click="emit('uploadProof', row)"
         >上传盖章文件</el-button>
         <!-- 附件 -->
-        <el-popover v-if="row.fileIds" trigger="hover" placement="left" :width="280">
+        <el-popover trigger="hover" placement="left" :width="320">
           <template #reference>
-            <el-button link type="info">附件</el-button>
+            <el-button link type="info">
+              附件<span v-if="row.attachmentCount">({{ row.attachmentCount }})</span>
+            </el-button>
           </template>
-          <AttachmentPopover :file-ids="row.fileIds" />
+          <AttachmentPopover :contract-id="row.id" />
         </el-popover>
         <!-- 咨询 -->
         <el-button v-hasPermi="['dealer:signing:consult']" link type="primary" @click="emit('consult', row)">咨询</el-button>

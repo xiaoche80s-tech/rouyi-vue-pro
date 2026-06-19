@@ -22,4 +22,9 @@ public interface AfterSaleProgressMapper extends BaseMapperX<AfterSaleProgressDO
                 .orderByAsc(AfterSaleProgressDO::getSortOrder));
     }
 
+    default AfterSaleProgressDO selectByAftersaleCodeAndNodeCode(String aftersaleCode, String nodeCode) {
+        return selectOne(AfterSaleProgressDO::getAftersaleCode, aftersaleCode,
+                AfterSaleProgressDO::getNodeCode, nodeCode);
+    }
+
 }

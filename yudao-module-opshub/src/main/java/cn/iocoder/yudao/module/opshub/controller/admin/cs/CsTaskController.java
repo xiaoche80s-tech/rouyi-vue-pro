@@ -6,6 +6,8 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.opshub.controller.admin.cs.vo.*;
 import cn.iocoder.yudao.module.opshub.dal.dataobject.cs.CsTaskDO;
 import cn.iocoder.yudao.module.opshub.service.cs.CsTaskService;
+import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
+import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,6 +16,9 @@ import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
@@ -25,13 +30,25 @@ public class CsTaskController {
 
     @Resource
     private CsTaskService csTaskService;
+    @Resource
+    private AdminUserApi adminUserApi;
+
+    @GetMapping("/tab-counts")
+    @Operation(summary = "获取各子标签工单数量")
+    @PreAuthorize("@ss.hasPermission('dealer:cs-task:query')")
+    public CommonResult<java.util.Map<String, Long>> getTabCounts() {
+        return success(csTaskService.getTabCounts());
+    }
 
     @GetMapping("/page")
     @Operation(summary = "获得工单分页")
     @PreAuthorize("@ss.hasPermission('dealer:cs-task:query')")
     public CommonResult<PageResult<CsTaskRespVO>> getCsTaskPage(@Valid CsTaskPageReqVO pageReqVO) {
         PageResult<CsTaskDO> pageResult = csTaskService.getCsTaskPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, CsTaskRespVO.class));
+        PageResult<CsTaskRespVO> voResult = BeanUtils.toBean(pageResult, CsTaskRespVO.class);
+        // 补充处理人/提单人姓名
+        fillUserNames(voResult.getList());
+        return success(voResult);
     }
 
     @GetMapping("/get")
@@ -40,7 +57,11 @@ public class CsTaskController {
     @PreAuthorize("@ss.hasPermission('dealer:cs-task:query')")
     public CommonResult<CsTaskRespVO> getCsTask(@RequestParam("id") Long id) {
         CsTaskDO task = csTaskService.getCsTask(id);
-        return success(BeanUtils.toBean(task, CsTaskRespVO.class));
+        CsTaskRespVO vo = BeanUtils.toBean(task, CsTaskRespVO.class);
+        if (vo != null) {
+            fillUserNames(java.util.Collections.singletonList(vo));
+        }
+        return success(vo);
     }
 
     @PostMapping("/create")
@@ -67,12 +88,21 @@ public class CsTaskController {
         return success(true);
     }
 
-    @PostMapping("/deliver")
-    @Operation(summary = "执行员交付工单")
+    @PostMapping("/submit-for-approval")
+    @Operation(summary = "执行员提交审批")
     @Parameter(name = "id", description = "工单ID", required = true)
     @PreAuthorize("@ss.hasPermission('dealer:cs-task:deliver')")
-    public CommonResult<Boolean> deliverTask(@RequestParam("id") Long id) {
-        csTaskService.deliverTask(id);
+    public CommonResult<Boolean> submitForApproval(@RequestParam("id") Long id) {
+        csTaskService.submitForApproval(id);
+        return success(true);
+    }
+
+    @PostMapping("/cancel")
+    @Operation(summary = "取消/关闭工单")
+    @PreAuthorize("@ss.hasPermission('dealer:cs-task:cancel')")
+    public CommonResult<Boolean> cancelTask(@RequestParam("id") Long id,
+                                            @RequestParam(value = "reason", required = false) String reason) {
+        csTaskService.cancelTask(id, reason);
         return success(true);
     }
 
@@ -100,6 +130,39 @@ public class CsTaskController {
     public CommonResult<Boolean> urgeTask(@RequestParam("id") Long id) {
         csTaskService.urgeTask(id);
         return success(true);
+    }
+
+    // ========== 私有方法 ==========
+
+    /**
+     * 批量补充处理人/提单人姓名
+     */
+    private void fillUserNames(java.util.List<CsTaskRespVO> list) {
+        if (list == null || list.isEmpty()) {
+            return;
+        }
+        Set<Long> userIds = list.stream()
+                .flatMap(vo -> java.util.stream.Stream.of(vo.getAssigneeId(), vo.getCreatorUserId()))
+                .filter(java.util.Objects::nonNull)
+                .collect(Collectors.toSet());
+        if (userIds.isEmpty()) {
+            return;
+        }
+        java.util.Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(userIds);
+        for (CsTaskRespVO vo : list) {
+            if (vo.getAssigneeId() != null) {
+                AdminUserRespDTO user = userMap.get(vo.getAssigneeId());
+                if (user != null) {
+                    vo.setAssigneeName(user.getNickname());
+                }
+            }
+            if (vo.getCreatorUserId() != null) {
+                AdminUserRespDTO user = userMap.get(vo.getCreatorUserId());
+                if (user != null) {
+                    vo.setCreatorUserName(user.getNickname());
+                }
+            }
+        }
     }
 
 }
