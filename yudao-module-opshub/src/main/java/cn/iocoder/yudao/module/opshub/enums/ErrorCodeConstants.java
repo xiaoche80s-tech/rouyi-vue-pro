@@ -63,6 +63,7 @@ public interface ErrorCodeConstants {
     ErrorCode CS_TASK_NOT_ASSIGNEE      = new ErrorCode(1_050_008_005, "非当前处理人，无权操作");
     ErrorCode CS_TASK_NOT_CREATOR       = new ErrorCode(1_050_008_006, "非提单人，无权验收");
     ErrorCode CS_TASK_TRANSFER_SAME     = new ErrorCode(1_050_008_007, "不可转单给自己");
+    ErrorCode CS_TASK_NOT_PENDING_OR_IN_PROGRESS = new ErrorCode(1_050_008_008, "仅待接单或处理中状态可取消");
 
     // ========== 操作请求 1-050-008-0xx ==========
     ErrorCode CS_OPREQ_NOT_EXISTS       = new ErrorCode(1_050_008_010, "操作请求不存在");

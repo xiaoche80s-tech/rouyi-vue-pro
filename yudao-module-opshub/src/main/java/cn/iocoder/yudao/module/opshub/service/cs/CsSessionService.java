@@ -4,6 +4,8 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.opshub.controller.admin.cs.vo.*;
 import cn.iocoder.yudao.module.opshub.dal.dataobject.cs.CsSessionDO;
 
+import java.time.LocalDateTime;
+
 /**
  * 咨询会话 Service 接口
  */
@@ -47,5 +49,10 @@ public interface CsSessionService {
      * 获取咨询统计数据
      */
     CsConsultStatisticsRespVO getStatistics();
+
+    /**
+     * 获取咨询统计数据（指定时间范围）
+     */
+    CsConsultStatisticsRespVO getStatistics(LocalDateTime startTime);
 
 }

@@ -22,6 +22,7 @@ import org.springframework.validation.annotation.Validated;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -88,26 +89,21 @@ public class SigningContractServiceImpl implements SigningContractService {
 
     @Override
     public SigningContractStatisticsRespVO getStatistics() {
-        List<Map<String, Object>> statsList = signingContractMapper.selectStatistics();
+        return getStatistics(null);
+    }
 
+    @Override
+    public SigningContractStatisticsRespVO getStatistics(LocalDateTime startTime) {
         SigningContractStatisticsRespVO respVO = new SigningContractStatisticsRespVO();
         int totalCount = 0, signedCount = 0, unsignedCount = 0, pendingCount = 0, signingCount = 0;
         Map<String, int[]> typeStatsMap = new HashMap<>(); // type -> [total, signed, unsigned]
 
-        for (Map<String, Object> row : statsList) {
-            String type = String.valueOf(row.get("contract_type"));
-            String status = String.valueOf(row.get("status"));
-            String subStatus = row.get("sub_status") != null ? String.valueOf(row.get("sub_status")) : "";
-            int count = ((Number) row.values().stream()
-                    .filter(v -> v instanceof Number && !(v.equals(row.get("contract_type"))))
-                    .findFirst().orElse(0)).intValue();
-
-            // 如果 selectMaps 没有 COUNT 列，这里换用全量查询统计
-            // 简化实现：直接查全量数据统计
+        // 查询数据（支持时间范围过滤）
+        LambdaQueryWrapperX<SigningContractDO> wrapper = new LambdaQueryWrapperX<>();
+        if (startTime != null) {
+            wrapper.ge(SigningContractDO::getCreateTime, startTime);
         }
-
-        // 简化实现：查全量数据统计
-        List<SigningContractDO> allContracts = signingContractMapper.selectList();
+        List<SigningContractDO> allContracts = signingContractMapper.selectList(wrapper);
         totalCount = allContracts.size();
 
         for (SigningContractDO c : allContracts) {

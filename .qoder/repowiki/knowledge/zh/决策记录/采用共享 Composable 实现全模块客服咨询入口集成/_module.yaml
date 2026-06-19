@@ -4,5 +4,4 @@ title: 采用共享 Composable 实现全模块客服咨询入口集成
 scope: []
 source_files: []
 depends_on: []
-related_to:
-    - path: ui_admin/opshub/customer_service
+related_to: []

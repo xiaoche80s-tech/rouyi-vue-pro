@@ -12,6 +12,5 @@ scope:
 source_files: []
 depends_on: []
 related_to:
-    - path: opshub/dealer
-    - path: ui_admin/system_management/tenant_management
     - path: framework/starter_biz_tenant
+    - path: ui_admin/system_management/tenant_management

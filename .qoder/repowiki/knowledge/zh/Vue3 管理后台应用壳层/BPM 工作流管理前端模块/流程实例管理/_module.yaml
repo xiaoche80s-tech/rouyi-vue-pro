@@ -1,0 +1,20 @@
+schema_version: 1
+module_path: ui_admin/bpm_workflow/process_instance
+title: 流程实例管理
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/bpm/processInstance/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/bpm/processInstance/
+source_files: []
+depends_on: []
+related_to:
+    - path: ui_admin/bpm_workflow/task_management
+    - path: bpm/task_management
+    - path: ui_admin/bpm_workflow/model_design
+    - path: bpm/bpm_api
+    - path: bpm/oa_leave
+    - path: ui_admin/bpm_workflow/form_category_group
+    - path: framework/starter_excel
+    - path: ui_admin/system_management/user_management
+    - path: ui_admin/system_management/dict_management
+    - path: ui_admin/system_management/tenant_management
+    - path: ui_admin/system_management/operation_logs

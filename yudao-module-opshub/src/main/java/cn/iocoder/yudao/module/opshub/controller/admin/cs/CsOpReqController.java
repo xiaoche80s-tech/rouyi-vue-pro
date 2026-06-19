@@ -26,6 +26,13 @@ public class CsOpReqController {
     @Resource
     private CsOpReqService csOpReqService;
 
+    @GetMapping("/statistics")
+    @Operation(summary = "获得操作请求统计数据")
+    @PreAuthorize("@ss.hasPermission('dealer:cs-opreq:query')")
+    public CommonResult<CsOpReqStatisticsRespVO> getStatistics() {
+        return success(csOpReqService.getStatistics());
+    }
+
     @GetMapping("/page")
     @Operation(summary = "获得操作请求分页")
     @PreAuthorize("@ss.hasPermission('dealer:cs-opreq:query')")

@@ -6,4 +6,8 @@ scope:
 source_files: []
 depends_on: []
 related_to:
+    - path: opshub/dealer
     - path: system/access_control
+    - path: opshub/signing
+    - path: bpm/task_management
+    - path: bpm/process_definition

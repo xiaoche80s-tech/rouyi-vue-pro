@@ -220,9 +220,14 @@ public class CsSessionServiceImpl implements CsSessionService {
 
     @Override
     public CsConsultStatisticsRespVO getStatistics() {
+        return getStatistics(null);
+    }
+
+    @Override
+    public CsConsultStatisticsRespVO getStatistics(LocalDateTime startTime) {
         Long currentUserId = SecurityFrameworkUtils.getLoginUserId();
         String viewScope = resolveViewScope(currentUserId);
-        Map<Integer, Long> countMap = csSessionMapper.selectCountGroupByStatusWithScope(viewScope, currentUserId);
+        Map<Integer, Long> countMap = csSessionMapper.selectCountGroupByStatusWithScope(viewScope, currentUserId, startTime);
         int pendingCount = countMap.getOrDefault(CsSessionStatusEnum.PENDING.getCode(), 0L).intValue();
         int processingCount = countMap.getOrDefault(CsSessionStatusEnum.PROCESSING.getCode(), 0L).intValue();
         int completedCount = countMap.getOrDefault(CsSessionStatusEnum.COMPLETED.getCode(), 0L).intValue();

@@ -5,4 +5,8 @@ scope:
     - yudao-module-bpm/src/main/java/cn/iocoder/yudao/module/bpm/api/
 source_files: []
 depends_on: []
-related_to: []
+related_to:
+    - path: bpm/task_management
+    - path: bpm/flowable_framework
+    - path: opshub/cs
+    - path: ui_admin/bpm_workflow/process_instance

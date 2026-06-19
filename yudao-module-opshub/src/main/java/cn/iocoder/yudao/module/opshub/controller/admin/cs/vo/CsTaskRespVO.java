@@ -78,4 +78,7 @@ public class CsTaskRespVO {
     @Schema(description = "更新时间")
     private LocalDateTime updateTime;
 
+    @Schema(description = "BPM 流程实例编号")
+    private String processInstanceId;
+
 }

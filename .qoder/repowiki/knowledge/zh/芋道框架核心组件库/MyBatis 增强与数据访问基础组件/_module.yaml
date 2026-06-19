@@ -5,4 +5,13 @@ scope:
     - yudao-framework/yudao-spring-boot-starter-mybatis/
 source_files: []
 depends_on: []
-related_to: []
+related_to:
+    - path: ui_admin/infra_platform/codegen
+    - path: infra/db_management
+    - path: opshub/aftersale
+    - path: im/statistics
+    - path: im/channel
+    - path: im/friend
+    - path: ui_admin/system_management/user_management
+    - path: ui_admin/infra_platform/data_source
+    - path: ui_admin/system_management/dict_management

@@ -25,6 +25,7 @@ export interface CsTaskVO {
   rejectReason: string
   createTime: string
   updateTime: string
+  processInstanceId: string
 }
 
 // 查询工单分页
@@ -80,4 +81,9 @@ export const reprocessTask = async (id: number) => {
 // 催办工单
 export const urgeTask = async (id: number) => {
   return await request.post({ url: '/opshub/cs-task/urge?id=' + id })
+}
+
+// 获取工单 BPM 候选人列表
+export const getTaskCandidateUsers = async (id: number) => {
+  return await request.get({ url: '/opshub/cs-task/candidate-users?id=' + id })
 }

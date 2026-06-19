@@ -159,8 +159,8 @@
   <el-dialog v-model="transferDialogVisible" title="转单" width="400px">
     <el-form :model="transferForm" label-width="80px">
       <el-form-item label="新处理人">
-        <el-select v-model="transferForm.newAssigneeId" filterable placeholder="请选择" style="width: 100%">
-          <el-option v-for="u in userList" :key="u.id" :label="u.nickname" :value="u.id" />
+        <el-select v-model="transferForm.newAssigneeId" filterable placeholder="请选择" style="width: 100%" :loading="candidateLoading">
+          <el-option v-for="u in candidateUserList" :key="u.id" :label="u.nickname" :value="u.id" />
         </el-select>
       </el-form-item>
       <el-form-item label="转单原因">
@@ -187,7 +187,7 @@
   </el-dialog>
 
   <!-- 工单详情弹窗 -->
-  <el-dialog v-model="detailDialogVisible" title="工单详情" width="800px" destroy-on-close>
+  <el-dialog v-model="detailDialogVisible" title="工单详情" width="900px" destroy-on-close>
     <TaskDetail v-if="detailDialogVisible" :id="detailTaskId" />
   </el-dialog>
 </template>
@@ -198,6 +198,7 @@ import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from 'elem
 import * as CsTaskApi from '@/api/opshub/csTask'
 import { getSimpleUserList } from '@/api/system/user'
 import { useUserStore } from '@/store/modules/user'
+import { useCsWebSocket, type CsTaskEventPayload } from '@/hooks/useCsWebSocket'
 import TaskDetail from '../task-detail.vue'
 
 // ========== 枚举常量 ==========
@@ -305,13 +306,13 @@ const handleSubTabChange = (tab: string) => {
 // 操作按钮可见性计算
 const canAccept = (row: any) => row.status === 0 && props.side === 'handler' && (row.assigneeId === null || row.assigneeId === currentUserId.value)
 const canSubmitApproval = (row: any) => row.status === 1 && row.assigneeId === currentUserId.value
-const canTransfer = (row: any) => row.status === 1 && row.assigneeId === currentUserId.value
+const canTransfer = (row: any) => row.status === 1 && (props.side === 'admin' || row.assigneeId === currentUserId.value)
 const canVerify = (row: any) => row.status === 2 && row.creatorUserId === currentUserId.value
 const canReprocess = (row: any) => row.status === 4 && row.assigneeId === currentUserId.value
 const canCancel = (row: any) => {
   if (row.status === 3) return false
   if (props.side === 'admin') return true
-  return row.status === 0 && row.creatorUserId === currentUserId.value
+  return (row.status === 0 || row.status === 1) && row.creatorUserId === currentUserId.value
 }
 const canUrge = (row: any) => row.status !== 3
 
@@ -365,9 +366,37 @@ const handleSubmitApproval = async (row: any) => {
 // ========== 转单 ==========
 const transferDialogVisible = ref(false)
 const transferLoading = ref(false)
+const candidateLoading = ref(false)
+const candidateUserList = ref<any[]>([])
 const transferForm = reactive({ id: 0, newAssigneeId: undefined as number | undefined, reason: '' })
-const handleTransfer = (row: any) => {
-  transferForm.id = row.id; transferForm.newAssigneeId = undefined; transferForm.reason = ''; transferDialogVisible.value = true
+
+const loadCandidateUsers = async (taskId: number) => {
+  candidateLoading.value = true
+  try {
+    const userIds: number[] = await CsTaskApi.getTaskCandidateUsers(taskId)
+    if (!userIds || userIds.length === 0) {
+      candidateUserList.value = []
+      return
+    }
+    // 从已加载的 userList 中筛选候选人，避免额外请求
+    const idSet = new Set(userIds)
+    candidateUserList.value = userList.value.filter((u: any) => idSet.has(u.id))
+    // 如果 userList 为空或没有匹配，用 userId 构造简单对象
+    if (candidateUserList.value.length === 0) {
+      candidateUserList.value = userIds.map((id: number) => ({ id, nickname: `用户${id}` }))
+    }
+  } catch (e) {
+    console.warn('[loadCandidateUsers] 加载候选人失败:', e)
+    candidateUserList.value = []
+  } finally {
+    candidateLoading.value = false
+  }
+}
+
+const handleTransfer = async (row: any) => {
+  transferForm.id = row.id; transferForm.newAssigneeId = undefined; transferForm.reason = ''
+  transferDialogVisible.value = true
+  await loadCandidateUsers(row.id)
 }
 const submitTransfer = async () => {
   if (!transferForm.newAssigneeId) { ElMessage.warning('请选择新处理人'); return }
@@ -408,9 +437,25 @@ const handleUrge = async (row: any) => {
   await CsTaskApi.urgeTask(row.id); ElMessage.success('催办成功')
 }
 
+// ========== WebSocket 监听 ==========
+useCsWebSocket(
+  undefined, // onChatMessage
+  undefined, // onSessionEvent
+  undefined, // onNewConsult
+  (event: CsTaskEventPayload) => {
+    // 收到工单事件时刷新列表和计数
+    console.log('[TaskTab] 收到工单事件:', event.type, event.taskId)
+    getList()
+    loadTabCounts()
+  }
+)
+
 // ========== 取消/关闭 ==========
 const handleCancel = async (row: any) => {
-  const { value: reason } = await ElMessageBox.prompt('请输入取消原因（可选）', '取消工单', {
+  const confirmMsg = row.status === 1
+    ? '取消后流程将终止，工单将被关闭。请输入取消原因（可选）'
+    : '取消后工单将被关闭。请输入取消原因（可选）'
+  const { value: reason } = await ElMessageBox.prompt(confirmMsg, '取消工单', {
     confirmButtonText: '确认取消', cancelButtonText: '返回', inputType: 'textarea'
   }).catch(() => { throw new Error('cancel') })
   try {

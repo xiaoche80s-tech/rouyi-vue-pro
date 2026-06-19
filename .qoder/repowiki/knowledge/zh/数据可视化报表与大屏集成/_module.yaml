@@ -5,5 +5,4 @@ scope:
     - yudao-module-report/
 source_files: []
 depends_on: []
-related_to:
-    - path: ui_admin/report_designer
+related_to: []

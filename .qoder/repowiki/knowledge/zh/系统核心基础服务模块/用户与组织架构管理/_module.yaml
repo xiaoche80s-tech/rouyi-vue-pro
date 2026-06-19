@@ -17,7 +17,9 @@ depends_on: []
 related_to:
     - path: system/access_control
     - path: system/system_support
-    - path: ui_admin/system_management/user_management
-    - path: ui_admin/system_management/dept_post
+    - path: opshub/dealer
+    - path: bpm/oa_leave
     - path: bpm/flowable_framework
-    - path: opshub/cs
+    - path: bpm/task_management
+    - path: ui_admin/bpm_workflow/task_management
+    - path: bpm/process_definition

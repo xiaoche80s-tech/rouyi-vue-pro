@@ -23,6 +23,7 @@ import cn.iocoder.yudao.module.bpm.enums.task.BpmCommentTypeEnum;
 import cn.iocoder.yudao.module.bpm.enums.task.BpmReasonEnum;
 import cn.iocoder.yudao.module.bpm.enums.task.BpmTaskSignTypeEnum;
 import cn.iocoder.yudao.module.bpm.enums.task.BpmTaskStatusEnum;
+import cn.iocoder.yudao.module.bpm.framework.flowable.core.candidate.BpmTaskCandidateInvoker;
 import cn.iocoder.yudao.module.bpm.framework.flowable.core.enums.BpmTaskCandidateStrategyEnum;
 import cn.iocoder.yudao.module.bpm.framework.flowable.core.enums.BpmnVariableConstants;
 import cn.iocoder.yudao.module.bpm.framework.flowable.core.util.BpmHttpRequestUtils;
@@ -107,6 +108,9 @@ public class BpmTaskServiceImpl implements BpmTaskService {
     private AdminUserApi adminUserApi;
     @Resource
     private DeptApi deptApi;
+
+    @Resource
+    private BpmTaskCandidateInvoker taskCandidateInvoker;
 
     // ========== Query 查询相关方法 ==========
 
@@ -546,6 +550,40 @@ public class BpmTaskServiceImpl implements BpmTaskService {
                 && BpmTaskSignTypeEnum.of(task.getScopeType()) != null;
     }
 
+    @Override
+    public Set<Long> getTaskCandidateUserIds(String processInstanceId) {
+        if (StrUtil.isBlank(processInstanceId)) {
+            return Collections.emptySet();
+        }
+        // 1. 获取当前运行的任务
+        List<Task> tasks = getRunningTaskListByProcessInstanceId(processInstanceId, null, null);
+        if (CollUtil.isEmpty(tasks)) {
+            return Collections.emptySet();
+        }
+        Task task = tasks.get(0);
+
+        // 2. 获取 BpmnModel
+        BpmnModel bpmnModel = modelService.getBpmnModelByDefinitionId(task.getProcessDefinitionId());
+        if (bpmnModel == null) {
+            return Collections.emptySet();
+        }
+
+        // 3. 获取流程实例，取发起人 ID
+        ProcessInstance processInstance = processInstanceService.getProcessInstance(processInstanceId);
+        Long startUserId = processInstance != null ? Long.valueOf(processInstance.getStartUserId()) : null;
+
+        // 4. 计算候选人
+        try {
+            return taskCandidateInvoker.calculateUsersByActivity(
+                    bpmnModel, task.getTaskDefinitionKey(),
+                    startUserId, task.getProcessDefinitionId(),
+                    task.getProcessVariables());
+        } catch (Exception e) {
+            log.warn("[getTaskCandidateUserIds][计算候选人失败 processInstanceId={}]", processInstanceId, e);
+            return Collections.emptySet();
+        }
+    }
+    
     // ========== Update 写入相关方法 ==========
 
     @Override

@@ -2,7 +2,7 @@
   <el-tabs v-model="activeTab" type="border-card">
     <!-- Tab 1: 工单管理 -->
     <el-tab-pane label="工单管理" name="task">
-      <TaskTab side="handler" />
+      <TaskTab :side="isAdmin ? 'admin' : 'handler'" />
     </el-tab-pane>
 
     <!-- Tab 2: 操作请求 -->
@@ -25,10 +25,17 @@ import { ref, computed } from 'vue'
 import TaskTab from './components/TaskTab.vue'
 import OpReqTab from './components/OpReqTab.vue'
 import ConsultTab from './components/ConsultTab.vue'
+import { useUserStore } from '@/store/modules/user'
 
 defineOptions({ name: 'OpshubCustomerService' })
 
-const activeTab = ref('task')
+const route = useRoute()
+const activeTab = ref((route.query.tab as string) || 'task')
+
+// 管理员角色使用 side='admin'，拥有更多操作权限（如转单、取消任意工单）
+const userStore = useUserStore()
+const adminRoles = ['super_admin', 'brand_admin', 'tenant_admin']
+const isAdmin = computed(() => userStore.getRoles.some((r: string) => adminRoles.includes(r)))
 
 // 咨询队列 Tab 角标
 const consultTabRef = ref<InstanceType<typeof ConsultTab>>()

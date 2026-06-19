@@ -1,0 +1,16 @@
+schema_version: 1
+module_path: ui_admin/system_management/menu_management
+title: 系统菜单管理
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/system/menu/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/system/menu/
+source_files: []
+depends_on: []
+related_to:
+    - path: ui_admin/system_management/role_permission
+    - path: system/access_control
+    - path: ui_admin/app_shell
+    - path: framework/starter_security
+    - path: ui_admin/system_management/user_management
+    - path: ui_admin/system_management/dict_management
+    - path: bpm/message_integration

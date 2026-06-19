@@ -10,6 +10,7 @@ import cn.iocoder.yudao.module.opshub.dal.dataobject.cs.CsSessionDO;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -92,10 +93,15 @@ public interface CsSessionMapper extends BaseMapperX<CsSessionDO> {
      *
      * @param viewScope     可见范围：creator / assignee / all
      * @param currentUserId 当前用户 ID
+     * @param startTime     起始时间（可为 null）
      */
-    default Map<Integer, Long> selectCountGroupByStatusWithScope(String viewScope, Long currentUserId) {
+    default Map<Integer, Long> selectCountGroupByStatusWithScope(String viewScope, Long currentUserId, LocalDateTime startTime) {
         LambdaQueryWrapper<CsSessionDO> wrapper = new LambdaQueryWrapper<CsSessionDO>()
                 .select(CsSessionDO::getStatus);
+
+        if (startTime != null) {
+            wrapper.ge(CsSessionDO::getCreateTime, startTime);
+        }
 
         if ("creator".equals(viewScope)) {
             wrapper.eq(CsSessionDO::getInitiatorId, currentUserId);

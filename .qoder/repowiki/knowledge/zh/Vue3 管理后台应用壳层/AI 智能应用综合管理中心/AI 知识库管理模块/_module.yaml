@@ -1,0 +1,13 @@
+schema_version: 1
+module_path: ui_admin/ai_assistant/knowledge
+title: AI 知识库管理模块
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/ai/knowledge/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/ai/knowledge/
+source_files: []
+depends_on: []
+related_to:
+    - path: ui_admin/ai_assistant/chat
+    - path: ui_admin/ai_assistant/workflow
+    - path: ui_admin/ai_assistant/image
+    - path: framework/starter_redis

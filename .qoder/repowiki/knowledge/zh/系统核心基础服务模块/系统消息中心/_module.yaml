@@ -22,8 +22,10 @@ scope:
 source_files: []
 depends_on: []
 related_to:
-    - path: bpm/task_management
-    - path: ui_admin/system_management/sms_notify_mail
-    - path: opshub/order
     - path: bpm/message_integration
-    - path: decisions/3722ab296d3b_708ca796e6e9
+    - path: opshub/cs
+    - path: opshub/aftersale
+    - path: ui_admin/system_management/sms_notify_mail
+    - path: opshub/signing
+    - path: opshub/order
+    - path: bpm/task_management

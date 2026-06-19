@@ -8,6 +8,7 @@ import cn.iocoder.yudao.module.bpm.api.task.BpmProcessInstanceApi;
 import cn.iocoder.yudao.module.bpm.api.task.dto.BpmProcessInstanceCreateReqDTO;
 import cn.iocoder.yudao.module.bpm.controller.admin.task.vo.task.BpmTaskApproveReqVO;
 import cn.iocoder.yudao.module.bpm.controller.admin.task.vo.task.BpmTaskRejectReqVO;
+import cn.iocoder.yudao.module.bpm.controller.admin.task.vo.task.BpmTaskTransferReqVO;
 import cn.iocoder.yudao.module.bpm.enums.task.BpmProcessInstanceStatusEnum;
 import cn.iocoder.yudao.module.bpm.service.task.BpmTaskService;
 import cn.iocoder.yudao.module.opshub.controller.admin.cs.vo.*;
@@ -29,6 +30,8 @@ import org.flowable.task.api.Task;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
@@ -38,6 +41,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.opshub.enums.ErrorCodeConstants.*;
@@ -62,6 +66,7 @@ public class CsTaskServiceImpl implements CsTaskService {
     private static final String NOTIFY_TASK_VERIFIED = "cs-task-verified";
     private static final String NOTIFY_TASK_REJECTED = "cs-task-rejected";
     private static final String NOTIFY_TASK_TRANSFERRED = "cs-task-transferred";
+    private static final String NOTIFY_TASK_URGING = "cs-task-urging";
 
     @Resource
     private CsTaskMapper csTaskMapper;
@@ -116,8 +121,8 @@ public class CsTaskServiceImpl implements CsTaskService {
         // 回写 processInstanceId
         csTaskMapper.updateById(new CsTaskDO().setId(taskDO.getId()).setProcessInstanceId(processInstanceId));
 
-        // 从 BPM 流程读取当前任务处理人，同步到工单表
-        syncBpmAssignee(taskDO.getId(), processInstanceId, true);
+        // 事务提交后再同步 BPM 处理人，确保 BPM 引擎已完成 StartUserNode 自动流转
+        executeAfterTransaction(() -> syncBpmAssignee(taskDO.getId(), processInstanceId, true));
 
         // 5. WebSocket 推送 + 站内信通知处理人
         // csWebSocketService.sendTaskNotifyAsync(reqVO.getAssigneeId(),
@@ -181,10 +186,15 @@ public class CsTaskServiceImpl implements CsTaskService {
 
         // 校验状态：仅处理中可转单
         validateStatus(task, CsTaskStatusEnum.IN_PROGRESS);
-        // 校验当前操作人是处理人
-        validateIsAssignee(task, currentUserId);
+        // 权限校验：管理员可转单，执行员仅可转单自己的工单
+        boolean isAdmin = permissionCommonApi.hasAnyRoles(currentUserId,
+                OpsRoleCodeConstants.BRAND_ADMIN, OpsRoleCodeConstants.SUPER_ADMIN);
+        if (!isAdmin) {
+            // 校验当前操作人是处理人
+            validateIsAssignee(task, currentUserId);
+        }
         // 校验不可转给自己
-        if (currentUserId.equals(reqVO.getNewAssigneeId())) {
+        if (task.getAssigneeId() != null && task.getAssigneeId().equals(reqVO.getNewAssigneeId())) {
             throw exception(CS_TASK_TRANSFER_SAME);
         }
 
@@ -192,6 +202,23 @@ public class CsTaskServiceImpl implements CsTaskService {
         csTaskMapper.updateById(new CsTaskDO()
                 .setId(reqVO.getId())
                 .setAssigneeId(reqVO.getNewAssigneeId()));
+
+        // 同步 BPM 流程中的任务处理人
+        if (task.getProcessInstanceId() != null) {
+            try {
+                String bpmTaskId = findCurrentBpmTaskId(task.getProcessInstanceId());
+                if (bpmTaskId != null) {
+                    BpmTaskTransferReqVO bpmVO = new BpmTaskTransferReqVO();
+                    bpmVO.setId(bpmTaskId);
+                    bpmVO.setAssigneeUserId(reqVO.getNewAssigneeId());
+                    bpmVO.setReason(reqVO.getReason() != null ? reqVO.getReason() : "工单转单");
+                    // 管理员转单时 currentUserId 非 BPM 任务执行人，需传入原处理人绕过 BPM validateTask 校验
+                    bpmTaskService.transferTask(task.getAssigneeId(), bpmVO);
+                }
+            } catch (Exception e) {
+                log.warn("[transferTask][同步 BPM 转单失败 taskId={}]", reqVO.getId(), e);
+            }
+        }
 
         // 推送给新处理人 + 站内信
         csWebSocketService.sendTaskNotifyAsync(reqVO.getNewAssigneeId(),
@@ -277,6 +304,7 @@ public class CsTaskServiceImpl implements CsTaskService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void urgeTask(Long id) {
         CsTaskDO task = validateTaskExists(id);
 
@@ -286,8 +314,11 @@ public class CsTaskServiceImpl implements CsTaskService {
         }
 
         // 推送催办通知给处理人
-        csWebSocketService.sendTaskNotifyAsync(task.getAssigneeId(),
-                buildNotification(task, CsTaskNotification.TYPE_TASK_URGING, "工单被催办，请尽快处理"));
+        if (task.getAssigneeId() != null) {
+            csWebSocketService.sendTaskNotifyAsync(task.getAssigneeId(),
+                    buildNotification(task, CsTaskNotification.TYPE_TASK_URGING, "工单被催办，请尽快处理"));
+            sendNotify(task.getAssigneeId(), NOTIFY_TASK_URGING, buildNotifyParams(task));
+        }
     }
 
     @Override
@@ -301,13 +332,16 @@ public class CsTaskServiceImpl implements CsTaskService {
             throw exception(CS_TASK_ALREADY_CLOSED);
         }
 
-        // 权限校验：经销商仅 PENDING + 仅提单人；管理员任意非 CLOSED
+        // 权限校验：经销商仅 PENDING/IN_PROGRESS + 仅提单人；管理员任意非 CLOSED
         boolean isCreator = currentUserId.equals(task.getCreatorUserId());
         boolean isAdmin = permissionCommonApi.hasAnyRoles(currentUserId,
                 OpsRoleCodeConstants.BRAND_ADMIN, OpsRoleCodeConstants.SUPER_ADMIN);
         if (!isAdmin) {
-            // 非管理员：仅 PENDING + 仅提单人
-            validateStatus(task, CsTaskStatusEnum.PENDING);
+            // 非管理员：仅 PENDING 或 IN_PROGRESS + 仅提单人
+            if (!CsTaskStatusEnum.PENDING.getCode().equals(task.getStatus())
+                    && !CsTaskStatusEnum.IN_PROGRESS.getCode().equals(task.getStatus())) {
+                throw exception(CS_TASK_NOT_PENDING_OR_IN_PROGRESS);
+            }
             if (!isCreator) {
                 throw exception(CS_TASK_NOT_CREATOR);
             }
@@ -551,6 +585,15 @@ public class CsTaskServiceImpl implements CsTaskService {
         return counts;
     }
 
+    @Override
+    public Set<Long> getTaskCandidateUserIds(Long csTaskId) {
+        CsTaskDO task = validateTaskExists(csTaskId);
+        if (task.getProcessInstanceId() == null) {
+            return Collections.emptySet();
+        }
+        return bpmTaskService.getTaskCandidateUserIds(task.getProcessInstanceId());
+    }
+
     // ========== BPM 集成辅助方法 ==========
 
     /**
@@ -680,6 +723,24 @@ public class CsTaskServiceImpl implements CsTaskService {
                 .setNewStatus(newStatus.getCode())
                 .setDealerCode(task.getDealerCode())
                 .setProductLineCode(task.getProductLineCode()));
+    }
+
+    /**
+     * 事务提交后执行任务，确保 BPM 引擎已完成节点流转
+     * - 无活跃事务：直接执行
+     * - 有活跃事务：注册 afterCommit 回调
+     */
+    private void executeAfterTransaction(Runnable task) {
+        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
+            task.run();
+            return;
+        }
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                task.run();
+            }
+        });
     }
 
 }

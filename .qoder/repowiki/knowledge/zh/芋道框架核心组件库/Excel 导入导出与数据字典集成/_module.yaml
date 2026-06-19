@@ -5,4 +5,16 @@ scope:
     - yudao-framework/yudao-spring-boot-starter-excel/
 source_files: []
 depends_on: []
-related_to: []
+related_to:
+    - path: ui_admin/system_management/dict_management
+    - path: opshub/order
+    - path: ui_admin/system_management/user_management
+    - path: ui_admin/system_management/sms_notify_mail
+    - path: ui_admin/bpm_workflow/task_management
+    - path: ui_admin/system_management/role_permission
+    - path: ui_admin/ai_assistant/knowledge/document
+    - path: ui_admin/bpm_workflow/process_instance
+    - path: ui_admin/opshub/signing
+    - path: ui_admin/opshub/product_line
+    - path: ui_admin/opshub/order
+    - path: infra/file_storage

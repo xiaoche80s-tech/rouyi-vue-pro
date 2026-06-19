@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.opshub.service.order.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.opshub.controller.admin.order.vo.*;
 import cn.iocoder.yudao.module.opshub.dal.dataobject.order.*;
 import cn.iocoder.yudao.module.opshub.dal.mysql.order.*;
@@ -106,7 +107,16 @@ public class OrderInfoServiceImpl implements OrderInfoService {
 
     @Override
     public OrderStatisticsRespVO getStatistics() {
-        List<OrderInfoDO> allOrders = orderInfoMapper.selectList();
+        return getStatistics(null);
+    }
+
+    @Override
+    public OrderStatisticsRespVO getStatistics(LocalDateTime startTime) {
+        LambdaQueryWrapperX<OrderInfoDO> wrapper = new LambdaQueryWrapperX<>();
+        if (startTime != null) {
+            wrapper.ge(OrderInfoDO::getCreateTime, startTime);
+        }
+        List<OrderInfoDO> allOrders = orderInfoMapper.selectList(wrapper);
 
         OrderStatisticsRespVO resp = new OrderStatisticsRespVO();
         resp.setTotalCount(allOrders.size());

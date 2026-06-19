@@ -1,9 +1,16 @@
 package cn.iocoder.yudao.module.opshub.controller.admin.excel;
 
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
+import cn.iocoder.yudao.framework.excel.core.annotations.ExcelColumnSelect;
+import cn.iocoder.yudao.framework.excel.core.function.ExcelColumnSelectFunction;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.opshub.controller.admin.excel.vo.*;
 import cn.iocoder.yudao.module.opshub.service.excel.OpsExcelImportService;
+import cn.idev.excel.ExcelWriter;
+import cn.idev.excel.FastExcelFactory;
+import cn.idev.excel.write.metadata.WriteSheet;
+import cn.iocoder.yudao.framework.common.util.http.HttpUtils;
+import cn.iocoder.yudao.framework.excel.core.handler.SelectSheetWriteHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,12 +21,17 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import cn.idev.excel.annotation.ExcelProperty;
+
 import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
@@ -32,10 +44,22 @@ public class OpsExcelImportController {
     @Resource
     private OpsExcelImportService opsExcelImportService;
 
+    /** functionName -> ExcelColumnSelectFunction，用于构建字段说明 Sheet */
+    @Resource
+    private List<ExcelColumnSelectFunction> selectFunctions;
+
+    private Map<String, List<String>> getFunctionMap() {
+        Map<String, List<String>> map = new HashMap<>();
+        if (selectFunctions != null) {
+            selectFunctions.forEach(f -> map.put(f.getName(), f.getOptions()));
+        }
+        return map;
+    }
+
     // ==================== 模板下载 ====================
 
     @GetMapping("/template/{type}")
-    @Operation(summary = "下载导入模板（含示例数据）")
+    @Operation(summary = "下载导入模板（含示例数据 + 字段说明）")
     @Parameter(name = "type", description = "导入类型", required = true,
             example = "dealer-info / product-line / relation / contract / order / order-product / " +
                     "order-payment / order-invoice / order-logistics / order-timeline / " +
@@ -45,48 +69,169 @@ public class OpsExcelImportController {
                                  HttpServletResponse response) throws IOException {
         switch (type) {
             case "dealer-info" ->
-                    ExcelUtils.write(response, "经销商导入模板.xlsx", "数据",
+                    writeMultiSheetExcel(response, "经销商导入模板.xlsx",
                             DealerInfoImportExcelVO.class, sampleDealerInfo());
             case "product-line" ->
-                    ExcelUtils.write(response, "产品线导入模板.xlsx", "数据",
+                    writeMultiSheetExcel(response, "产品线导入模板.xlsx",
                             DealerProductLineImportExcelVO.class, sampleProductLine());
             case "relation" ->
-                    ExcelUtils.write(response, "经销商产品线关联导入模板.xlsx", "数据",
+                    writeMultiSheetExcel(response, "经销商产品线关联导入模板.xlsx",
                             DealerProductLineRelationImportExcelVO.class, sampleRelation());
             case "contract" ->
-                    ExcelUtils.write(response, "签约合同导入模板.xlsx", "数据",
+                    writeMultiSheetExcel(response, "签约合同导入模板.xlsx",
                             SigningContractImportExcelVO.class, sampleContract());
             case "order" ->
-                    ExcelUtils.write(response, "订单导入模板.xlsx", "数据",
+                    writeMultiSheetExcel(response, "订单导入模板.xlsx",
                             OrderInfoImportExcelVO.class, sampleOrder());
             case "order-product" ->
-                    ExcelUtils.write(response, "订单产品导入模板.xlsx", "数据",
+                    writeMultiSheetExcel(response, "订单产品导入模板.xlsx",
                             OrderProductImportExcelVO.class, sampleOrderProduct());
             case "order-payment" ->
-                    ExcelUtils.write(response, "订单付款导入模板.xlsx", "数据",
+                    writeMultiSheetExcel(response, "订单付款导入模板.xlsx",
                             OrderPaymentImportExcelVO.class, sampleOrderPayment());
             case "order-invoice" ->
-                    ExcelUtils.write(response, "订单发票导入模板.xlsx", "数据",
+                    writeMultiSheetExcel(response, "订单发票导入模板.xlsx",
                             OrderInvoiceImportExcelVO.class, sampleOrderInvoice());
             case "order-logistics" ->
-                    ExcelUtils.write(response, "订单物流导入模板.xlsx", "数据",
+                    writeMultiSheetExcel(response, "订单物流导入模板.xlsx",
                             OrderLogisticsImportExcelVO.class, sampleOrderLogistics());
             case "order-timeline" ->
-                    ExcelUtils.write(response, "订单时间线导入模板.xlsx", "数据",
+                    writeMultiSheetExcel(response, "订单时间线导入模板.xlsx",
                             OrderTimelineImportExcelVO.class, sampleOrderTimeline());
             case "aftersale" ->
-                    ExcelUtils.write(response, "售后单导入模板.xlsx", "数据",
+                    writeMultiSheetExcel(response, "售后单导入模板.xlsx",
                             AfterSaleInfoImportExcelVO.class, sampleAfterSale());
             case "aftersale-progress" ->
-                    ExcelUtils.write(response, "售后进度导入模板.xlsx", "数据",
+                    writeMultiSheetExcel(response, "售后进度导入模板.xlsx",
                             AfterSaleProgressImportExcelVO.class, sampleAfterSaleProgress());
             case "basedata-file" ->
-                    ExcelUtils.write(response, "基础数据文件导入模板.xlsx", "数据",
+                    writeMultiSheetExcel(response, "基础数据文件导入模板.xlsx",
                             BasedataFileImportExcelVO.class, sampleBasedataFile());
             default ->
-                    ExcelUtils.write(response, "未知模板.xlsx", "数据",
+                    writeMultiSheetExcel(response, "未知模板.xlsx",
                             DealerInfoImportExcelVO.class, Collections.emptyList());
         }
+    }
+
+    // ==================== 批量打包下载 ====================
+
+    @GetMapping("/template/all")
+    @Operation(summary = "批量打包下载全部导入模板（ZIP）")
+    @PreAuthorize("@ss.hasPermission('opshub:excel-import:import')")
+    public void downloadAllTemplates(HttpServletResponse response) throws IOException {
+        response.setContentType("application/zip");
+        response.addHeader("Content-Disposition",
+                "attachment;filename=" + java.net.URLEncoder.encode("OpsHub导入模板.zip", "UTF-8"));
+
+        try (ZipOutputStream zos = new ZipOutputStream(response.getOutputStream())) {
+            writeZipEntry(zos, "L0_经销商导入模板.xlsx", DealerInfoImportExcelVO.class, sampleDealerInfo());
+            writeZipEntry(zos, "L0_产品线导入模板.xlsx", DealerProductLineImportExcelVO.class, sampleProductLine());
+            writeZipEntry(zos, "L1_经销商产品线关联导入模板.xlsx", DealerProductLineRelationImportExcelVO.class, sampleRelation());
+            writeZipEntry(zos, "L2_签约合同导入模板.xlsx", SigningContractImportExcelVO.class, sampleContract());
+            writeZipEntry(zos, "L2_订单导入模板.xlsx", OrderInfoImportExcelVO.class, sampleOrder());
+            writeZipEntry(zos, "L3_订单产品导入模板.xlsx", OrderProductImportExcelVO.class, sampleOrderProduct());
+            writeZipEntry(zos, "L3_订单付款导入模板.xlsx", OrderPaymentImportExcelVO.class, sampleOrderPayment());
+            writeZipEntry(zos, "L3_订单发票导入模板.xlsx", OrderInvoiceImportExcelVO.class, sampleOrderInvoice());
+            writeZipEntry(zos, "L3_订单物流导入模板.xlsx", OrderLogisticsImportExcelVO.class, sampleOrderLogistics());
+            writeZipEntry(zos, "L3_订单时间线导入模板.xlsx", OrderTimelineImportExcelVO.class, sampleOrderTimeline());
+            writeZipEntry(zos, "L2_售后单导入模板.xlsx", AfterSaleInfoImportExcelVO.class, sampleAfterSale());
+            writeZipEntry(zos, "L3_售后进度导入模板.xlsx", AfterSaleProgressImportExcelVO.class, sampleAfterSaleProgress());
+            writeZipEntry(zos, "L4_基础数据文件导入模板.xlsx", BasedataFileImportExcelVO.class, sampleBasedataFile());
+        }
+    }
+
+    // ==================== 多 Sheet 写入工具方法 ====================
+
+    /**
+     * 多 Sheet 写入：Sheet1=数据（含下拉） + Sheet2=字段说明
+     * 注意：响应头必须在写入数据之前设置，否则响应提交后无法再修改头信息
+     */
+    @SuppressWarnings("unchecked")
+    private <T> void writeMultiSheetExcel(HttpServletResponse response, String fileName,
+                                          Class<T> head, List<T> data) throws IOException {
+        // 先设置 header 和 contentType（必须在写入之前）
+        response.setContentType("application/vnd.ms-excel;charset=UTF-8");
+        response.addHeader("Content-Disposition", "attachment;filename=" + HttpUtils.encodeUtf8(fileName));
+        writeMultiSheet(response.getOutputStream(), head, data);
+    }
+
+    private <T> void writeZipEntry(ZipOutputStream zos, String fileName,
+                                   Class<T> head, List<T> data) throws IOException {
+        zos.putNextEntry(new ZipEntry(fileName));
+        writeMultiSheet(zos, head, data);
+        zos.closeEntry();
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private <T> void writeMultiSheet(OutputStream out, Class<T> head, List<T> data) throws IOException {
+        ExcelWriter writer = FastExcelFactory.write(out, head)
+                .autoCloseStream(false)
+                .registerWriteHandler(new SelectSheetWriteHandler(head))
+                .build();
+        boolean success = false;
+        try {
+            // Sheet 1: 数据
+            WriteSheet dataSheet = cn.idev.excel.EasyExcel.writerSheet(0, "数据").build();
+            writer.write(data, dataSheet);
+            // Sheet 2: 字段说明
+            WriteSheet descSheet = cn.idev.excel.EasyExcel.writerSheet(1, "字段说明")
+                    .head(FieldDescriptionExcelVO.class).build();
+            writer.write(buildFieldDescriptions(head), descSheet);
+            success = true;
+        } finally {
+            if (success) {
+                writer.finish();
+            } else {
+                // 异常路径：仅关闭 writer，跳过 dispose 以避免 "Stream closed" 警告
+                try {
+                    writer.close();
+                } catch (Exception ignored) {
+                    // 清理阶段的异常可以忽略
+                }
+            }
+        }
+    }
+
+    /**
+     * 通过反射解析 VO 类构建字段说明列表
+     */
+    private List<FieldDescriptionExcelVO> buildFieldDescriptions(Class<?> head) {
+        Map<String, List<String>> functionMap = getFunctionMap();
+        List<FieldDescriptionExcelVO> descriptions = new ArrayList<>();
+        for (Field field : head.getDeclaredFields()) {
+            if (java.lang.reflect.Modifier.isStatic(field.getModifiers()) &&
+                    java.lang.reflect.Modifier.isFinal(field.getModifiers())) {
+                continue;
+            }
+            ExcelProperty ep = field.getAnnotation(ExcelProperty.class);
+            if (ep == null) continue;
+
+            String fieldName = ep.value().length > 0 ? ep.value()[0] : field.getName();
+            String fieldType = resolveFieldType(field.getType());
+            String options = "";
+
+            // 检查是否有 @ExcelColumnSelect
+            ExcelColumnSelect ecs = field.getAnnotation(ExcelColumnSelect.class);
+            if (ecs != null && !ecs.functionName().isEmpty()) {
+                List<String> opts = functionMap.get(ecs.functionName());
+                if (opts != null) {
+                    fieldType = "枚举";
+                    options = String.join("、", opts);
+                }
+            }
+            descriptions.add(FieldDescriptionExcelVO.builder()
+                    .fieldName(fieldName).fieldType(fieldType).options(options).build());
+        }
+        return descriptions;
+    }
+
+    private String resolveFieldType(Class<?> clazz) {
+        if (clazz == String.class) return "文本";
+        if (clazz == Integer.class || clazz == Long.class || clazz == int.class || clazz == long.class) return "整数";
+        if (clazz == BigDecimal.class || clazz == Double.class || clazz == double.class) return "数字";
+        if (clazz == LocalDate.class) return "日期";
+        if (clazz == LocalDateTime.class) return "日期时间";
+        return "文本";
     }
 
     // ==================== Excel 导入 ====================

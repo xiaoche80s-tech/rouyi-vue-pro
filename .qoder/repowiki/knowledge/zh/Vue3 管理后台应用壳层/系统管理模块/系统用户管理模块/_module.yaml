@@ -1,0 +1,40 @@
+schema_version: 1
+module_path: ui_admin/system_management/user_management
+title: 系统用户管理模块
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/system/user/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/system/user/
+source_files: []
+depends_on: []
+related_to:
+    - path: ui_admin/system_management/dept_post
+    - path: system/authentication
+    - path: ui_admin/system_management/operation_logs
+    - path: ui_admin/system_management/role_permission
+    - path: ui_admin/system_management/area_notice
+    - path: ui_admin/system_management/sms_notify_mail
+    - path: framework/starter_security
+    - path: bpm/message_integration
+    - path: framework/starter_excel
+    - path: ui_admin/system_management/dict_management
+    - path: framework/starter_mybatis
+    - path: bpm/process_definition
+    - path: ui_admin/bpm_workflow/task_management
+    - path: bpm/task_management
+    - path: ui_admin/bpm_workflow/process_instance
+    - path: ui_admin/ai_assistant/chat
+    - path: ui_admin/system_management/menu_management
+    - path: ui_admin/bpm_workflow/model_design
+    - path: ui_admin/ai_assistant/knowledge/document
+    - path: im/friend
+    - path: ui_admin/opshub/signing
+    - path: opshub/basedata
+    - path: im/group
+    - path: opshub/cs
+    - path: ui_admin/ai_assistant/workflow
+    - path: opshub/aftersale
+    - path: im/channel
+    - path: ui_admin/opshub/order
+    - path: ui_admin/infra_platform/job_scheduler
+    - path: im/rtc
+    - path: ui_admin/ai_assistant/knowledge/segment

@@ -132,6 +132,14 @@ public class CsTaskController {
         return success(true);
     }
 
+    @GetMapping("/candidate-users")
+    @Operation(summary = "获取工单 BPM 候选人列表")
+    @Parameter(name = "id", description = "工单ID", required = true)
+    @PreAuthorize("@ss.hasPermission('dealer:cs-task:transfer')")
+    public CommonResult<Set<Long>> getTaskCandidateUserIds(@RequestParam("id") Long id) {
+        return success(csTaskService.getTaskCandidateUserIds(id));
+    }
+
     // ========== 私有方法 ==========
 
     /**

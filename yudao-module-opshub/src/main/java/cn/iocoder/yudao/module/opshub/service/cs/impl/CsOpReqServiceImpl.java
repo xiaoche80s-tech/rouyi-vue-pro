@@ -177,6 +177,31 @@ public class CsOpReqServiceImpl implements CsOpReqService {
         sendNotify(opReq.getAssigneeId(), NOTIFY_OPREQ_VERIFIED, buildNotifyParams(opReq));
     }
 
+    @Override
+    public CsOpReqStatisticsRespVO getStatistics() {
+        return getStatistics(null);
+    }
+
+    @Override
+    public CsOpReqStatisticsRespVO getStatistics(LocalDateTime startTime) {
+        Long currentUserId = SecurityFrameworkUtils.getLoginUserId();
+        String viewScope = resolveViewScope(currentUserId);
+        Map<Integer, Long> countMap = csOpReqMapper.selectCountGroupByStatusWithScope(viewScope, currentUserId, startTime);
+
+        int pendingCount = countMap.getOrDefault(CsOpReqStatusEnum.PENDING.getCode(), 0L).intValue();
+        int inProgressCount = countMap.getOrDefault(CsOpReqStatusEnum.IN_PROGRESS.getCode(), 0L).intValue();
+        int pendingVerifyCount = countMap.getOrDefault(CsOpReqStatusEnum.DELIVERED.getCode(), 0L).intValue();
+        int completedCount = countMap.getOrDefault(CsOpReqStatusEnum.CLOSED.getCode(), 0L).intValue();
+
+        CsOpReqStatisticsRespVO respVO = new CsOpReqStatisticsRespVO();
+        respVO.setTotalCount(pendingCount + inProgressCount + pendingVerifyCount + completedCount);
+        respVO.setPendingCount(pendingCount);
+        respVO.setInProgressCount(inProgressCount);
+        respVO.setPendingVerifyCount(pendingVerifyCount);
+        respVO.setCompletedCount(completedCount);
+        return respVO;
+    }
+
     // ========== 辅助方法 ==========
 
     private CsOpReqDO validateOpReqExists(Long id) {

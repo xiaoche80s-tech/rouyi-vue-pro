@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.opshub.controller.admin.excel.vo;
 
 import cn.idev.excel.annotation.ExcelProperty;
+import cn.iocoder.yudao.framework.excel.core.annotations.ExcelColumnSelect;
 import cn.iocoder.yudao.module.opshub.framework.excel.convert.OrderInvoiceRecordStatusConvert;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +24,8 @@ public class OrderInvoiceImportExcelVO {
     @ExcelProperty("发票抬头") private String companyName;
     @ExcelProperty("纳税人识别号") private String taxNo;
     @ExcelProperty("特殊开票需求") private String specialRequest;
-    @ExcelProperty(value = "状态", converter = OrderInvoiceRecordStatusConvert.class) private String status;
+    @ExcelProperty(value = "状态", converter = OrderInvoiceRecordStatusConvert.class)
+    @ExcelColumnSelect(functionName = "order_invoice_record_status")
+    private String status;
     @ExcelProperty("备注") private String remark;
 }

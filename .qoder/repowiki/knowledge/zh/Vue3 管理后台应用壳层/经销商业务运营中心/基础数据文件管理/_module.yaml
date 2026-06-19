@@ -1,0 +1,18 @@
+schema_version: 1
+module_path: ui_admin/opshub/basedata
+title: 基础数据文件管理
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/opshub/basedata/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/opshub/basedata/
+source_files: []
+depends_on: []
+related_to:
+    - path: ui_admin/ai_assistant
+    - path: opshub/basedata
+    - path: opshub/signing
+    - path: ui_admin/opshub/order
+    - path: opshub/aftersale
+    - path: opshub/cs
+    - path: opshub/order
+    - path: opshub/dealer
+    - path: bpm/message_integration

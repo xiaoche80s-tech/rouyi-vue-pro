@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.opshub.service.aftersale.impl;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.opshub.controller.admin.aftersale.vo.*;
 import cn.iocoder.yudao.module.opshub.dal.dataobject.aftersale.AfterSaleInfoDO;
 import cn.iocoder.yudao.module.opshub.dal.dataobject.aftersale.AfterSaleProgressDO;
@@ -88,7 +89,16 @@ public class AfterSaleInfoServiceImpl implements AfterSaleInfoService {
 
     @Override
     public AfterSaleStatisticsRespVO getStatistics() {
-        List<AfterSaleInfoDO> allList = afterSaleInfoMapper.selectList();
+        return getStatistics(null);
+    }
+
+    @Override
+    public AfterSaleStatisticsRespVO getStatistics(LocalDateTime startTime) {
+        LambdaQueryWrapperX<AfterSaleInfoDO> wrapper = new LambdaQueryWrapperX<>();
+        if (startTime != null) {
+            wrapper.ge(AfterSaleInfoDO::getCreateTime, startTime);
+        }
+        List<AfterSaleInfoDO> allList = afterSaleInfoMapper.selectList(wrapper);
         int total = allList.size();
 
         AfterSaleStatisticsRespVO resp = new AfterSaleStatisticsRespVO();

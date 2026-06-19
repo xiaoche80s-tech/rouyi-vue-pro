@@ -4,5 +4,4 @@ title: 建立跨模块的通用附件表 ops_cs_attachment
 scope: []
 source_files: []
 depends_on: []
-related_to:
-    - path: infra/file_storage
+related_to: []

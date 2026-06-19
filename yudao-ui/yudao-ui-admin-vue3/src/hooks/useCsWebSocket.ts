@@ -25,6 +25,20 @@ export interface CsChatMessagePayload {
 }
 
 /**
+ * 工单事件通知 Payload
+ */
+export interface CsTaskEventPayload {
+  taskId: number
+  taskNo: string
+  type: string
+  message: string
+  status: number
+  urgency: number
+  operatorUserId?: number
+  operatorUserName?: string
+}
+
+/**
  * 客服咨询 WebSocket Hook
  *
  * 监听 cs-chat-message / cs-session-event / cs-new-consult 三类消息推送
@@ -32,7 +46,8 @@ export interface CsChatMessagePayload {
 export function useCsWebSocket(
   onChatMessage?: (msg: CsChatMessagePayload) => void,
   onSessionEvent?: (msg: CsChatMessagePayload) => void,
-  onNewConsult?: (msg: CsChatMessagePayload) => void
+  onNewConsult?: (msg: CsChatMessagePayload) => void,
+  onTaskEvent?: (msg: CsTaskEventPayload) => void
 ) {
   const server = ref(
     (import.meta.env.VITE_BASE_URL + '/infra/ws').replace('http', 'ws') +
@@ -80,6 +95,24 @@ export function useCsWebSocket(
           break
         case 'cs-new-consult':
           onNewConsult?.(content)
+          break
+        default:
+          // 工单事件通知（cs-task-* / cs-opreq-* / cs-sla-*）
+          if (type.startsWith('cs-task-') || type.startsWith('cs-opreq-') || type.startsWith('cs-sla-')) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const raw = content as any
+            const taskEvent: CsTaskEventPayload = {
+              taskId: raw.taskId,
+              taskNo: raw.taskNo,
+              type: type,
+              message: raw.message,
+              status: raw.status,
+              urgency: raw.urgency,
+              operatorUserId: raw.operatorUserId,
+              operatorUserName: raw.operatorUserName
+            }
+            onTaskEvent?.(taskEvent)
+          }
           break
       }
     } catch (error) {

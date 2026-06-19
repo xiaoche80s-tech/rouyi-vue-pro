@@ -4,6 +4,8 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.opshub.controller.admin.cs.vo.*;
 import cn.iocoder.yudao.module.opshub.dal.dataobject.cs.CsOpReqDO;
 
+import java.time.LocalDateTime;
+
 /**
  * 操作请求 Service 接口
  */
@@ -42,5 +44,15 @@ public interface CsOpReqService {
      * 状态：等待验收(2) → 已完成(3)
      */
     void verifyOpReq(Long id);
+
+    /**
+     * 获得操作请求统计数据（按角色可见性过滤）
+     */
+    CsOpReqStatisticsRespVO getStatistics();
+
+    /**
+     * 获得操作请求统计数据（指定时间范围）
+     */
+    CsOpReqStatisticsRespVO getStatistics(LocalDateTime startTime);
 
 }

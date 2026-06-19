@@ -1,0 +1,12 @@
+schema_version: 1
+module_path: ui_admin/opshub/customer_service
+title: 客户服务与工单管理
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/opshub/csAttachment/
+    - yudao-ui/yudao-ui-admin-vue3/src/api/opshub/csOpReq/
+    - yudao-ui/yudao-ui-admin-vue3/src/api/opshub/csSession/
+    - yudao-ui/yudao-ui-admin-vue3/src/api/opshub/csTask/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/opshub/customerservice/
+source_files: []
+depends_on: []
+related_to: []

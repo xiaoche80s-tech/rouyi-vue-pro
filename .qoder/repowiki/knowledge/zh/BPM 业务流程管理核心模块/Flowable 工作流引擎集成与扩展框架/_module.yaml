@@ -6,4 +6,7 @@ scope:
 source_files: []
 depends_on: []
 related_to:
+    - path: bpm/process_definition
+    - path: bpm/bpm_api
     - path: system/user_identity
+    - path: ui_admin/bpm_workflow/model_design

@@ -7,3 +7,13 @@ source_files: []
 depends_on: []
 related_to:
     - path: system/authentication
+    - path: ui_admin/app_shell
+    - path: opshub/cs
+    - path: ui_admin/system_management/user_management
+    - path: ui_admin/system_management/role_permission
+    - path: ui_admin/system_management/menu_management
+    - path: ui_admin/system_management/oauth2_social
+    - path: ui_admin/system_management/sms_notify_mail
+    - path: ui_admin/system_management/dict_management
+    - path: ui_admin/system_management/tenant_management
+    - path: ui_admin/system_management/operation_logs

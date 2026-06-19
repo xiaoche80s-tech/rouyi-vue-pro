@@ -1,0 +1,12 @@
+schema_version: 1
+module_path: ui_admin/opshub/cs_workbench
+title: 客服咨询工作台
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/views/opshub/csWorkbench/
+source_files: []
+depends_on: []
+related_to:
+    - path: ui_admin/im_chat/user_im
+    - path: ui_admin/opshub/customer_service
+    - path: opshub/cs
+    - path: opshub/dealer

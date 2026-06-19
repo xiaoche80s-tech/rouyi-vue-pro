@@ -12,4 +12,12 @@ source_files: []
 depends_on: []
 related_to:
     - path: im/friend
+    - path: im/channel
+    - path: ui_admin/im_chat/user_im
+    - path: im/rtc
     - path: ui_admin/im_chat/admin_im
+    - path: framework/starter_websocket
+    - path: im/statistics
+    - path: ui_admin/system_management/user_management
+    - path: ui_admin/system_management/dict_management
+    - path: ui_admin/system_management/tenant_management

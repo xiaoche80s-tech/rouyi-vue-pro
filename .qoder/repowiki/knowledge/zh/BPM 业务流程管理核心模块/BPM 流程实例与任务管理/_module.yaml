@@ -7,8 +7,15 @@ scope:
 source_files: []
 depends_on: []
 related_to:
-    - path: system/message_center
-    - path: ui_admin/bpm_workflow/process_instance
     - path: opshub/cs
-    - path: decisions/3722ab296d3b_3531af1c0478
-    - path: im/friend
+    - path: bpm/bpm_api
+    - path: bpm/process_definition
+    - path: ui_admin/bpm_workflow/process_instance
+    - path: system/user_identity
+    - path: ui_admin/bpm_workflow/task_management
+    - path: framework/starter_biz_data_permission
+    - path: system/message_center
+    - path: ui_admin/system_management/user_management
+    - path: ui_admin/bpm_workflow/form_category_group
+    - path: ui_admin/system_management/dict_management
+    - path: ui_admin/system_management/tenant_management

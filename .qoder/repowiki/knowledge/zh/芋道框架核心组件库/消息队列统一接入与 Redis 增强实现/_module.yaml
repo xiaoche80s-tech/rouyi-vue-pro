@@ -6,5 +6,4 @@ scope:
 source_files: []
 depends_on: []
 related_to:
-    - path: framework/starter_websocket
-    - path: im/rtc
+    - path: bpm/message_integration

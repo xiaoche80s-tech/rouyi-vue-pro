@@ -1,8 +1,7 @@
 schema_version: 1
-module_path: decisions/17684d7dc89b_d7231804859e
+module_path: decisions/3722ab296d3b_e8789d865c53
 title: 在 opshub 模块自建客服会话层而非复用 IM 模块
 scope: []
 source_files: []
 depends_on: []
-related_to:
-    - path: opshub/cs
+related_to: []

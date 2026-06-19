@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.opshub.controller.admin.excel.vo;
 
 import cn.idev.excel.annotation.ExcelProperty;
+import cn.iocoder.yudao.framework.excel.core.annotations.ExcelColumnSelect;
 import cn.iocoder.yudao.module.opshub.framework.excel.convert.OrderPaymentStatusConvert;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +21,8 @@ public class OrderPaymentImportExcelVO {
     @ExcelProperty("付款日期") private LocalDate payDate;
     @ExcelProperty("付款方式") private String payMethod;
     @ExcelProperty("付款凭证号") private String voucherNo;
-    @ExcelProperty(value = "状态", converter = OrderPaymentStatusConvert.class) private String status;
+    @ExcelProperty(value = "状态", converter = OrderPaymentStatusConvert.class)
+    @ExcelColumnSelect(functionName = "order_payment_status")
+    private String status;
     @ExcelProperty("备注") private String remark;
 }

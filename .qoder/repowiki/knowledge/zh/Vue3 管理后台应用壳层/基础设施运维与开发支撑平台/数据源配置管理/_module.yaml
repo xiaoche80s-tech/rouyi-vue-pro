@@ -1,0 +1,13 @@
+schema_version: 1
+module_path: ui_admin/infra_platform/data_source
+title: 数据源配置管理
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/infra/dataSourceConfig/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/infra/dataSourceConfig/
+source_files: []
+depends_on: []
+related_to:
+    - path: ui_admin/infra_platform/codegen
+    - path: infra/db_management
+    - path: framework/starter_mybatis
+    - path: ui_admin/infra_platform/monitoring_tools

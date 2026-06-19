@@ -1,0 +1,12 @@
+schema_version: 1
+module_path: opshub/dealer
+title: 经销商与产品线管理
+scope:
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/controller/admin/dealer/
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/dal/dataobject/dealer/
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/dal/mysql/dealer/
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/service/dealer/
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/framework/datapermission/rule/DealerDataPermissionRule.java
+source_files: []
+depends_on: []
+related_to: []

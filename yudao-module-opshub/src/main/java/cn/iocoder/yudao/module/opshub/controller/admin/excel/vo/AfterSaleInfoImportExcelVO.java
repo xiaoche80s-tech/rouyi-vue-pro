@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.opshub.controller.admin.excel.vo;
 
 import cn.idev.excel.annotation.ExcelProperty;
+import cn.iocoder.yudao.framework.excel.core.annotations.ExcelColumnSelect;
 import cn.iocoder.yudao.module.opshub.framework.excel.convert.AfterSaleHandlingMethodConvert;
 import cn.iocoder.yudao.module.opshub.framework.excel.convert.AfterSaleProgressStatusConvert;
 import cn.iocoder.yudao.module.opshub.framework.excel.convert.AfterSaleReasonConvert;
@@ -20,9 +21,15 @@ public class AfterSaleInfoImportExcelVO {
     @ExcelProperty("经销商编码") private String dealerCode;
     @ExcelProperty("产品线编码") private String productLineCode;
     @ExcelProperty("关联订单号") private String orderCode;
-    @ExcelProperty(value = "处理方式", converter = AfterSaleHandlingMethodConvert.class) private String handlingMethod;
-    @ExcelProperty(value = "售后原因", converter = AfterSaleReasonConvert.class) private String reason;
-    @ExcelProperty(value = "进度状态", converter = AfterSaleProgressStatusConvert.class) private String progressStatus;
+    @ExcelProperty(value = "处理方式", converter = AfterSaleHandlingMethodConvert.class)
+    @ExcelColumnSelect(functionName = "aftersale_handling_method")
+    private String handlingMethod;
+    @ExcelProperty(value = "售后原因", converter = AfterSaleReasonConvert.class)
+    @ExcelColumnSelect(functionName = "aftersale_reason")
+    private String reason;
+    @ExcelProperty(value = "进度状态", converter = AfterSaleProgressStatusConvert.class)
+    @ExcelColumnSelect(functionName = "aftersale_progress_status")
+    private String progressStatus;
     @ExcelProperty("产品名称") private String productName;
     @ExcelProperty("产品规格型号") private String productSpec;
     @ExcelProperty("售后数量") private Integer quantity;

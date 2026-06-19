@@ -13,5 +13,9 @@ source_files: []
 depends_on: []
 related_to:
     - path: opshub/cs
+    - path: im/rtc
+    - path: im/sensitiveword
+    - path: im/channel
+    - path: im/face
     - path: im/statistics
     - path: ui_admin/im_chat/user_im

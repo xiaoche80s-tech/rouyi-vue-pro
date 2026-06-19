@@ -1,0 +1,14 @@
+schema_version: 1
+module_path: ui_admin/ai_assistant/knowledge/segment
+title: 知识库分段管理
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/ai/knowledge/segment/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/ai/knowledge/segment/
+source_files: []
+depends_on: []
+related_to:
+    - path: ui_admin/ai_assistant/knowledge/document
+    - path: ui_admin/ai_assistant/chat
+    - path: framework/starter_redis
+    - path: ui_admin/system_management/user_management
+    - path: ui_admin/system_management/dict_management

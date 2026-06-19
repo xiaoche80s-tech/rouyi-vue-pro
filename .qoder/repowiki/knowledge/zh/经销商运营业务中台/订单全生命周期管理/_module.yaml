@@ -13,6 +13,4 @@ scope:
     - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/enums/OrderProgressStatusEnum.java
 source_files: []
 depends_on: []
-related_to:
-    - path: opshub/aftersale
-    - path: system/message_center
+related_to: []

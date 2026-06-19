@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.opshub.controller.admin.excel.vo;
 
 import cn.idev.excel.annotation.ExcelProperty;
+import cn.iocoder.yudao.framework.excel.core.annotations.ExcelColumnSelect;
 import cn.iocoder.yudao.module.opshub.framework.excel.convert.OrderInvoiceStatusConvert;
 import cn.iocoder.yudao.module.opshub.framework.excel.convert.OrderPayStatusConvert;
 import cn.iocoder.yudao.module.opshub.framework.excel.convert.OrderProgressStatusConvert;
@@ -22,8 +23,14 @@ public class OrderInfoImportExcelVO {
     @ExcelProperty("产品线编码") private String productLineCode;
     @ExcelProperty("订单总金额") private BigDecimal totalAmount;
     @ExcelProperty("订单日期") private LocalDate orderDate;
-    @ExcelProperty(value = "进度状态", converter = OrderProgressStatusConvert.class) private String progressStatus;
-    @ExcelProperty(value = "付款状态", converter = OrderPayStatusConvert.class) private String payStatus;
-    @ExcelProperty(value = "开票状态", converter = OrderInvoiceStatusConvert.class) private String invStatus;
+    @ExcelProperty(value = "进度状态", converter = OrderProgressStatusConvert.class)
+    @ExcelColumnSelect(functionName = "order_progress_status")
+    private String progressStatus;
+    @ExcelProperty(value = "付款状态", converter = OrderPayStatusConvert.class)
+    @ExcelColumnSelect(functionName = "order_pay_status")
+    private String payStatus;
+    @ExcelProperty(value = "开票状态", converter = OrderInvoiceStatusConvert.class)
+    @ExcelColumnSelect(functionName = "order_invoice_status")
+    private String invStatus;
     @ExcelProperty("备注") private String remark;
 }

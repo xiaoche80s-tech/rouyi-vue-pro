@@ -9,4 +9,11 @@ scope:
     - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/service/permission/
 source_files: []
 depends_on: []
-related_to: []
+related_to:
+    - path: system/user_identity
+    - path: system/authentication
+    - path: ui_admin/system_management/menu_management
+    - path: framework/starter_biz_data_permission
+    - path: ui_admin/system_management/role_permission
+    - path: opshub/aftersale
+    - path: opshub/cs

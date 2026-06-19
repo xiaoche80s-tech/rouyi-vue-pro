@@ -10,4 +10,4 @@ scope:
 source_files: []
 depends_on: []
 related_to:
-    - path: ui_admin/im_chat/im_api_views
+    - path: im/rtc

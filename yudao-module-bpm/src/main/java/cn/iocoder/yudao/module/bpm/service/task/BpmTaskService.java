@@ -14,6 +14,7 @@ import org.flowable.task.api.history.HistoricTaskInstance;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 流程任务实例 Service 接口
@@ -183,6 +184,14 @@ public interface BpmTaskService {
      * @return 流程任务列表
      */
     List<HistoricTaskInstance> getFinishedTaskListByProcessInstanceIdWithoutCancel(String processInstanceId);
+
+    /**
+     * 获取指定流程实例当前运行节点的候选人用户 ID 集合
+     *
+     * @param processInstanceId 流程实例编号
+     * @return 候选人用户 ID 集合
+     */
+    Set<Long> getTaskCandidateUserIds(String processInstanceId);
 
     // ========== Update 写入相关方法 ==========
 

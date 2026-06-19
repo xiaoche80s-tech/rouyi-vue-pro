@@ -5,6 +5,7 @@ import cn.iocoder.yudao.module.opshub.controller.admin.cs.vo.*;
 import cn.iocoder.yudao.module.opshub.dal.dataobject.cs.CsTaskDO;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 客服工单 Service 接口
@@ -96,5 +97,13 @@ public interface CsTaskService {
      * @return Map: tabFilter -> count
      */
     Map<String, Long> getTabCounts();
+
+    /**
+     * 获取工单 BPM 流程当前节点的候选人用户 ID 集合
+     *
+     * @param csTaskId 工单 ID
+     * @return 候选人用户 ID 集合
+     */
+    Set<Long> getTaskCandidateUserIds(Long csTaskId);
 
 }

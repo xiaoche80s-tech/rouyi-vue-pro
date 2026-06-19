@@ -1,0 +1,14 @@
+schema_version: 1
+module_path: ui_admin/infra_platform/config_management
+title: 基础设施参数配置管理
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/infra/config/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/infra/config/
+source_files: []
+depends_on: []
+related_to:
+    - path: infra/system_config
+    - path: framework/starter_redis
+    - path: ui_admin/system_management/operation_logs
+    - path: ui_admin/system_management/dict_management
+    - path: ui_admin/system_management/tenant_management

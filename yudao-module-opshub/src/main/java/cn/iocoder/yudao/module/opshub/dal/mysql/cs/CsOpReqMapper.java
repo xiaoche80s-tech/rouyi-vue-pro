@@ -10,7 +10,10 @@ import cn.iocoder.yudao.module.opshub.dal.dataobject.cs.CsOpReqDO;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Mapper
 public interface CsOpReqMapper extends BaseMapperX<CsOpReqDO> {
@@ -71,6 +74,29 @@ public interface CsOpReqMapper extends BaseMapperX<CsOpReqDO> {
         } catch (NumberFormatException e) {
             return 0;
         }
+    }
+
+    /**
+     * 按状态统计数量（角色可见性过滤）
+     */
+    default Map<Integer, Long> selectCountGroupByStatusWithScope(String viewScope, Long currentUserId, LocalDateTime startTime) {
+        LambdaQueryWrapper<CsOpReqDO> wrapper = new LambdaQueryWrapper<CsOpReqDO>()
+                .select(CsOpReqDO::getStatus);
+
+        if (startTime != null) {
+            wrapper.ge(CsOpReqDO::getCreateTime, startTime);
+        }
+
+        if ("creator".equals(viewScope)) {
+            wrapper.eq(CsOpReqDO::getCreatorUserId, currentUserId);
+        } else if ("assignee".equals(viewScope)) {
+            wrapper.and(w -> w
+                    .eq(CsOpReqDO::getStatus, 0) // PENDING
+                    .or().eq(CsOpReqDO::getAssigneeId, currentUserId));
+        }
+
+        List<CsOpReqDO> list = selectList(wrapper);
+        return list.stream().collect(Collectors.groupingBy(CsOpReqDO::getStatus, Collectors.counting()));
     }
 
 }

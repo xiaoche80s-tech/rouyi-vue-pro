@@ -10,6 +10,4 @@ scope:
     - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/enums/BasedataFileTypeEnum.java
 source_files: []
 depends_on: []
-related_to:
-    - path: infra/file_storage
-    - path: ui_admin/opshub/basedata
+related_to: []
