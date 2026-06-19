@@ -1,5 +1,5 @@
 -- =============================================
--- OpsHub Step 1: 经销商管理 SaaS 基础设施层
+-- OpsHub Step 1: 聚院通 基础设施层
 -- 数据库: PostgreSQL
 -- 包含: 纯 DML（角色 + 菜单 + 角色-菜单关联）
 -- 租户ID: 123
@@ -22,7 +22,7 @@ INSERT INTO system_role (id, name, code, sort, data_scope, data_scope_dept_ids, 
 
 -- 一级目录
 INSERT INTO system_menu (id, name, permission, type, sort, parent_id, path, icon, component, component_name, status, visible, keep_alive, always_show, deleted) VALUES
-(6000, '经销商管理 SaaS', '', 1, 5, 0, '/dealer', 'ep:office-building', NULL, NULL, 0, true, true, true, 0);
+(6000, '聚院通', '', 1, 5, 0, '/dealer', 'ep:office-building', NULL, NULL, 0, true, true, true, 0);
 
 -- 二级菜单
 INSERT INTO system_menu (id, name, permission, type, sort, parent_id, path, icon, component, component_name, status, visible, keep_alive, always_show, deleted) VALUES
@@ -177,6 +177,11 @@ SELECT (SELECT COALESCE(MAX(id),0) FROM system_role_menu) + row_number() OVER ()
 SELECT setval('system_role_seq',      (SELECT COALESCE(MAX(id), 0) FROM system_role));
 SELECT setval('system_menu_seq',      (SELECT COALESCE(MAX(id), 0) FROM system_menu));
 SELECT setval('system_role_menu_seq', (SELECT COALESCE(MAX(id), 0) FROM system_role_menu));
+
+-- =============================================
+-- 菜单重命名：将"经销商管理 SaaS"改为"聚院通"
+-- =============================================
+UPDATE system_menu SET name = '聚院通' WHERE id = 6000;
 
 -- =============================================
 -- Step 13: Excel 批量导入（独立页面）

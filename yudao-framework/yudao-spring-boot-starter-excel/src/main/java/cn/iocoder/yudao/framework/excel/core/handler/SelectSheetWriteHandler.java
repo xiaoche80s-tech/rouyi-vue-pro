@@ -135,8 +135,11 @@ public class SelectSheetWriteHandler implements SheetWriteHandler {
         List<KeyValue<Integer, List<String>>> keyValues = convertList(selectMap.entrySet(), entry -> new KeyValue<>(entry.getKey(), entry.getValue()));
         keyValues.sort(Comparator.comparing(item -> item.getValue().size())); // 升序不然创建下拉会报错
 
-        // 2. 创建数据字典的 sheet 页
-        Sheet dictSheet = workbook.createSheet(DICT_SHEET_NAME);
+        // 2. 创建数据字典的 sheet 页（若已存在则复用，避免多 Sheet 写入时重复创建报错）
+        Sheet dictSheet = workbook.getSheet(DICT_SHEET_NAME);
+        if (dictSheet == null) {
+            dictSheet = workbook.createSheet(DICT_SHEET_NAME);
+        }
         for (KeyValue<Integer, List<String>> keyValue : keyValues) {
             int rowLength = keyValue.getValue().size();
             // 2.1 设置字典 sheet 页的值，每一列一个字典项
