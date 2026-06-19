@@ -193,7 +193,11 @@ SELECT (SELECT COALESCE(MAX(id),0) FROM system_role_menu) + row_number() OVER ()
   UNION ALL SELECT 161, 6080
   UNION ALL SELECT 161, 6097
   UNION ALL SELECT 161, 6219
-) t;
+) t
+WHERE NOT EXISTS (
+  SELECT 1 FROM system_role_menu rm
+  WHERE rm.role_id = t.role_id AND rm.menu_id = t.menu_id AND rm.tenant_id = 123
+);
 
 -- BPM 菜单授权
 INSERT INTO system_role_menu (id, role_id, menu_id, tenant_id)
@@ -203,7 +207,11 @@ SELECT (SELECT COALESCE(MAX(id),0) FROM system_role_menu) + row_number() OVER ()
   UNION ALL SELECT 161, 2724
   UNION ALL SELECT 161, 2725
   UNION ALL SELECT 161, 1222
-) t;
+) t
+WHERE NOT EXISTS (
+  SELECT 1 FROM system_role_menu rm
+  WHERE rm.role_id = t.role_id AND rm.menu_id = t.menu_id AND rm.tenant_id = 123
+);
 
 SELECT setval('system_role_seq',      (SELECT COALESCE(MAX(id), 0) FROM system_role));
 SELECT setval('system_role_menu_seq', (SELECT COALESCE(MAX(id), 0) FROM system_role_menu));

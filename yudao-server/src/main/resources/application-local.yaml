@@ -193,6 +193,7 @@ logging:
     cn.iocoder.yudao.module.mes.dal.mysql: debug
     cn.iocoder.yudao.module.wms.dal.mysql: debug
     cn.iocoder.yudao.module.iot.dal.mysql: debug
+    cn.iocoder.yudao.module.opshub.dal.mysql: debug
     cn.iocoder.yudao.module.iot.dal.tdengine: DEBUG
     cn.iocoder.yudao.module.iot.service.rule: debug
     cn.iocoder.yudao.module.ai.dal.mysql: debug

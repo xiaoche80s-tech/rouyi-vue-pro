@@ -828,6 +828,27 @@ const remainingRouter: AppRouteRecordRaw[] = [
         ]
       }
     ]
+  },
+  {
+    path: '/opshub',
+    component: Layout,
+    name: 'OpsHub',
+    meta: { hidden: true },
+    children: [
+      {
+        path: 'task-detail',
+        component: () => import('@/views/opshub/customerservice/task-detail.vue'),
+        name: 'OpsHubTaskDetail',
+        meta: {
+          noCache: true,
+          hidden: true,
+          canTo: true,
+          title: '工单详情',
+          activeMenu: '/opshub/customerservice'
+        },
+        props: (route) => ({ id: route.query.id })
+      }
+    ]
   }
 ]
 

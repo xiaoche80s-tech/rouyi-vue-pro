@@ -266,11 +266,11 @@ class CsTaskServiceImplTest extends BaseMockitoUnitTest {
             mockLoginUserId(USER_ID);
             mockBpmTask(PROCESS_INSTANCE_ID, BPM_TASK_ID);
 
-            csTaskService.submitForApproval(TASK_ID);
+            csTaskService.submitForApproval(TASK_ID, "测试审批意见");
 
-            // 验证：BPM 审批被推动
+            // 验证：BPM 审批被推动，且 reason 已传递
             verify(bpmTaskService).approveTask(eq(USER_ID), argThat(req ->
-                    BPM_TASK_ID.equals(req.getId())));
+                    BPM_TASK_ID.equals(req.getId()) && "测试审批意见".equals(req.getReason())));
             // 验证：记录交付时间
             verify(csTaskMapper).updateById(ArgumentMatchers.<CsTaskDO>argThat(update ->
                     TASK_ID.equals(update.getId()) && update.getDeliverTime() != null));
@@ -285,7 +285,7 @@ class CsTaskServiceImplTest extends BaseMockitoUnitTest {
             when(csTaskMapper.selectById(TASK_ID)).thenReturn(task);
             mockLoginUserId(OTHER_USER_ID);
 
-            assertThatThrownBy(() -> csTaskService.submitForApproval(TASK_ID))
+            assertThatThrownBy(() -> csTaskService.submitForApproval(TASK_ID, null))
                     .message().contains("非当前处理人");
         }
     }

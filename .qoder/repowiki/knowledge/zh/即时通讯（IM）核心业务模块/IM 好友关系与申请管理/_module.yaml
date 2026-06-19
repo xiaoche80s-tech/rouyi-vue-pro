@@ -12,6 +12,4 @@ scope:
 source_files: []
 depends_on: []
 related_to:
-    - path: im/group
-    - path: im/message
-    - path: ui_admin/im_chat/user_im
+    - path: ui_admin/im_chat/im_api_views

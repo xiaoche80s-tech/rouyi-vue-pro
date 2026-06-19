@@ -40,11 +40,15 @@ public interface CsTaskMapper extends BaseMapperX<CsTaskDO> {
                         }
                         case "pending" -> {
                             wrapper.eq(CsTaskDO::getAssigneeId, currentUserId);
-                            wrapper.in(CsTaskDO::getStatus, java.util.List.of(0, 1, 4)); // PENDING, IN_PROGRESS, REJECTED
+                            wrapper.in(CsTaskDO::getStatus, java.util.List.of(1, 4)); // IN_PROGRESS, REJECTED
+                        }
+                        case "delivered" -> {
+                            wrapper.eq(CsTaskDO::getAssigneeId, currentUserId);
+                            wrapper.in(CsTaskDO::getStatus, java.util.List.of(2)); // DELIVERED
                         }
                         case "done" -> {
                             wrapper.eq(CsTaskDO::getAssigneeId, currentUserId);
-                            wrapper.in(CsTaskDO::getStatus, java.util.List.of(2, 3)); // DELIVERED, CLOSED
+                            wrapper.in(CsTaskDO::getStatus, java.util.List.of(3)); // CLOSED
                         }
                     }
                 }

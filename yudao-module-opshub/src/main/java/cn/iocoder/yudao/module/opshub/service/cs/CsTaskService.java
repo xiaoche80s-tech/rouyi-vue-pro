@@ -46,8 +46,11 @@ public interface CsTaskService {
     /**
      * 执行员提交审批（原交付）
      * 推动 BPM 流程到审批节点，由 BPM 回调设置 DELIVERED
+     *
+     * @param id     工单 ID
+     * @param reason 审批意见（可选）
      */
-    void submitForApproval(Long id);
+    void submitForApproval(Long id, String reason);
 
     /**
      * 经销商验收工单

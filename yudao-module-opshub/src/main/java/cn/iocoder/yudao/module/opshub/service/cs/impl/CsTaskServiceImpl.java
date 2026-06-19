@@ -23,6 +23,8 @@ import cn.iocoder.yudao.module.opshub.service.cs.websocket.dto.CsTaskNotificatio
 import cn.iocoder.yudao.module.system.api.notify.NotifyMessageSendApi;
 import cn.iocoder.yudao.module.system.api.notify.dto.NotifySendSingleToUserReqDTO;
 import cn.iocoder.yudao.framework.common.biz.system.permission.PermissionCommonApi;
+
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -176,15 +178,16 @@ public class CsTaskServiceImpl implements CsTaskService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void transferTask(CsTaskTransferReqVO reqVO) {
+        log.info("transferTask reqVO={}", JSON.toJSONString(reqVO));
         CsTaskDO task = validateTaskExists(reqVO.getId());
         Long currentUserId = SecurityFrameworkUtils.getLoginUserId();
 
         // 校验状态：仅处理中可转单
         validateStatus(task, CsTaskStatusEnum.IN_PROGRESS);
-        // 权限校验：管理员（含流程管理员）可转单，执行员仅可转单自己的工单
+        // 权限校验：仅超管和流程管理员可转单，执行员仅可转单自己的工单
         boolean isAdmin = permissionCommonApi.hasAnyRoles(currentUserId,
-                OpsRoleCodeConstants.BRAND_ADMIN, OpsRoleCodeConstants.SUPER_ADMIN,
-                OpsRoleCodeConstants.PROCESS_ADMIN);
+                OpsRoleCodeConstants.SUPER_ADMIN, OpsRoleCodeConstants.PROCESS_ADMIN);
+        log.info("isAdmin={}", isAdmin);
         if (!isAdmin) {
             // 校验当前操作人是处理人
             validateIsAssignee(task, currentUserId);
@@ -208,8 +211,7 @@ public class CsTaskServiceImpl implements CsTaskService {
                     bpmVO.setId(bpmTaskId);
                     bpmVO.setAssigneeUserId(reqVO.getNewAssigneeId());
                     bpmVO.setReason(reqVO.getReason() != null ? reqVO.getReason() : "工单转单");
-                    // 管理员转单时 currentUserId 非 BPM 任务执行人，传入当前用户 ID + BPM 层 isAdmin 校验绕过 assignee 检查
-                    bpmTaskService.transferTask(currentUserId, bpmVO);
+                    bpmTaskService.transferTask(task.getAssigneeId(), bpmVO);
                 }
             } catch (Exception e) {
                 log.warn("[transferTask][同步 BPM 转单失败 taskId={}]", reqVO.getId(), e);
@@ -224,7 +226,7 @@ public class CsTaskServiceImpl implements CsTaskService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void submitForApproval(Long id) {
+    public void submitForApproval(Long id, String reason) {
         CsTaskDO task = validateTaskExists(id);
         Long currentUserId = SecurityFrameworkUtils.getLoginUserId();
 
@@ -234,7 +236,7 @@ public class CsTaskServiceImpl implements CsTaskService {
         validateIsAssignee(task, currentUserId);
 
         // 推动 BPM 流程到审批节点（不直接改变业务状态，由 BPM 回调设置）
-        approveCurrentBpmTask(task, currentUserId);
+        approveCurrentBpmTask(task, currentUserId, reason);
 
         // 下一岗处理人由 CsTaskBpmAssignedListener 监听 TASK_ASSIGNED 事件自动同步
 
@@ -268,7 +270,7 @@ public class CsTaskServiceImpl implements CsTaskService {
 
         if (Boolean.TRUE.equals(reqVO.getPassed())) {
             // 验收通过 → 推动 BPM 验收到结束节点 → BPM 回调设 CLOSED
-            approveCurrentBpmTask(task, currentUserId);
+            approveCurrentBpmTask(task, currentUserId, null);
         } else {
             // 验收不通过 → 推动 BPM 退回 → BPM 回调设 REJECTED
             rejectCurrentBpmTask(task, currentUserId, reqVO.getRejectReason());
@@ -486,18 +488,22 @@ public class CsTaskServiceImpl implements CsTaskService {
                         reqVO.setUnassigned(true);
                     }
                     case "pending" -> {
-                        // 执行员待办：处理人是我 且 状态∈{待接单(0), 处理中(1), 已退回(4)}
+                        // 执行员待办：处理人是我 且 状态∈{处理中(1), 已退回(4)}
                         reqVO.setAssigneeId(currentUserId);
                         reqVO.setStatusList(List.of(
-                                CsTaskStatusEnum.PENDING.getCode(),
                                 CsTaskStatusEnum.IN_PROGRESS.getCode(),
                                 CsTaskStatusEnum.REJECTED.getCode()));
                     }
-                    case "done" -> {
-                        // 执行员已办：处理人是我 且 状态∈{已交付(2), 已关闭(3)}
+                    case "delivered" -> {
+                        // 执行员已交付：处理人是我 且 状态∈{已交付(2)}
                         reqVO.setAssigneeId(currentUserId);
                         reqVO.setStatusList(List.of(
-                                CsTaskStatusEnum.DELIVERED.getCode(),
+                                CsTaskStatusEnum.DELIVERED.getCode()));
+                    }
+                    case "done" -> {
+                        // 执行员已办：处理人是我 且 状态∈{已关闭(3)}
+                        reqVO.setAssigneeId(currentUserId);
+                        reqVO.setStatusList(List.of(
                                 CsTaskStatusEnum.CLOSED.getCode()));
                     }
                 }
@@ -575,6 +581,8 @@ public class CsTaskServiceImpl implements CsTaskService {
         counts.put("pending", csTaskMapper.selectCountByTab("pending", viewScope, loginUserId));
         // 可领取
         counts.put("claimable", csTaskMapper.selectCountByTab("claimable", viewScope, loginUserId));
+        // 已交付
+        counts.put("delivered", csTaskMapper.selectCountByTab("delivered", viewScope, loginUserId));
         // 已办
         counts.put("done", csTaskMapper.selectCountByTab("done", viewScope, loginUserId));
         return counts;
@@ -613,13 +621,18 @@ public class CsTaskServiceImpl implements CsTaskService {
 
     /**
      * 审批当前 BPM 任务（推动流程前进）
+     *
+     * @param task   工单
+     * @param userId 当前操作人
+     * @param reason 审批意见（可选）
      */
-    private void approveCurrentBpmTask(CsTaskDO task, Long userId) {
+    private void approveCurrentBpmTask(CsTaskDO task, Long userId, String reason) {
         String bpmTaskId = findCurrentBpmTaskId(task.getProcessInstanceId());
         if (bpmTaskId != null) {
             try {
                 BpmTaskApproveReqVO approveReqVO = new BpmTaskApproveReqVO();
                 approveReqVO.setId(bpmTaskId);
+                approveReqVO.setReason(reason);
                 bpmTaskService.approveTask(userId, approveReqVO);
             } catch (Exception e) {
                 log.warn("[approveCurrentBpmTask][BPM 审批失败 taskId={}, bpmTaskId={}]", task.getId(), bpmTaskId, e);

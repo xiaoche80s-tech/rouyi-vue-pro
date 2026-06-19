@@ -193,22 +193,17 @@
       <el-button type="danger" :loading="rejectLoading" @click="submitReject">确认退回</el-button>
     </template>
   </el-dialog>
-
-  <!-- 工单详情弹窗 -->
-  <el-dialog v-model="detailDialogVisible" title="工单详情" width="900px" destroy-on-close>
-    <TaskDetail v-if="detailDialogVisible" :id="detailTaskId" />
-  </el-dialog>
 </template>
 
 <script lang="ts" setup>
 import { ref, reactive, onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from 'element-plus'
 import * as CsTaskApi from '@/api/opshub/csTask'
 import { formatDate } from '@/utils/formatTime'
 import { getSimpleUserList } from '@/api/system/user'
 import { useUserStore } from '@/store/modules/user'
 import { useCsWebSocket, type CsTaskEventPayload } from '@/hooks/useCsWebSocket'
-import TaskDetail from '../task-detail.vue'
 
 // ========== 枚举常量 ==========
 const statusOptions = [
@@ -252,6 +247,7 @@ const subTabsMap: Record<string, Array<{ value: string; label: string }>> = {
   handler: [
     { value: 'claimable', label: '可领取' },
     { value: 'pending', label: '待办' },
+    { value: 'delivered', label: '已交付' },
     { value: 'done', label: '已办' }
   ],
   admin: []
@@ -474,11 +470,9 @@ const handleCancel = async (row: any) => {
 }
 
 // ========== 工单详情 ==========
-const detailDialogVisible = ref(false)
-const detailTaskId = ref<number>(0)
+const router = useRouter()
 const handleDetail = (row: any) => {
-  detailTaskId.value = row.id
-  detailDialogVisible.value = true
+  router.push({ name: 'OpsHubTaskDetail', query: { id: row.id } })
 }
 
 // ========== 初始化 ==========

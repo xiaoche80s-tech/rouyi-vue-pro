@@ -114,7 +114,7 @@ const getStatusLabel = (val: number) => {
 }
 
 const getStatusTagType = (val: number) =>
-  (['warning', 'primary', 'success', 'info'] as any)[val] || ''
+  (['warning', 'primary', 'success', 'info'] as const)[val] || undefined
 
 const getStatusDotClass = (val: number) => {
   const map: Record<number, string> = {
@@ -136,10 +136,10 @@ const getConsultTypeLabel = (val: string) =>
 
 const getConsultTypeTagType = (val: string) => {
   const map: Record<string, string> = {
-    signing: '', policy: 'info', aftersale: 'warning',
+    signing: 'primary', policy: 'info', aftersale: 'warning',
     order: 'success', basedata: 'danger', other: 'info'
   }
-  return (map[val] || '') as any
+  return (map[val] || undefined) as any
 }
 
 const getAvatarColor = (name: string) => {
@@ -152,9 +152,10 @@ const getAvatarColor = (name: string) => {
   return colors[Math.abs(hash) % colors.length]
 }
 
-const getRelativeTime = (dateStr: string) => {
+const getRelativeTime = (dateStr: string | number) => {
   if (!dateStr) return ''
   const date = new Date(dateStr)
+  if (isNaN(date.getTime())) return ''
   const now = new Date()
   const diff = now.getTime() - date.getTime()
   const minutes = Math.floor(diff / 60000)
@@ -164,7 +165,12 @@ const getRelativeTime = (dateStr: string) => {
   if (hours < 24) return `${hours}小时前`
   const days = Math.floor(hours / 24)
   if (days < 7) return `${days}天前`
-  return dateStr.substring(5, 16) // MM-DD HH:mm
+  // 用 Date 方法格式化，兼容 string 和 number 输入
+  const mm = String(date.getMonth() + 1).padStart(2, '0')
+  const dd = String(date.getDate()).padStart(2, '0')
+  const hh = String(date.getHours()).padStart(2, '0')
+  const mi = String(date.getMinutes()).padStart(2, '0')
+  return `${mm}-${dd} ${hh}:${mi}`
 }
 
 const filteredSessions = computed(() => {

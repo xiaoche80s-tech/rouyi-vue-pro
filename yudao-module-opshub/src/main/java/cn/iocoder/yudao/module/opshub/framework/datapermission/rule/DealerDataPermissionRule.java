@@ -54,6 +54,7 @@ public class DealerDataPermissionRule implements DataPermissionRule {
 
     private static final String DEALER_COLUMN_NAME = "dealer_code";
     private static final String PRODUCT_LINE_COLUMN_NAME = "product_line_code";
+    private static final String ASSIGNEE_COLUMN_NAME = "assignee_id";
 
     private final PermissionCommonApi permissionApi;
     private final DealerUserScopeMapper dealerUserScopeMapper;
@@ -81,6 +82,13 @@ public class DealerDataPermissionRule implements DataPermissionRule {
      * 需要包含 NULL 值的表名集合（经销商维度）
      */
     private final Set<String> dealerIncludeNull = new HashSet<>();
+
+    /**
+     * 处理人旁路表名集合
+     * 注册了此配置的表，数据权限条件会追加 OR assignee_id = currentUserId
+     * 确保被分配的处理人始终能看到分配给自己的工单，不受产品线/经销商数据权限限制
+     */
+    private final Set<String> assigneeBypassTables = new HashSet<>();
 
     /**
      * 所有表名集合
@@ -171,7 +179,7 @@ public class DealerDataPermissionRule implements DataPermissionRule {
     }
 
     /**
-     * 构建经销商维度 WHERE 条件：WHERE dealer_code IN ('HK', 'ZS') [OR dealer_code IS NULL]
+     * 构建经销商维度 WHERE 条件：WHERE dealer_code IN ('HK', 'ZS') [OR dealer_code IS NULL] [OR assignee_id = me]
      */
     private Expression buildDealerExpression(String tableName, Alias tableAlias, Set<String> dealerCodes) {
         String columnName = dealerColumns.get(tableName);
@@ -181,23 +189,35 @@ public class DealerDataPermissionRule implements DataPermissionRule {
         // 经销商 Code 为空 → 无权查看任何数据，使用 column = -1 永假条件
         if (CollUtil.isEmpty(dealerCodes)) {
             var column = MyBatisUtils.buildColumn(tableName, tableAlias, columnName);
-            return new EqualsTo(column, new StringValue("__NO_ACCESS__"));
+            Expression noAccessExpr = new EqualsTo(column, new StringValue("__NO_ACCESS__"));
+            // 即使无经销商权限，处理人仍应看到分配给自己的工单
+            if (assigneeBypassTables.contains(tableName)) {
+                return buildAssigneeBypassOrExpression(noAccessExpr, tableName, tableAlias);
+            }
+            return noAccessExpr;
         }
         var column = MyBatisUtils.buildColumn(tableName, tableAlias, columnName);
         InExpression inExpr = new InExpression(column,
                 new ParenthesedExpressionList(new ExpressionList<StringValue>(
                         CollectionUtils.convertList(dealerCodes, StringValue::new))));
+        Expression baseExpr;
         // 条件性追加 OR IS NULL（需用括号包裹，避免与外层 AND 产生优先级问题）
         if (dealerIncludeNull.contains(tableName)) {
-            Parenthesis p = new Parenthesis();
-            p.add(new OrExpression(inExpr, new IsNullExpression(column)));
-            return p;
+            Parenthesis paren = new Parenthesis();
+            paren.add(new OrExpression(inExpr, new IsNullExpression(column)));
+            baseExpr = paren;
+        } else {
+            baseExpr = inExpr;
         }
-        return inExpr;
+        // 处理人旁路：追加 OR assignee_id = currentUserId
+        if (assigneeBypassTables.contains(tableName)) {
+            return buildAssigneeBypassOrExpression(baseExpr, tableName, tableAlias);
+        }
+        return baseExpr;
     }
 
     /**
-     * 构建产品线维度 WHERE 条件：WHERE product_line_code IN ('GK', 'FK') [OR product_line_code IS NULL]
+     * 构建产品线维度 WHERE 条件：WHERE product_line_code IN ('GK', 'FK') [OR product_line_code IS NULL] [OR assignee_id = me]
      */
     private Expression buildProductLineExpression(String tableName, Alias tableAlias, Set<String> productLineCodes) {
         String columnName = productLineColumns.get(tableName);
@@ -207,19 +227,52 @@ public class DealerDataPermissionRule implements DataPermissionRule {
         // 产品线 Code 为空 → 无权查看任何数据，使用 column = -1 永假条件
         if (CollUtil.isEmpty(productLineCodes)) {
             var column = MyBatisUtils.buildColumn(tableName, tableAlias, columnName);
-            return new EqualsTo(column, new StringValue("__NO_ACCESS__"));
+            Expression noAccessExpr = new EqualsTo(column, new StringValue("__NO_ACCESS__"));
+            // 即使无产品线权限，处理人仍应看到分配给自己的工单
+            if (assigneeBypassTables.contains(tableName)) {
+                return buildAssigneeBypassOrExpression(noAccessExpr, tableName, tableAlias);
+            }
+            return noAccessExpr;
         }
         var column = MyBatisUtils.buildColumn(tableName, tableAlias, columnName);
         InExpression inExpr = new InExpression(column,
                 new ParenthesedExpressionList(new ExpressionList<StringValue>(
                         CollectionUtils.convertList(productLineCodes, StringValue::new))));
+        Expression baseExpr;
         // 条件性追加 OR IS NULL（需用括号包裹，避免与外层 AND 产生优先级问题）
         if (productLineIncludeNull.contains(tableName)) {
-            Parenthesis p = new Parenthesis();
-            p.add(new OrExpression(inExpr, new IsNullExpression(column)));
-            return p;
+            Parenthesis paren = new Parenthesis();
+            paren.add(new OrExpression(inExpr, new IsNullExpression(column)));
+            baseExpr = paren;
+        } else {
+            baseExpr = inExpr;
         }
-        return inExpr;
+        // 处理人旁路：追加 OR assignee_id = currentUserId
+        if (assigneeBypassTables.contains(tableName)) {
+            return buildAssigneeBypassOrExpression(baseExpr, tableName, tableAlias);
+        }
+        return baseExpr;
+    }
+
+    // ==================== 处理人旁路辅助 ====================
+
+    /**
+     * 为表达式追加 OR assignee_id = currentUserId 旁路
+     * 最终 SQL: (原始条件) OR assignee_id = {loginUserId}
+     */
+    private Expression buildAssigneeBypassOrExpression(Expression baseExpr, String tableName, Alias tableAlias) {
+        LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
+        if (loginUser == null) {
+            return baseExpr;
+        }
+        var assigneeColumn = MyBatisUtils.buildColumn(tableName, tableAlias, ASSIGNEE_COLUMN_NAME);
+        Expression assigneeExpr = new EqualsTo(assigneeColumn, new LongValue(loginUser.getId()));
+        // 用括号包裹 baseExpr，避免与外层 AND 产生优先级问题
+        Parenthesis baseParen = new Parenthesis();
+        baseParen.add(baseExpr);
+        Parenthesis p = new Parenthesis();
+        p.add(new OrExpression(baseParen, assigneeExpr));
+        return p;
     }
 
     // ==================== 添加配置 ====================
@@ -278,6 +331,17 @@ public class DealerDataPermissionRule implements DataPermissionRule {
         if (includeNull) {
             productLineIncludeNull.add(tableName);
         }
+    }
+
+    /**
+     * 注册处理人旁路表
+     * 注册后，该表的数据权限条件会追加 OR assignee_id = currentUserId
+     * 确保被分配的处理人始终能看到分配给自己的工单，不受产品线/经销商数据权限限制
+     *
+     * @param tableName 表名
+     */
+    public void addAssigneeBypass(String tableName) {
+        assigneeBypassTables.add(tableName);
     }
 
     // ==================== 内部缓存 DTO ====================

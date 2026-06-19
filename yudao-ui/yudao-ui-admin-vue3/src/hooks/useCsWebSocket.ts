@@ -99,7 +99,6 @@ export function useCsWebSocket(
         default:
           // 工单事件通知（cs-task-* / cs-opreq-* / cs-sla-*）
           if (type.startsWith('cs-task-') || type.startsWith('cs-opreq-') || type.startsWith('cs-sla-')) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const raw = content as any
             const taskEvent: CsTaskEventPayload = {
               taskId: raw.taskId,

@@ -59,8 +59,10 @@ export const transferTask = async (data: any) => {
 }
 
 // 执行员提交审批
-export const submitForApproval = async (id: number) => {
-  return await request.post({ url: '/opshub/cs-task/submit-for-approval?id=' + id })
+export const submitForApproval = async (id: number, reason?: string) => {
+  return await request.post({
+    url: '/opshub/cs-task/submit-for-approval?id=' + id + (reason ? '&reason=' + encodeURIComponent(reason) : '')
+  })
 }
 
 // 取消/关闭工单

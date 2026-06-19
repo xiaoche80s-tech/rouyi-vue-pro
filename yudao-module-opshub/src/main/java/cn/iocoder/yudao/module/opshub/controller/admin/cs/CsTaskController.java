@@ -90,10 +90,11 @@ public class CsTaskController {
 
     @PostMapping("/submit-for-approval")
     @Operation(summary = "执行员提交审批")
-    @Parameter(name = "id", description = "工单ID", required = true)
     @PreAuthorize("@ss.hasPermission('dealer:cs-task:deliver')")
-    public CommonResult<Boolean> submitForApproval(@RequestParam("id") Long id) {
-        csTaskService.submitForApproval(id);
+    public CommonResult<Boolean> submitForApproval(
+            @RequestParam("id") Long id,
+            @RequestParam(value = "reason", required = false) String reason) {
+        csTaskService.submitForApproval(id, reason);
         return success(true);
     }
 
