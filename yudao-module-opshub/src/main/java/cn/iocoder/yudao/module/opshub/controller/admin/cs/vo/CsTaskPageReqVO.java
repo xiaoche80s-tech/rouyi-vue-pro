@@ -43,6 +43,9 @@ public class CsTaskPageReqVO extends PageParam {
 
     // ========== 以下字段由 Service 层按角色自动填充 ==========
 
+    @Schema(description = "流程实例 ID 列表（Service 层从 BPM 查询填充，用于 BPM 驱动的待办/已办过滤）", hidden = true)
+    private List<String> processInstanceIds;
+
     @Schema(description = "可见范围：all/creator/assignee（Service 层自动填充）", hidden = true)
     private String viewScope;
 

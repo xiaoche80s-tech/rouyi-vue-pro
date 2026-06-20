@@ -2,11 +2,11 @@
 schema_version: 1
 locale: zh-CN
 branch: feature/step1-权限功能设计
-exported_at: "2026-06-19T13:27:31Z"
+exported_at: "2026-06-19T15:56:32Z"
 modules:
     "":
-        dir_name: 经销商运营与客服协同平台
-        title: 经销商运营与客服协同平台
+        dir_name: 芋道 OpsHub 经销商运营与智能客服中台
+        title: 芋道 OpsHub 经销商运营与智能客服中台
         scope: []
         source_files: []
         children: []
@@ -20,11 +20,11 @@ modules:
         source_files: []
         children:
             - bpm/message_integration
-            - bpm/process_definition
-            - bpm/oa_leave
+            - bpm/flowable_framework
             - bpm/bpm_api
             - bpm/task_management
-            - bpm/flowable_framework
+            - bpm/oa_leave
+            - bpm/process_definition
         depends_on: []
         related_to:
             - path: opshub/cs
@@ -99,29 +99,29 @@ modules:
         scope: []
         source_files: []
         children:
-            - decisions/9465c044e6e5_182b3c774d03
-            - decisions/9465c044e6e5_b09b46d4f16b
-            - decisions/c750ce25ed88_f920aa1701c2
             - decisions/4b587e420296_0fac68b17ba2
-            - decisions/17684d7dc89b_67c04da90a41
-            - decisions/3722ab296d3b_e8789d865c53
-            - decisions/32a9ec7828ae_1bfdbbef84cf
-            - decisions/4b587e420296_45096dc77474
-            - decisions/c750ce25ed88_65034344b961
+            - decisions/11502cccfbad_300fba8a5da1
             - decisions/9465c044e6e5_748cf7fc2744
-            - decisions/17684d7dc89b_d7231804859e
+            - decisions/3722ab296d3b_3531af1c0478
+            - decisions/c750ce25ed88_65034344b961
+            - decisions/c750ce25ed88_f920aa1701c2
+            - decisions/9465c044e6e5_182b3c774d03
+            - decisions/14276d8c8f17_9d2fc86bda6e
+            - decisions/9465c044e6e5_b09b46d4f16b
             - decisions/49bb62d2fb70_34e07c479aac
             - decisions/3722ab296d3b_708ca796e6e9
-            - decisions/3722ab296d3b_3531af1c0478
-            - decisions/14276d8c8f17_9d2fc86bda6e
-            - decisions/11502cccfbad_300fba8a5da1
-            - decisions/49bb62d2fb70_41ed096e3fdd
-            - decisions/11502cccfbad_aa5cf4b91dcc
-            - decisions/11502cccfbad_6afd995d68d4
+            - decisions/17684d7dc89b_67c04da90a41
             - decisions/32a9ec7828ae_f24602610fd1
-            - decisions/ebb1cd2e67fd_8e722feec56b
             - decisions/ebb1cd2e67fd_b253495bd6d6
             - decisions/ebb1cd2e67fd_cf7818acd772
+            - decisions/4b587e420296_45096dc77474
+            - decisions/ebb1cd2e67fd_8e722feec56b
+            - decisions/11502cccfbad_aa5cf4b91dcc
+            - decisions/11502cccfbad_6afd995d68d4
+            - decisions/17684d7dc89b_d7231804859e
+            - decisions/3722ab296d3b_e8789d865c53
+            - decisions/32a9ec7828ae_1bfdbbef84cf
+            - decisions/49bb62d2fb70_41ed096e3fdd
         depends_on: []
         related_to: []
     decisions/4b587e420296_0fac68b17ba2:
@@ -190,7 +190,7 @@ modules:
         related_to:
             - path: opshub/cs
     decisions/3722ab296d3b_e8789d865c53:
-        dir_name: 在 opshub 模块自建客服会话层而非复用 IM 模块
+        dir_name: 在 opshub 模块自建客服会话层而非复用 IM 模块_2
         title: 在 opshub 模块自建客服会话层而非复用 IM 模块
         scope: []
         source_files: []
@@ -263,7 +263,7 @@ modules:
         depends_on: []
         related_to: []
     decisions/17684d7dc89b_d7231804859e:
-        dir_name: 在 opshub 模块自建客服会话层而非复用 IM 模块_2
+        dir_name: 在 opshub 模块自建客服会话层而非复用 IM 模块
         title: 在 opshub 模块自建客服会话层而非复用 IM 模块
         scope: []
         source_files: []
@@ -312,15 +312,14 @@ modules:
         depends_on: []
         related_to: []
     docs:
-        dir_name: 客户服务与操作请求管理
-        title: 客户服务与操作请求管理
+        dir_name: 经销商运营与智能客服中台
+        title: 经销商运营与智能客服中台
         scope:
             - docs/
         source_files: []
         children: []
         depends_on: []
-        related_to:
-            - path: bpm
+        related_to: []
     framework:
         dir_name: 芋道框架核心组件库
         title: 芋道框架核心组件库
@@ -328,21 +327,21 @@ modules:
             - yudao-framework/
         source_files: []
         children:
-            - framework/starter_security
-            - framework/starter_web
+            - framework/starter_biz_data_permission
             - framework/starter_redis
+            - framework/starter_test
+            - framework/starter_web
+            - framework/starter_biz_tenant
+            - framework/common
+            - framework/starter_monitor
+            - framework/starter_security
+            - framework/starter_mq
+            - framework/starter_biz_ip
+            - framework/starter_websocket
             - framework/starter_job
             - framework/starter_protection
             - framework/starter_mybatis
-            - framework/starter_mq
-            - framework/starter_test
-            - framework/starter_biz_data_permission
-            - framework/starter_biz_tenant
-            - framework/starter_websocket
-            - framework/starter_monitor
             - framework/starter_excel
-            - framework/starter_biz_ip
-            - framework/common
         depends_on: []
         related_to: []
     framework/common:
@@ -492,16 +491,16 @@ modules:
             - yudao-module-im/
         source_files: []
         children:
-            - im/group
-            - im/message
-            - im/channel
-            - im/websocket
-            - im/framework
-            - im/rtc
-            - im/sensitiveword
-            - im/face
-            - im/friend
             - im/statistics
+            - im/channel
+            - im/sensitiveword
+            - im/friend
+            - im/face
+            - im/group
+            - im/websocket
+            - im/rtc
+            - im/message
+            - im/framework
         depends_on: []
         related_to:
             - path: server
@@ -658,16 +657,16 @@ modules:
             - yudao-module-infra/
         source_files: []
         children:
-            - infra/api_logging
+            - infra/codegen
             - infra/demo_examples
+            - infra/db_management
+            - infra/system_config
+            - infra/api_logging
             - infra/job_scheduler
             - infra/infra_framework
-            - infra/file_storage
             - infra/websocket_push
+            - infra/file_storage
             - infra/redis_monitor
-            - infra/system_config
-            - infra/codegen
-            - infra/db_management
         depends_on: []
         related_to: []
     infra/api_logging:
@@ -808,25 +807,24 @@ modules:
         depends_on: []
         related_to: []
     opshub:
-        dir_name: 经销商运营与客服协同平台_2
-        title: 经销商运营与客服协同平台
+        dir_name: 经销商运营中心 (OpsHub)
+        title: 经销商运营中心 (OpsHub)
         scope:
             - yudao-module-opshub/
         source_files: []
         children:
+            - opshub/framework
+            - opshub/dashboard
             - opshub/dealer
-            - opshub/order
+            - opshub/aftersale
+            - opshub/signing
+            - opshub/basedata
             - opshub/cs
             - opshub/enums
-            - opshub/framework
-            - opshub/signing
-            - opshub/dashboard
-            - opshub/basedata
             - opshub/excel_import
-            - opshub/aftersale
+            - opshub/order
         depends_on: []
-        related_to:
-            - path: server
+        related_to: []
     opshub/aftersale:
         dir_name: 售后工单管理
         title: 售后工单管理
@@ -865,13 +863,7 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to:
-            - path: bpm
-            - path: opshub/dashboard
-            - path: im/websocket
-            - path: decisions/3722ab296d3b_3531af1c0478
-            - path: decisions/17684d7dc89b_d7231804859e
-            - path: opshub/enums
+        related_to: []
     opshub/dashboard:
         dir_name: 角色化仪表盘数据聚合
         title: 角色化仪表盘数据聚合
@@ -929,8 +921,7 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to:
-            - path: framework/starter_biz_data_permission
+        related_to: []
     opshub/order:
         dir_name: 订单全生命周期管理
         title: 订单全生命周期管理
@@ -991,13 +982,13 @@ modules:
             - yudao-module-system/
         source_files: []
         children:
-            - system/authentication
-            - system/oauth_social
-            - system/access_control
-            - system/message_center
-            - system/user_identity
             - system/system_support
             - system/tenant_management
+            - system/message_center
+            - system/oauth_social
+            - system/authentication
+            - system/access_control
+            - system/user_identity
         depends_on: []
         related_to: []
     system/access_control:
@@ -1140,21 +1131,21 @@ modules:
             - path: system/access_control
             - path: ui_admin/system_management/user_management
     ui_admin:
-        dir_name: 管理后台前端应用
-        title: 管理后台前端应用
+        dir_name: Vue3 管理后台前端应用
+        title: Vue3 管理后台前端应用
         scope:
             - yudao-ui/
         source_files: []
         children:
-            - ui_admin/ai_assistant
-            - ui_admin/im_chat
-            - ui_admin/report_designer
-            - ui_admin/opshub
-            - ui_admin/system_management
             - ui_admin/bpm_workflow
-            - ui_admin/app_shell
+            - ui_admin/ai_assistant
             - ui_admin/payment_center
             - ui_admin/infra_platform
+            - ui_admin/im_chat
+            - ui_admin/system_management
+            - ui_admin/app_shell
+            - ui_admin/opshub
+            - ui_admin/report_designer
         depends_on: []
         related_to: []
     ui_admin/ai_assistant:
@@ -1165,14 +1156,14 @@ modules:
             - yudao-ui/yudao-ui-admin-vue3/src/views/ai/
         source_files: []
         children:
-            - ui_admin/ai_assistant/chat
+            - ui_admin/ai_assistant/knowledge
             - ui_admin/ai_assistant/mindmap
+            - ui_admin/ai_assistant/chat
+            - ui_admin/ai_assistant/image
             - ui_admin/ai_assistant/music
             - ui_admin/ai_assistant/workflow
-            - ui_admin/ai_assistant/write
-            - ui_admin/ai_assistant/knowledge
-            - ui_admin/ai_assistant/image
             - ui_admin/ai_assistant/model_config
+            - ui_admin/ai_assistant/write
         depends_on: []
         related_to: []
     ui_admin/ai_assistant/chat:
@@ -1229,8 +1220,8 @@ modules:
         source_files: []
         children:
             - ui_admin/ai_assistant/knowledge/knowledge_base
-            - ui_admin/ai_assistant/knowledge/document
             - ui_admin/ai_assistant/knowledge/segment
+            - ui_admin/ai_assistant/knowledge/document
         depends_on: []
         related_to:
             - path: ui_admin/ai_assistant/chat
@@ -1316,8 +1307,8 @@ modules:
         depends_on: []
         related_to: []
     ui_admin/app_shell:
-        dir_name: 管理后台应用壳层与基础架构
-        title: 管理后台应用壳层与基础架构
+        dir_name: 管理后台应用壳层与基础设施
+        title: 管理后台应用壳层与基础设施
         scope:
             - yudao-ui/yudao-ui-admin-vue3/src/components/
             - yudao-ui/yudao-ui-admin-vue3/src/layout/
@@ -1345,9 +1336,7 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to:
-            - path: ui_admin/system_management
-            - path: ui_admin/opshub
+        related_to: []
     ui_admin/bpm_workflow:
         dir_name: BPM 工作流管理前端模块
         title: BPM 工作流管理前端模块
@@ -1357,11 +1346,11 @@ modules:
             - yudao-ui/yudao-ui-admin-vue3/src/views/bpm/
         source_files: []
         children:
-            - ui_admin/bpm_workflow/model_design
             - ui_admin/bpm_workflow/task_management
+            - ui_admin/bpm_workflow/model_design
             - ui_admin/bpm_workflow/supporting_features
-            - ui_admin/bpm_workflow/form_category_group
             - ui_admin/bpm_workflow/process_instance
+            - ui_admin/bpm_workflow/form_category_group
         depends_on: []
         related_to: []
     ui_admin/bpm_workflow/form_category_group:
@@ -1438,8 +1427,8 @@ modules:
         source_files: []
         children:
             - ui_admin/im_chat/admin_im
-            - ui_admin/im_chat/im_api_views
             - ui_admin/im_chat/user_im
+            - ui_admin/im_chat/im_api_views
         depends_on: []
         related_to: []
     ui_admin/im_chat/admin_im:
@@ -1488,15 +1477,15 @@ modules:
             - yudao-ui/yudao-ui-admin-vue3/src/views/infra/
         source_files: []
         children:
-            - ui_admin/infra_platform/config_management
             - ui_admin/infra_platform/file_management
-            - ui_admin/infra_platform/data_source
-            - ui_admin/infra_platform/monitoring_tools
-            - ui_admin/infra_platform/job_scheduler
             - ui_admin/infra_platform/api_logs
             - ui_admin/infra_platform/codegen
-            - ui_admin/infra_platform/demo_examples
             - ui_admin/infra_platform/redis_monitor
+            - ui_admin/infra_platform/job_scheduler
+            - ui_admin/infra_platform/config_management
+            - ui_admin/infra_platform/monitoring_tools
+            - ui_admin/infra_platform/data_source
+            - ui_admin/infra_platform/demo_examples
         depends_on: []
         related_to: []
     ui_admin/infra_platform/api_logs:
@@ -1601,23 +1590,22 @@ modules:
         depends_on: []
         related_to: []
     ui_admin/opshub:
-        dir_name: OpsHub 运营业务中台
-        title: OpsHub 运营业务中台
+        dir_name: OpsHub 运营服务管理
+        title: OpsHub 运营服务管理
         scope:
             - yudao-ui/yudao-ui-admin-vue3/src/api/opshub/
             - yudao-ui/yudao-ui-admin-vue3/src/views/opshub/
         source_files: []
         children:
-            - ui_admin/opshub/signing_contracts
-            - ui_admin/opshub/product_line
             - ui_admin/opshub/dealer_management
             - ui_admin/opshub/order_management
+            - ui_admin/opshub/excel_import
+            - ui_admin/opshub/signing_contracts
+            - ui_admin/opshub/product_line
             - ui_admin/opshub/basedata
             - ui_admin/opshub/customer_service
-            - ui_admin/opshub/excel_import
         depends_on: []
-        related_to:
-            - path: ui_admin/app_shell
+        related_to: []
     ui_admin/opshub/basedata:
         dir_name: 经销商基础数据管理
         title: 经销商基础数据管理
@@ -1629,8 +1617,8 @@ modules:
         depends_on: []
         related_to: []
     ui_admin/opshub/customer_service:
-        dir_name: 售后客服与工单管理
-        title: 售后客服与工单管理
+        dir_name: OpsHub 客户服务与工单管理
+        title: OpsHub 客户服务与工单管理
         scope:
             - yudao-ui/yudao-ui-admin-vue3/src/api/opshub/csAttachment/
             - yudao-ui/yudao-ui-admin-vue3/src/api/opshub/csOpReq/
@@ -1642,8 +1630,7 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to:
-            - path: ui_admin/bpm_workflow/task_management
+        related_to: []
     ui_admin/opshub/dealer_management:
         dir_name: 经销商管理与数据权限配置
         title: 经销商管理与数据权限配置
@@ -1727,16 +1714,16 @@ modules:
             - yudao-ui/yudao-ui-admin-vue3/src/views/system/
         source_files: []
         children:
-            - ui_admin/system_management/operation_logs
-            - ui_admin/system_management/tenant_management
-            - ui_admin/system_management/area_notice
-            - ui_admin/system_management/oauth2_social
-            - ui_admin/system_management/dict_management
-            - ui_admin/system_management/dept_post
             - ui_admin/system_management/menu_management
             - ui_admin/system_management/user_management
-            - ui_admin/system_management/sms_notify_mail
+            - ui_admin/system_management/operation_logs
+            - ui_admin/system_management/tenant_management
+            - ui_admin/system_management/dept_post
+            - ui_admin/system_management/dict_management
             - ui_admin/system_management/role_permission
+            - ui_admin/system_management/sms_notify_mail
+            - ui_admin/system_management/oauth2_social
+            - ui_admin/system_management/area_notice
         depends_on: []
         related_to:
             - path: ui_admin/app_shell

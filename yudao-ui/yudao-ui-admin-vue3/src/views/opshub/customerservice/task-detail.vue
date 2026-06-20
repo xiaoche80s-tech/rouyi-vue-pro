@@ -203,6 +203,7 @@ import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import * as CsTaskApi from '@/api/opshub/csTask'
+import * as TaskApi from '@/api/bpm/task'
 import * as CsAttachmentApi from '@/api/opshub/csAttachment'
 import * as ProcessInstanceApi from '@/api/bpm/processInstance'
 import { formatNullableDate } from '@/utils/formatTime'
@@ -412,7 +413,13 @@ const submitTransfer = async () => {
   if (!transferForm.newAssigneeId) { ElMessage.warning('请选择新处理人'); return }
   transferLoading.value = true
   try {
-    await CsTaskApi.transferTask({ id: taskId.value, newAssigneeId: transferForm.newAssigneeId, reason: transferForm.reason })
+    // 1. 解析 BPM 任务 ID
+    const bpmTaskId = await CsTaskApi.getBpmTaskId(taskId.value)
+    if (!bpmTaskId) {
+      ElMessage.warning('当前工单状态不支持转单'); transferLoading.value = false; return
+    }
+    // 2. 调用 BPM 转派接口
+    await TaskApi.transferTask({ id: bpmTaskId, assigneeUserId: transferForm.newAssigneeId, reason: transferForm.reason })
     ElMessage.success('转单成功')
     transferDialogVisible.value = false
     transferForm.newAssigneeId = undefined; transferForm.reason = ''

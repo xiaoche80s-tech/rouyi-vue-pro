@@ -1,0 +1,7 @@
+schema_version: 1
+module_path: decisions/4b587e420296_45096dc77474
+title: 采用 WebSocket 实现客服实时通讯与状态同步
+scope: []
+source_files: []
+depends_on: []
+related_to: []

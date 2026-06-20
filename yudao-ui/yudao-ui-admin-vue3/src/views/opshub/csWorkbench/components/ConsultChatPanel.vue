@@ -46,6 +46,7 @@
 import { ref, watch, nextTick } from 'vue'
 import { ElMessage } from 'element-plus'
 import type { CsSessionVO, CsMessageVO } from '@/api/opshub/csSession'
+import type { CsChatMessagePayload } from '@/hooks/useCsWebSocket'
 import {
   getSession,
   acceptSession,
@@ -156,5 +157,18 @@ const refresh = () => {
   loadSession()
 }
 
-defineExpose({ appendMessage, refresh })
+/** 根据 session-event 就地更新会话状态（接单/完成/关闭），无需 HTTP 请求 */
+const updateSessionState = (msg: CsChatMessagePayload) => {
+  if (!session.value) return
+  const statusMap: Record<string, number> = { accepted: 1, completed: 2, closed: 3 }
+  if (msg.content && statusMap[msg.content] !== undefined) {
+    session.value = { ...session.value, status: statusMap[msg.content] }
+  }
+  // 接单时更新处理人名称
+  if (msg.content === 'accepted' && msg.senderName) {
+    session.value = { ...session.value, assigneeName: msg.senderName }
+  }
+}
+
+defineExpose({ appendMessage, refresh, updateSessionState })
 </script>

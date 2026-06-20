@@ -65,6 +65,7 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -261,6 +262,48 @@ public class BpmTaskServiceImpl implements BpmTaskService {
                     || task.getCreateTime().after(DateUtils.of(pageVO.getCreateTime()[1])));
         }
         return new PageResult<>(tasks, count);
+    }
+
+    @Override
+    public List<String> getTodoProcessInstanceIds(Long userId, String processDefinitionKey) {
+        TaskQuery query = taskService.createTaskQuery()
+                .active()
+                .taskTenantId(FlowableUtils.getTenantId());
+        if (userId != null) {
+            query.taskAssignee(String.valueOf(userId));
+        }
+        if (StrUtil.isNotEmpty(processDefinitionKey)) {
+            query.processDefinitionKey(processDefinitionKey);
+        }
+        List<Task> tasks = query.list();
+        if (CollUtil.isEmpty(tasks)) {
+            return Collections.emptyList();
+        }
+        return tasks.stream()
+                .map(Task::getProcessInstanceId)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getDoneProcessInstanceIds(Long userId, String processDefinitionKey) {
+        HistoricTaskInstanceQuery query = historyService.createHistoricTaskInstanceQuery()
+                .finished();
+        if (userId != null) {
+            query.taskAssignee(String.valueOf(userId));
+        }
+        if (StrUtil.isNotEmpty(processDefinitionKey)) {
+            query.processDefinitionKey(processDefinitionKey);
+        }
+        List<HistoricTaskInstance> tasks = query.list();
+        if (CollUtil.isEmpty(tasks)) {
+            return Collections.emptyList();
+        }
+        return tasks.stream()
+                .filter(task -> !START_USER_NODE_ID.equals(task.getTaskDefinitionKey()))
+                .map(HistoricTaskInstance::getProcessInstanceId)
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     @Override

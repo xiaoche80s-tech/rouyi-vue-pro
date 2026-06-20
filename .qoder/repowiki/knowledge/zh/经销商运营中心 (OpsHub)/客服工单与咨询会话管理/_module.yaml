@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: opshub/cs
+title: 客服工单与咨询会话管理
+scope:
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/controller/admin/cs/
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/dal/dataobject/cs/
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/dal/mysql/cs/
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/service/cs/
+source_files: []
+depends_on: []
+related_to: []

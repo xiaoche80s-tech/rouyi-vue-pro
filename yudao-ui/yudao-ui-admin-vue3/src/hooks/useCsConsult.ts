@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { createSession } from '@/api/opshub/csSession'
+import { getMyDealers, type DealerItemVO } from '@/api/opshub/dealerScope'
 
 /**
  * 咨询参数接口
@@ -28,7 +29,8 @@ const BATCH_LIMIT = 20
  * 使用方式：
  * ```vue
  * <script setup>
- * const { chatVisible, currentSessionId, openConsult, openBatchConsult, openByCategory } = useCsConsult()
+ * const { chatVisible, currentSessionId, openConsult, openBatchConsult, openByCategory,
+ *   dealerDialogVisible, myDealerList, onDealerSelected } = useCsConsult()
  * </script>
  * <template>
  *   <!-- 各模块内容 -->
@@ -39,6 +41,11 @@ const BATCH_LIMIT = 20
 export function useCsConsult() {
   const chatVisible = ref(false)
   const currentSessionId = ref<number>()
+  // 经销商选择对话框状态
+  const dealerDialogVisible = ref(false)
+  const myDealerList = ref<DealerItemVO[]>([])
+  // 暂存的咨询类型（多经销商弹框时使用）
+  let pendingConsultType = 'other'
 
   /**
    * 单条咨询：创建（或复用已有）会话 → 打开 ChatWindow Drawer
@@ -84,12 +91,47 @@ export function useCsConsult() {
   }
 
   /**
-   * 浮动按钮 / 分类入口：创建无上下文的「other」类型会话
+   * 浮动按钮 / 分类入口：先获取授权经销商列表，再决定行为
+   * - 0 个 → 提示无授权
+   * - 1 个 → 直接创建
+   * - 多个 → 弹框选择
    */
   const openByCategory = async (consultType: string = 'other') => {
+    try {
+      const dealers = await getMyDealers()
+      if (dealers.length === 0) {
+        ElMessage.warning('当前无授权经销商，无法发起咨询')
+        return
+      }
+      if (dealers.length === 1) {
+        // 仅 1 个 → 直接创建
+        await openConsult({
+          consultType,
+          sourceModule: 'manual',
+          dealerCode: dealers[0].dealerCode,
+          dealerName: dealers[0].dealerName
+        })
+      } else {
+        // 多个 → 弹框选择
+        pendingConsultType = consultType
+        myDealerList.value = dealers
+        dealerDialogVisible.value = true
+      }
+    } catch (e: any) {
+      ElMessage.error(e.message || '获取经销商列表失败')
+    }
+  }
+
+  /**
+   * 经销商选择确认回调
+   */
+  const onDealerSelected = async (dealer: DealerItemVO) => {
+    dealerDialogVisible.value = false
     await openConsult({
-      consultType,
-      sourceModule: 'manual'
+      consultType: pendingConsultType,
+      sourceModule: 'manual',
+      dealerCode: dealer.dealerCode,
+      dealerName: dealer.dealerName
     })
   }
 
@@ -98,6 +140,10 @@ export function useCsConsult() {
     currentSessionId,
     openConsult,
     openBatchConsult,
-    openByCategory
+    openByCategory,
+    // 经销商选择对话框
+    dealerDialogVisible,
+    myDealerList,
+    onDealerSelected
   }
 }

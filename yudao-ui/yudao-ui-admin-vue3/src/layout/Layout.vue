@@ -9,6 +9,7 @@ import { getLayoutRenderMode } from '@/utils/layout'
 import ChatFloatingButton from '@/components/CsChatWindow/ChatFloatingButton.vue'
 import ChatWindow from '@/components/CsChatWindow/ChatWindow.vue'
 import CsExecutorNotifier from '@/components/CsChatWindow/CsExecutorNotifier.vue'
+import DealerSelectDialog from '@/components/CsChatWindow/DealerSelectDialog.vue'
 import { useCsConsult } from '@/hooks/useCsConsult'
 import { useUserStore } from '@/store/modules/user'
 
@@ -52,7 +53,8 @@ const renderLayout = () => {
 export default defineComponent({
   name: 'Layout',
   setup() {
-    const { chatVisible, currentSessionId, openByCategory } = useCsConsult()
+    const { chatVisible, currentSessionId, openByCategory,
+      dealerDialogVisible, myDealerList, onDealerSelected } = useCsConsult()
     const userStore = useUserStore()
     /** 浮动按钮仅经销商角色可见 */
     const isDealer = computed(() => userStore.getRoles.includes('dealer'))
@@ -92,6 +94,12 @@ export default defineComponent({
               onUpdate:modelValue={(v: boolean) => { chatVisible.value = v }}
               sessionId={currentSessionId.value}
               mode="dealer"
+            />
+            <DealerSelectDialog
+              modelValue={dealerDialogVisible.value}
+              onUpdate:modelValue={(v: boolean) => { dealerDialogVisible.value = v }}
+              dealers={myDealerList.value}
+              onSelect={(dealer: any) => onDealerSelected(dealer)}
             />
           </>
         ) : undefined}

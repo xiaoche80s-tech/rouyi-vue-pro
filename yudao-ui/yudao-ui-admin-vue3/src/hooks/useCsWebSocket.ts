@@ -22,6 +22,17 @@ export interface CsChatMessagePayload {
   dealerName: string
   /** 咨询上下文（前端显示用） */
   context: string
+  /** 会话事件携带的系统消息（前端直接追加，无需 refresh） */
+  systemMessage?: SystemMessageVO
+}
+
+/** 会话事件中携带的系统消息类型 */
+export interface SystemMessageVO {
+  id: number
+  senderRole: string
+  messageType: string
+  content: string
+  createTime: string
 }
 
 /**

@@ -142,8 +142,12 @@ const statusText = computed(() => {
   return props.session ? map[props.session.status] || '未知' : '加载中'
 })
 
-const statusTagType = computed(() => {
-  const map: Record<number, string> = { 0: 'warning', 1: '', 2: 'success', 3: 'info' }
-  return (props.session ? map[props.session.status] : 'info') as any
+/** ElTag 合法 type 值 */
+type TagType = 'primary' | 'success' | 'info' | 'warning' | 'danger'
+
+const statusTagType = computed<TagType>(() => {
+  const map: Record<number, TagType> = { 0: 'warning', 1: 'primary', 2: 'success', 3: 'info' }
+  if (!props.session) return 'info'
+  return map[props.session.status] ?? 'info'
 })
 </script>

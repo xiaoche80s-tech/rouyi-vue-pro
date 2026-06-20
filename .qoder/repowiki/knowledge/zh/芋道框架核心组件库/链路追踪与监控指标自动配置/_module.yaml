@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: framework/starter_monitor
+title: 链路追踪与监控指标自动配置
+scope:
+    - yudao-framework/yudao-spring-boot-starter-monitor/
+source_files: []
+depends_on: []
+related_to: []

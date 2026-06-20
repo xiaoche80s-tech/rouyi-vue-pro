@@ -4,6 +4,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.opshub.controller.admin.cs.vo.*;
+import cn.iocoder.yudao.module.opshub.dal.dataobject.cs.CsMessageDO;
 import cn.iocoder.yudao.module.opshub.dal.dataobject.cs.CsSessionDO;
 import cn.iocoder.yudao.module.opshub.dal.dataobject.dealer.DealerInfoDO;
 import cn.iocoder.yudao.module.opshub.dal.mysql.cs.CsSessionMapper;
@@ -13,6 +14,7 @@ import cn.iocoder.yudao.module.opshub.enums.CsSessionStatusEnum;
 import cn.iocoder.yudao.module.opshub.enums.OpsRoleCodeConstants;
 import cn.iocoder.yudao.module.opshub.service.cs.CsMessageService;
 import cn.iocoder.yudao.module.opshub.service.cs.CsSessionService;
+import cn.iocoder.yudao.module.opshub.service.cs.dto.CsMessageSaveCmd;
 import cn.iocoder.yudao.module.opshub.service.cs.websocket.CsWebSocketService;
 import cn.iocoder.yudao.module.opshub.service.cs.websocket.dto.CsChatMessage;
 import cn.iocoder.yudao.module.system.api.notify.NotifyMessageSendApi;
@@ -116,14 +118,17 @@ public class CsSessionServiceImpl implements CsSessionService {
         // 4. 插入
         csSessionMapper.insert(sessionDO);
 
-        // 5. 创建系统消息
-        csMessageService.sendMessage(new CsMessageSendReqVO()
-                .setSessionId(sessionDO.getId())
-                .setMessageType("system")
-                .setContent("咨询会话已创建"));
+        // 5. 创建系统消息（仅落库，cs-new-consult 已精准推送给执行员，无需重复推送）
+        CsMessageDO createMsg = csMessageService.saveSystemMessage(
+                new CsMessageSaveCmd()
+                        .setSessionId(sessionDO.getId())
+                        .setSenderId(currentUserId)
+                        .setSenderName(currentUserName)
+                        .setContent("咨询会话已创建"));
 
         // 6. 精准推送新咨询通知给匹配的执行员 + 站内信
         CsChatMessage consultNotify = buildChatNotify(sessionDO, CsChatMessage.TYPE_NEW_CONSULT);
+        consultNotify.setSystemMessage(buildSystemMessageVO(createMsg));
         csWebSocketService.notifyMatchingExecutors(consultNotify, sessionDO.getProductLineCode());
 
         return sessionDO.getId();
@@ -165,15 +170,19 @@ public class CsSessionServiceImpl implements CsSessionService {
                 .setAssigneeName(currentUserName)
                 .setAcceptTime(LocalDateTime.now()));
 
-        // 推送系统消息
-        csMessageService.sendMessage(new CsMessageSendReqVO()
-                .setSessionId(id)
-                .setMessageType("system")
-                .setContent(currentUserName + " 已接单"));
+        // 仅落库系统消息，由下方 cs-session-event 携带消息内容推送给发起人
+        CsMessageDO acceptMsg = csMessageService.saveSystemMessage(
+                new CsMessageSaveCmd()
+                        .setSessionId(id)
+                        .setSenderId(currentUserId)
+                        .setSenderName(currentUserName)
+                        .setContent(currentUserName + " 已接单"));
 
-        // WebSocket + 站内信通知发起人
+        // WebSocket + 站内信通知发起人（event 中携带系统消息，前端直接追加，无需 refresh）
         CsChatMessage event = buildChatNotify(session, CsChatMessage.TYPE_SESSION_EVENT);
-        event.setContent(CsChatMessage.EVENT_ACCEPTED);
+        event.setContent(CsChatMessage.EVENT_ACCEPTED)
+             .setSenderName(currentUserName)
+             .setSystemMessage(buildSystemMessageVO(acceptMsg));
         csWebSocketService.sendSessionEventAsync(session.getInitiatorId(), event);
         sendNotify(session.getInitiatorId(), NOTIFY_SESSION_ACCEPTED, buildNotifyParams(session));
     }
@@ -198,15 +207,19 @@ public class CsSessionServiceImpl implements CsSessionService {
                 .setCompleteTime(LocalDateTime.now())
                 .setSolutionSummary(reqVO.getSolutionSummary()));
 
-        // 推送系统消息
-        csMessageService.sendMessage(new CsMessageSendReqVO()
-                .setSessionId(reqVO.getId())
-                .setMessageType("system")
-                .setContent("咨询已完成处理"));
+        // 仅落库系统消息，由下方 cs-session-event 携带消息内容推送给发起人
+        String completeUserName = SecurityFrameworkUtils.getLoginUserNickname();
+        CsMessageDO completeMsg = csMessageService.saveSystemMessage(
+                new CsMessageSaveCmd()
+                        .setSessionId(reqVO.getId())
+                        .setSenderId(currentUserId)
+                        .setSenderName(completeUserName)
+                        .setContent("咨询已完成处理"));
 
-        // WebSocket + 站内信通知发起人
+        // WebSocket + 站内信通知发起人（event 中携带系统消息，前端直接追加，无需 refresh）
         CsChatMessage event = buildChatNotify(session, CsChatMessage.TYPE_SESSION_EVENT);
-        event.setContent(CsChatMessage.EVENT_COMPLETED);
+        event.setContent(CsChatMessage.EVENT_COMPLETED)
+             .setSystemMessage(buildSystemMessageVO(completeMsg));
         csWebSocketService.sendSessionEventAsync(session.getInitiatorId(), event);
         sendNotify(session.getInitiatorId(), NOTIFY_SESSION_COMPLETED, buildNotifyParams(session));
     }
@@ -228,16 +241,20 @@ public class CsSessionServiceImpl implements CsSessionService {
                 .setStatus(CsSessionStatusEnum.CLOSED.getCode())
                 .setCloseTime(LocalDateTime.now()));
 
-        // 推送系统消息
-        csMessageService.sendMessage(new CsMessageSendReqVO()
-                .setSessionId(id)
-                .setMessageType("system")
-                .setContent("经销商已关闭对话"));
+        // 仅落库系统消息，由下方 cs-session-event 携带消息内容推送给处理人
+        String closeUserName = SecurityFrameworkUtils.getLoginUserNickname();
+        CsMessageDO closeMsg = csMessageService.saveSystemMessage(
+                new CsMessageSaveCmd()
+                        .setSessionId(id)
+                        .setSenderId(currentUserId)
+                        .setSenderName(closeUserName)
+                        .setContent("经销商已关闭对话"));
 
-        // WebSocket + 站内信通知处理人
+        // WebSocket + 站内信通知处理人（event 中携带系统消息，前端直接追加，无需 refresh）
         if (session.getAssigneeId() != null) {
             CsChatMessage event = buildChatNotify(session, CsChatMessage.TYPE_SESSION_EVENT);
-            event.setContent(CsChatMessage.EVENT_CLOSED);
+            event.setContent(CsChatMessage.EVENT_CLOSED)
+                 .setSystemMessage(buildSystemMessageVO(closeMsg));
             csWebSocketService.sendSessionEventAsync(session.getAssigneeId(), event);
             sendNotify(session.getAssigneeId(), NOTIFY_SESSION_CLOSED, buildNotifyParams(session));
         }
@@ -309,6 +326,18 @@ public class CsSessionServiceImpl implements CsSessionService {
         String dateStr = LocalDate.now().format(DATE_FORMATTER);
         Integer maxSeq = csSessionMapper.selectMaxSeqToday(dateStr);
         return String.format("CS-%s-%03d", dateStr, maxSeq + 1);
+    }
+
+    private CsChatMessage.SystemMessageVO buildSystemMessageVO(CsMessageDO msg) {
+        if (msg == null || msg.getCreateTime() == null) {
+            return null;
+        }
+        return new CsChatMessage.SystemMessageVO()
+                .setId(msg.getId())
+                .setSenderRole("system")
+                .setMessageType("system")
+                .setContent(msg.getContent())
+                .setCreateTime(msg.getCreateTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
     }
 
     private CsChatMessage buildChatNotify(CsSessionDO session, String type) {

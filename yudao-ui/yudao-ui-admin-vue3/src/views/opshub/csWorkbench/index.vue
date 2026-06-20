@@ -167,7 +167,28 @@ const { isConnected } = useCsWebSocket(
     loadSessionList()
     loadStatistics()
     if (msg.sessionId === selectedSessionId.value) {
-      chatPanelRef.value?.refresh()
+      if (msg.systemMessage) {
+        // event 携带了系统消息，直接追加到聊天面板，无需 HTTP refresh
+        chatPanelRef.value?.appendMessage({
+          id: msg.systemMessage.id,
+          sessionId: msg.sessionId,
+          sessionNo: msg.sessionNo,
+          senderId: undefined,
+          senderName: '',
+          senderRole: msg.systemMessage.senderRole,
+          messageType: msg.systemMessage.messageType,
+          content: msg.systemMessage.content,
+          attachmentIds: '',
+          linkUrl: '',
+          linkTitle: '',
+          isRead: true,
+          createTime: msg.systemMessage.createTime
+        })
+        chatPanelRef.value?.updateSessionState(msg)
+      } else {
+        // 兴容降级：旧数据无 systemMessage 时回退到 refresh
+        chatPanelRef.value?.refresh()
+      }
     }
   },
   // cs-new-consult: 新咨询到达 → 列表顶部插入 + 高亮闪烁

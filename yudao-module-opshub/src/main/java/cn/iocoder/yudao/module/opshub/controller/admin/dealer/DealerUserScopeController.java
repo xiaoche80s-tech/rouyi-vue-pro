@@ -8,6 +8,7 @@ import cn.iocoder.yudao.module.opshub.dal.dataobject.dealer.DealerInfoDO;
 import cn.iocoder.yudao.module.opshub.service.dealer.DealerInfoService;
 import cn.iocoder.yudao.module.opshub.service.dealer.DealerUserScopeService;
 import cn.iocoder.yudao.module.opshub.service.dealer.UserScopeDTO;
+import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -95,6 +96,29 @@ public class DealerUserScopeController {
             }));
             return vo;
         });
+        return success(result);
+    }
+
+    @GetMapping("/my-dealers")
+    @Operation(summary = "获取当前登录用户授权的经销商列表")
+    @PreAuthorize("@ss.hasPermission('dealer:cs-consult:create')")
+    public CommonResult<List<DealerItemVO>> getMyDealers() {
+        Long currentUserId = SecurityFrameworkUtils.getLoginUserId();
+        Set<String> dealerCodes = dealerUserScopeService.getDealerCodesByUserId(currentUserId);
+        if (dealerCodes.isEmpty()) {
+            return success(Collections.emptyList());
+        }
+        // 获取全部开启状态经销商，过滤出当前用户授权的
+        List<DealerInfoDO> allDealers = dealerInfoService.getSimpleList();
+        List<DealerItemVO> result = allDealers.stream()
+                .filter(d -> dealerCodes.contains(d.getDealerCode()))
+                .map(d -> {
+                    DealerItemVO vo = new DealerItemVO();
+                    vo.setDealerCode(d.getDealerCode());
+                    vo.setDealerName(d.getDealerName());
+                    return vo;
+                })
+                .collect(Collectors.toList());
         return success(result);
     }
 

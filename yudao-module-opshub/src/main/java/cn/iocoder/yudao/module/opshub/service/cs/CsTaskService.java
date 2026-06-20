@@ -109,4 +109,14 @@ public interface CsTaskService {
      */
     Set<Long> getTaskCandidateUserIds(Long csTaskId);
 
+    /**
+     * 获取工单当前运行的 BPM 任务 ID（用于前端调用 /bpm/task/transfer）
+     * <p>
+     * 仅当工单状态为 IN_PROGRESS 且 BPM 流程存在活跃任务时返回非空值。
+     *
+     * @param csTaskId 工单 ID
+     * @return BPM 任务 ID（Flowable Task ID），不可转单时返回 null
+     */
+    String getBpmTaskId(Long csTaskId);
+
 }

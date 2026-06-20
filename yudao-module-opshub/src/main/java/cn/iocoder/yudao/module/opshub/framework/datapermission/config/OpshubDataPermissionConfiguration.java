@@ -39,16 +39,7 @@ public class OpshubDataPermissionConfiguration {
         rule.addDealerColumn("ops_aftersale_info");
         rule.addProductLineColumn("ops_aftersale_info");
 
-        // Step 6：注册客服工单表和操作请求表 —— 允许产品线/经销商为空
-        rule.addDealerColumn("ops_cs_task", true);
-        rule.addProductLineColumn("ops_cs_task", true);
-        rule.addDealerColumn("ops_cs_opreq", true);
-        rule.addProductLineColumn("ops_cs_opreq", true);
-        // 处理人旁路：被分配的处理人始终能看到分配给自己的工单，不受产品线/经销商数据权限限制
-        rule.addAssigneeBypass("ops_cs_task");
-        rule.addAssigneeBypass("ops_cs_opreq");
-
-        // Step 7：注册咨询会话表 —— 允许产品线/经销商为空
+        // Step 6：注册咨询会话表 —— 允许产品线/经销商为空
         rule.addDealerColumn("ops_cs_session", true);
         rule.addProductLineColumn("ops_cs_session", true);
 

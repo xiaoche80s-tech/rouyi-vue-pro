@@ -41,6 +41,11 @@ export const getDealerScopeUsers = async (): Promise<DealerScopeUserRespVO[]> =>
   return await request.get({ url: '/opshub/dealer-scope/scope-users' })
 }
 
+// 获取当前登录用户授权的经销商列表
+export const getMyDealers = async (): Promise<DealerItemVO[]> => {
+  return await request.get({ url: '/opshub/dealer-scope/my-dealers' })
+}
+
 // ========== 执行员产品线授权 ==========
 
 // 查看用户授权的产品线

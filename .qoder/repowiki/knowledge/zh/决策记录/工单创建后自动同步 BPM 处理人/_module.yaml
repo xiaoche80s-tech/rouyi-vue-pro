@@ -1,0 +1,7 @@
+schema_version: 1
+module_path: decisions/9465c044e6e5_b09b46d4f16b
+title: 工单创建后自动同步 BPM 处理人
+scope: []
+source_files: []
+depends_on: []
+related_to: []

@@ -2,9 +2,9 @@ package cn.iocoder.yudao.module.opshub.service.cs;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.opshub.controller.admin.cs.vo.CsMessagePageReqVO;
-import cn.iocoder.yudao.module.opshub.controller.admin.cs.vo.CsMessageRespVO;
 import cn.iocoder.yudao.module.opshub.controller.admin.cs.vo.CsMessageSendReqVO;
 import cn.iocoder.yudao.module.opshub.dal.dataobject.cs.CsMessageDO;
+import cn.iocoder.yudao.module.opshub.service.cs.dto.CsMessageSaveCmd;
 
 import java.util.List;
 
@@ -18,6 +18,12 @@ public interface CsMessageService {
      * 每条消息全量持久化到数据库
      */
     CsMessageDO sendMessage(CsMessageSendReqVO reqVO);
+
+    /**
+     * 仅落库系统消息，不触发 WebSocket 推送
+     * 仅供会话生命周期方法（createSession / acceptSession / completeSession / closeSession）内部调用
+     */
+    CsMessageDO saveSystemMessage(CsMessageSaveCmd cmd);
 
     /**
      * 获取某会话全部历史消息（正序）

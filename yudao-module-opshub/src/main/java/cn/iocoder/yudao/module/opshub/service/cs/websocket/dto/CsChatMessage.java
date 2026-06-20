@@ -77,6 +77,31 @@ public class CsChatMessage {
      */
     private String context;
 
+    /**
+     * 会话事件中携带的系统消息（前端直接追加，无需 refresh 拉取）
+     */
+    private SystemMessageVO systemMessage;
+
+    // ========== 系统消息 VO ==========
+
+    /**
+     * 会话事件携带的系统消息
+     */
+    @Data
+    @Accessors(chain = true)
+    public static class SystemMessageVO {
+        /** 消息 ID */
+        private Long id;
+        /** 发送人角色，固定为 "system" */
+        private String senderRole;
+        /** 消息类型，固定为 "system" */
+        private String messageType;
+        /** 系统消息内容 */
+        private String content;
+        /** 消息创建时间（ISO-8601，与 LocalDateTime JSON 序列化保持一致） */
+        private String createTime;
+    }
+
     // ========== 推送类型常量 ==========
 
     /**

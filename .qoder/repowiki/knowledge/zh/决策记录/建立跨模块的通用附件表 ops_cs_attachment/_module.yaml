@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: decisions/11502cccfbad_aa5cf4b91dcc
+title: 建立跨模块的通用附件表 ops_cs_attachment
+scope: []
+source_files: []
+depends_on: []
+related_to:
+    - path: opshub/basedata

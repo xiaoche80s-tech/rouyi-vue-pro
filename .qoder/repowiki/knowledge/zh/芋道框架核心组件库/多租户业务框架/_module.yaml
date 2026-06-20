@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: framework/starter_biz_tenant
+title: 多租户业务框架
+scope:
+    - yudao-framework/yudao-spring-boot-starter-biz-tenant/
+source_files: []
+depends_on: []
+related_to: []

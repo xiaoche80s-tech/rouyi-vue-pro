@@ -18,13 +18,14 @@ import java.util.Map;
 public interface CsTaskMapper extends BaseMapperX<CsTaskDO> {
 
     /**
-     * 按 tabFilter 统计工单数量
-     * 复用与 selectPage 相同的可见性/标签过滤逻辑
+     * 按 tabFilter 统计工单数量（状态驱动）
+     * 仅用于非 BPM 驱动的标签计数（可领取、已交付、经销商待办）
+     * 待办/已办由 BPM 流程实例查询驱动，见 selectCountByProcessInstanceIds
      */
     default long selectCountByTab(String tabFilter, String viewScope, Long currentUserId) {
         LambdaQueryWrapperX<CsTaskDO> wrapper = new LambdaQueryWrapperX<>();
 
-        // tabFilter 翻译为查询条件
+        // tabFilter 翻译为查询条件（仅状态驱动的标签）
         if (tabFilter != null && !"all".equals(tabFilter)) {
             switch (viewScope) {
                 case "creator" -> {
@@ -38,18 +39,11 @@ public interface CsTaskMapper extends BaseMapperX<CsTaskDO> {
                             wrapper.eq(CsTaskDO::getStatus, 0); // PENDING
                             wrapper.isNull(CsTaskDO::getAssigneeId);
                         }
-                        case "pending" -> {
-                            wrapper.eq(CsTaskDO::getAssigneeId, currentUserId);
-                            wrapper.in(CsTaskDO::getStatus, java.util.List.of(1, 4)); // IN_PROGRESS, REJECTED
-                        }
                         case "delivered" -> {
                             wrapper.eq(CsTaskDO::getAssigneeId, currentUserId);
                             wrapper.in(CsTaskDO::getStatus, java.util.List.of(2)); // DELIVERED
                         }
-                        case "done" -> {
-                            wrapper.eq(CsTaskDO::getAssigneeId, currentUserId);
-                            wrapper.in(CsTaskDO::getStatus, java.util.List.of(3)); // CLOSED
-                        }
+                        // pending/done 由 BPM 驱动计数，不在此处理
                     }
                 }
             }
@@ -73,6 +67,20 @@ public interface CsTaskMapper extends BaseMapperX<CsTaskDO> {
         return selectCount(wrapper);
     }
 
+    /**
+     * BPM 驱动计数：根据流程实例 ID 列表统计工单数量
+     *
+     * @param processInstanceIds 流程实例 ID 列表（来自 BPM 查询）
+     * @return 匹配工单数量
+     */
+    default long selectCountByProcessInstanceIds(List<String> processInstanceIds) {
+        if (CollUtil.isEmpty(processInstanceIds)) {
+            return 0;
+        }
+        return selectCount(new LambdaQueryWrapperX<CsTaskDO>()
+                .in(CsTaskDO::getProcessInstanceId, processInstanceIds));
+    }
+
     default PageResult<CsTaskDO> selectPage(CsTaskPageReqVO reqVO) {
         LambdaQueryWrapperX<CsTaskDO> wrapper = new LambdaQueryWrapperX<CsTaskDO>()
                 .eqIfPresent(CsTaskDO::getUrgency, reqVO.getUrgency())
@@ -93,6 +101,14 @@ public interface CsTaskMapper extends BaseMapperX<CsTaskDO> {
         // 未分配工单过滤（可领取）
         if (Boolean.TRUE.equals(reqVO.getUnassigned())) {
             wrapper.isNull(CsTaskDO::getAssigneeId);
+        }
+
+        // BPM 流程实例 ID 过滤（由 Service 层从 BPM 引擎查询填充）
+        if (CollUtil.isNotEmpty(reqVO.getProcessInstanceIds())) {
+            wrapper.in(CsTaskDO::getProcessInstanceId, reqVO.getProcessInstanceIds());
+        } else if (reqVO.getProcessInstanceIds() != null) {
+            // 空列表（BPM 无匹配任务）→ 永假条件返回空结果
+            wrapper.eq(CsTaskDO::getProcessInstanceId, "__NO_BPM_TASK__");
         }
 
         // 关键词搜索

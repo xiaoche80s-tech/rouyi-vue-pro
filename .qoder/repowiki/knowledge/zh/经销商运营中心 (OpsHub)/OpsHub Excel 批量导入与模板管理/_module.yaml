@@ -1,0 +1,10 @@
+schema_version: 1
+module_path: opshub/excel_import
+title: OpsHub Excel 批量导入与模板管理
+scope:
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/controller/admin/excel/
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/service/excel/
+source_files: []
+depends_on: []
+related_to:
+    - path: framework/starter_excel

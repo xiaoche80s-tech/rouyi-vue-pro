@@ -89,3 +89,8 @@ export const urgeTask = async (id: number) => {
 export const getTaskCandidateUsers = async (id: number) => {
   return await request.get({ url: '/opshub/cs-task/candidate-users?id=' + id })
 }
+
+// 获取工单当前运行的 BPM 任务 ID（用于转单调用 /bpm/task/transfer）
+export const getBpmTaskId = async (csTaskId: number) => {
+  return await request.get({ url: '/opshub/cs-task/bpm-task-id?id=' + csTaskId })
+}

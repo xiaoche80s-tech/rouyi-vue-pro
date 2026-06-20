@@ -1,0 +1,12 @@
+schema_version: 1
+module_path: ui_admin/infra_platform/file_management
+title: 文件存储配置与管理
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/infra/file/
+    - yudao-ui/yudao-ui-admin-vue3/src/api/infra/fileConfig/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/infra/file/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/infra/fileConfig/
+source_files: []
+depends_on: []
+related_to:
+    - path: infra/file_storage

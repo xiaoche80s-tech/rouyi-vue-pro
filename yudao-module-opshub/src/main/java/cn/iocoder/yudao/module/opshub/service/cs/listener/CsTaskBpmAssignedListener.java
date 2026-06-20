@@ -7,6 +7,10 @@ import cn.iocoder.yudao.module.opshub.dal.dataobject.cs.CsTaskDO;
 import cn.iocoder.yudao.module.opshub.dal.mysql.cs.CsTaskMapper;
 import cn.iocoder.yudao.module.opshub.enums.CsTaskStatusEnum;
 import cn.iocoder.yudao.module.opshub.service.cs.impl.CsTaskServiceImpl;
+import cn.iocoder.yudao.module.opshub.service.cs.websocket.CsWebSocketService;
+import cn.iocoder.yudao.module.opshub.service.cs.websocket.dto.CsTaskNotification;
+import cn.iocoder.yudao.module.system.api.notify.NotifyMessageSendApi;
+import cn.iocoder.yudao.module.system.api.notify.dto.NotifySendSingleToUserReqDTO;
 import com.google.common.collect.ImmutableSet;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +26,8 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 客服工单 BPM 任务处理人变更监听器
@@ -47,6 +53,14 @@ public class CsTaskBpmAssignedListener extends AbstractFlowableEngineEventListen
     @Resource
     @Lazy
     private RuntimeService runtimeService;
+
+    @Resource
+    @Lazy
+    private CsWebSocketService csWebSocketService;
+
+    @Resource
+    @Lazy
+    private NotifyMessageSendApi notifyMessageSendApi;
 
     public CsTaskBpmAssignedListener() {
         super(ImmutableSet.of(FlowableEngineEventType.TASK_ASSIGNED));
@@ -119,7 +133,14 @@ public class CsTaskBpmAssignedListener extends AbstractFlowableEngineEventListen
     }
 
     /**
-     * 更新工单处理人，若工单仍处于 PENDING 状态则同时转为 IN_PROGRESS
+     * 站内信模板编码
+     */
+    private static final String NOTIFY_TASK_ACCEPTED = "cs-task-accepted";
+    private static final String NOTIFY_TASK_TRANSFERRED = "cs-task-transferred";
+
+    /**
+     * 更新工单处理人，若工单仍处于 PENDING 状态则同时转为 IN_PROGRESS。
+     * 同时检测转单/接单场景，发送 WebSocket 和站内信通知。
      */
     private void syncAssignee(Long csTaskId, Long assigneeUserId) {
         CsTaskDO current = csTaskMapper.selectById(csTaskId);
@@ -127,15 +148,71 @@ public class CsTaskBpmAssignedListener extends AbstractFlowableEngineEventListen
             log.warn("[syncAssignee][csTaskId={} 工单不存在，跳过]", csTaskId);
             return;
         }
+
+        Long previousAssigneeId = current.getAssigneeId();
         CsTaskDO updateDO = new CsTaskDO().setId(csTaskId).setAssigneeId(assigneeUserId);
+
+        boolean isInitialAccept = ObjectUtil.equal(current.getStatus(), CsTaskStatusEnum.PENDING.getCode());
         // 若工单仍是待接单状态，一并推进为处理中并记录接单时间
-        if (ObjectUtil.equal(current.getStatus(), CsTaskStatusEnum.PENDING.getCode())) {
+        if (isInitialAccept) {
             updateDO.setStatus(CsTaskStatusEnum.IN_PROGRESS.getCode())
                     .setAcceptTime(LocalDateTime.now());
         }
         csTaskMapper.updateById(updateDO);
         log.info("[syncAssignee][工单 {} 处理人已同步 assigneeId={}, status={}]",
                 csTaskId, assigneeUserId, updateDO.getStatus());
+
+        // ========== 通知逻辑 ==========
+        // 构建通知用的 task 快照（反映更新后的状态）
+        CsTaskDO notifyTask = new CsTaskDO()
+                .setId(current.getId())
+                .setTaskNo(current.getTaskNo())
+                .setStatus(isInitialAccept ? CsTaskStatusEnum.IN_PROGRESS.getCode() : current.getStatus())
+                .setUrgency(current.getUrgency())
+                .setCreatorUserId(current.getCreatorUserId())
+                .setAssigneeId(assigneeUserId);
+
+        if (isInitialAccept) {
+            // 接单场景：通知提单人
+            csWebSocketService.sendTaskNotifyAsync(current.getCreatorUserId(),
+                    buildNotification(notifyTask, CsTaskNotification.TYPE_TASK_ACCEPTED, "工单已被接单"));
+            sendNotify(current.getCreatorUserId(), NOTIFY_TASK_ACCEPTED, buildNotifyParams(notifyTask));
+        } else if (previousAssigneeId != null && !previousAssigneeId.equals(assigneeUserId)) {
+            // 转单场景：处理人变更 + 非初始接单 → 通知新处理人
+            csWebSocketService.sendTaskNotifyAsync(assigneeUserId,
+                    buildNotification(notifyTask, CsTaskNotification.TYPE_TASK_TRANSFERRED, "有新的工单转交给您"));
+            sendNotify(assigneeUserId, NOTIFY_TASK_TRANSFERRED, buildNotifyParams(notifyTask));
+        }
+    }
+
+    // ========== 通知辅助方法 ==========
+
+    private CsTaskNotification buildNotification(CsTaskDO task, String type, String message) {
+        return new CsTaskNotification()
+                .setTaskId(task.getId())
+                .setTaskNo(task.getTaskNo())
+                .setType(type)
+                .setMessage(message)
+                .setStatus(task.getStatus())
+                .setUrgency(task.getUrgency());
+    }
+
+    private Map<String, Object> buildNotifyParams(CsTaskDO task) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("taskNo", task.getTaskNo());
+        return params;
+    }
+
+    private void sendNotify(Long userId, String templateCode, Map<String, Object> params) {
+        try {
+            notifyMessageSendApi.sendSingleMessageToAdmin(
+                    new NotifySendSingleToUserReqDTO()
+                            .setUserId(userId)
+                            .setTemplateCode(templateCode)
+                            .setTemplateParams(params));
+        } catch (Exception e) {
+            log.warn("[sendNotify][发送站内信失败 templateCode={}, userId={}]", templateCode, userId, e);
+        }
     }
 
 }

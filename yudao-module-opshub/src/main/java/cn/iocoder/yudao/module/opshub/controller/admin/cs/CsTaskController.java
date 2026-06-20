@@ -141,6 +141,14 @@ public class CsTaskController {
         return success(csTaskService.getTaskCandidateUserIds(id));
     }
 
+    @GetMapping("/bpm-task-id")
+    @Operation(summary = "获取工单当前运行的 BPM 任务 ID")
+    @Parameter(name = "id", description = "工单ID", required = true)
+    @PreAuthorize("@ss.hasPermission('dealer:cs-task:transfer')")
+    public CommonResult<String> getBpmTaskId(@RequestParam("id") Long id) {
+        return success(csTaskService.getBpmTaskId(id));
+    }
+
     // ========== 私有方法 ==========
 
     /**

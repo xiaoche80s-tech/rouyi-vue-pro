@@ -57,6 +57,28 @@ public interface BpmTaskService {
     PageResult<HistoricTaskInstance> getTaskDonePage(Long userId, BpmTaskPageReqVO pageReqVO);
 
     /**
+     * 获取用户待办任务对应的流程实例 ID 列表（不分页，仅返回 ID）
+     * <p>
+     * 用于业务模块通过 processInstanceId 反查业务表，实现 BPM 驱动的待办查询。
+     *
+     * @param userId               用户编号（为 null 时查询所有用户的任务，用于管理员视图）
+     * @param processDefinitionKey 流程定义 Key（可选，为 null 时查询所有流程）
+     * @return 流程实例 ID 列表（已去重）
+     */
+    List<String> getTodoProcessInstanceIds(Long userId, String processDefinitionKey);
+
+    /**
+     * 获取用户已办任务对应的流程实例 ID 列表（不分页，仅返回 ID）
+     * <p>
+     * 自动排除发起人自动完成节点（START_USER_NODE_ID）。
+     *
+     * @param userId               用户编号（为 null 时查询所有用户的任务，用于管理员视图）
+     * @param processDefinitionKey 流程定义 Key（可选，为 null 时查询所有流程）
+     * @return 流程实例 ID 列表（已去重）
+     */
+    List<String> getDoneProcessInstanceIds(Long userId, String processDefinitionKey);
+
+    /**
      * 获得全部的流程任务分页
      *
      * @param userId    用户编号
