@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: crm/permission
+title: CRM 数据权限管理
+scope:
+    - yudao-module-crm/src/main/java/cn/iocoder/yudao/module/crm/controller/admin/permission/
+    - yudao-module-crm/src/main/java/cn/iocoder/yudao/module/crm/service/permission/
+    - yudao-module-crm/src/main/java/cn/iocoder/yudao/module/crm/dal/dataobject/permission/
+    - yudao-module-crm/src/main/java/cn/iocoder/yudao/module/crm/dal/mysql/permission/
+source_files: []
+depends_on: []
+related_to: []

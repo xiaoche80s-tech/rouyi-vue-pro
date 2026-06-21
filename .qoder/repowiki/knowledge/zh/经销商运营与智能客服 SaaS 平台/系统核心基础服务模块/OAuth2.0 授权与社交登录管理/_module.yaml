@@ -1,0 +1,19 @@
+schema_version: 1
+module_path: system/oauth_social
+title: OAuth2.0 授权与社交登录管理
+scope:
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/api/oauth2/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/api/social/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/controller/admin/oauth2/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/controller/admin/socail/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/convert/oauth2/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/dal/dataobject/oauth2/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/dal/dataobject/social/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/dal/mysql/oauth2/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/dal/mysql/social/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/dal/redis/oauth2/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/service/oauth2/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/service/social/
+source_files: []
+depends_on: []
+related_to: []

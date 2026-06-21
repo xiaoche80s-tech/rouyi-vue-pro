@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: opshub/signing
+title: 经销商签约合同管理
+scope:
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/controller/admin/signing/
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/dal/dataobject/signing/
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/dal/mysql/signing/
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/service/signing/
+source_files: []
+depends_on: []
+related_to: []

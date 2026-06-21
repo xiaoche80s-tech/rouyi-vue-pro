@@ -1,0 +1,12 @@
+schema_version: 1
+module_path: system/authentication
+title: 管理后台认证与验证码服务
+scope:
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/controller/admin/auth/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/controller/admin/captcha/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/convert/auth/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/framework/captcha/
+    - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/service/auth/
+source_files: []
+depends_on: []
+related_to: []

@@ -1,0 +1,14 @@
+schema_version: 1
+module_path: configuration_system
+title: 配置系统架构与多环境管理
+scope: []
+source_files:
+    - yudao-server/src/main/resources/application.yaml
+    - yudao-server/src/main/resources/application-local.yaml
+    - yudao-server/src/main/resources/application-dev.yaml
+    - yudao-ui/yudao-ui-admin-vue3/.env
+    - yudao-ui/yudao-ui-admin-vue3/.env.dev
+    - yudao-ui/yudao-ui-admin-vue3/.env.prod
+    - yudao-ui/yudao-ui-admin-vue3/vite.config.ts
+depends_on: []
+related_to: []

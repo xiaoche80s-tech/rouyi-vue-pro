@@ -1,0 +1,15 @@
+schema_version: 1
+module_path: infra/codegen
+title: 代码生成引擎
+scope:
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/controller/admin/codegen/
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/convert/codegen/
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/dal/dataobject/codegen/
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/dal/mysql/codegen/
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/enums/codegen/
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/framework/codegen/
+    - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/service/codegen/
+    - yudao-module-infra/src/main/resources/codegen/
+source_files: []
+depends_on: []
+related_to: []

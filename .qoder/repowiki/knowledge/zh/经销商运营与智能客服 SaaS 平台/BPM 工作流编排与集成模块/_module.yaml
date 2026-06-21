@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: bpm
+title: BPM 工作流编排与集成模块
+scope:
+    - yudao-module-bpm/
+source_files: []
+depends_on: []
+related_to: []

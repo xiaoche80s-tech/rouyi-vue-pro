@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: framework/starter_biz_ip
+title: IP与行政区划服务
+scope:
+    - yudao-framework/yudao-spring-boot-starter-biz-ip/
+source_files: []
+depends_on: []
+related_to: []

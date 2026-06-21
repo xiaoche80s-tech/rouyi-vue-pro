@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: crm/framework
+title: CRM 模块框架增强与切面支持
+scope:
+    - yudao-module-crm/src/main/java/cn/iocoder/yudao/module/crm/framework/
+source_files: []
+depends_on: []
+related_to: []

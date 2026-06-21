@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: crm/followup
+title: CRM 跟进记录管理
+scope:
+    - yudao-module-crm/src/main/java/cn/iocoder/yudao/module/crm/controller/admin/followup/
+    - yudao-module-crm/src/main/java/cn/iocoder/yudao/module/crm/service/followup/
+    - yudao-module-crm/src/main/java/cn/iocoder/yudao/module/crm/dal/dataobject/followup/
+    - yudao-module-crm/src/main/java/cn/iocoder/yudao/module/crm/dal/mysql/followup/
+source_files: []
+depends_on: []
+related_to: []

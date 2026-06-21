@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: crm/statistics
+title: CRM 统计分析模块
+scope:
+    - yudao-module-crm/src/main/java/cn/iocoder/yudao/module/crm/controller/admin/statistics/
+    - yudao-module-crm/src/main/java/cn/iocoder/yudao/module/crm/service/statistics/
+    - yudao-module-crm/src/main/java/cn/iocoder/yudao/module/crm/dal/mysql/statistics/
+    - yudao-module-crm/src/main/resources/mapper/statistics/
+source_files: []
+depends_on: []
+related_to: []

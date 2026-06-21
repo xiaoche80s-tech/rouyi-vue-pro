@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: ui_admin/im_chat/user_im
+title: 即时通讯与会话管理
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/views/im/home/
+source_files: []
+depends_on: []
+related_to: []

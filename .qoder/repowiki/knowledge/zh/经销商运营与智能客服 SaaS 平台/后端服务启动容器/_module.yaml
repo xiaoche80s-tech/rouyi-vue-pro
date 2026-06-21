@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: server
+title: 后端服务启动容器
+scope:
+    - yudao-server/
+source_files: []
+depends_on: []
+related_to: []

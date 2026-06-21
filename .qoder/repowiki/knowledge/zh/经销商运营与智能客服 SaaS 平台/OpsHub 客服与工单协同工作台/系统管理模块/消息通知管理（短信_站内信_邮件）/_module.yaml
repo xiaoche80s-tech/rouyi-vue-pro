@@ -1,0 +1,13 @@
+schema_version: 1
+module_path: ui_admin/system_management/sms_notify_mail
+title: 消息通知管理（短信/站内信/邮件）
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/system/sms/
+    - yudao-ui/yudao-ui-admin-vue3/src/api/system/notify/
+    - yudao-ui/yudao-ui-admin-vue3/src/api/system/mail/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/system/sms/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/system/notify/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/system/mail/
+source_files: []
+depends_on: []
+related_to: []

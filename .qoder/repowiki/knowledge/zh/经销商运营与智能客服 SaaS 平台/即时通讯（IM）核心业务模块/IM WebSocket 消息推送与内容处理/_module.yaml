@@ -1,0 +1,9 @@
+schema_version: 1
+module_path: im/websocket
+title: IM WebSocket 消息推送与内容处理
+scope:
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/service/websocket/
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/util/
+source_files: []
+depends_on: []
+related_to: []

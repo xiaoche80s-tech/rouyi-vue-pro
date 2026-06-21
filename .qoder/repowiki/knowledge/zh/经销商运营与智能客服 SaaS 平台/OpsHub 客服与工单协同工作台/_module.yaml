@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: ui_admin
+title: OpsHub 客服与工单协同工作台
+scope:
+    - yudao-ui/
+source_files: []
+depends_on: []
+related_to: []

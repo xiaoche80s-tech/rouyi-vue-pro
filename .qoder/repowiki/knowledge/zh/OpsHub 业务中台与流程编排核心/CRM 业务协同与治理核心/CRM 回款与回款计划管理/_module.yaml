@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: crm/receivable
+title: CRM 回款与回款计划管理
+scope:
+    - yudao-module-crm/src/main/java/cn/iocoder/yudao/module/crm/controller/admin/receivable/
+    - yudao-module-crm/src/main/java/cn/iocoder/yudao/module/crm/service/receivable/
+    - yudao-module-crm/src/main/java/cn/iocoder/yudao/module/crm/dal/dataobject/receivable/
+    - yudao-module-crm/src/main/java/cn/iocoder/yudao/module/crm/dal/mysql/receivable/
+source_files: []
+depends_on: []
+related_to: []

@@ -1,0 +1,9 @@
+schema_version: 1
+module_path: opshub/dashboard
+title: 角色化仪表盘数据聚合
+scope:
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/controller/admin/dashboard/
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/service/dashboard/
+source_files: []
+depends_on: []
+related_to: []

@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: opshub/framework
+title: OpsHub 模块基础设施与通用配置
+scope:
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/framework/
+source_files: []
+depends_on: []
+related_to: []

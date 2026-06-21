@@ -1,0 +1,13 @@
+schema_version: 1
+module_path: im/channel
+title: IM频道与素材管理
+scope:
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/controller/admin/channel/
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/controller/admin/manager/channel/
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/service/channel/
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/dal/dataobject/channel/
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/dal/mysql/channel/
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/enums/channel/
+source_files: []
+depends_on: []
+related_to: []

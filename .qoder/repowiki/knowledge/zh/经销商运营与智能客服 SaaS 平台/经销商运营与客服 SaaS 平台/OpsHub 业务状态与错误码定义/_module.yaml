@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: opshub/enums
+title: OpsHub 业务状态与错误码定义
+scope:
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/enums/
+source_files: []
+depends_on: []
+related_to: []

@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: crm/product
+title: CRM 产品与分类管理
+scope:
+    - yudao-module-crm/src/main/java/cn/iocoder/yudao/module/crm/controller/admin/product/
+    - yudao-module-crm/src/main/java/cn/iocoder/yudao/module/crm/service/product/
+    - yudao-module-crm/src/main/java/cn/iocoder/yudao/module/crm/dal/dataobject/product/
+    - yudao-module-crm/src/main/java/cn/iocoder/yudao/module/crm/dal/mysql/product/
+source_files: []
+depends_on: []
+related_to: []

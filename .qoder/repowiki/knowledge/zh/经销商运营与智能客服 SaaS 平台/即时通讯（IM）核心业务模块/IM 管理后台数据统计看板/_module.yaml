@@ -1,0 +1,10 @@
+schema_version: 1
+module_path: im/statistics
+title: IM 管理后台数据统计看板
+scope:
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/controller/admin/manager/statistics/
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/service/statistics/
+    - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/dal/mysql/statistics/
+source_files: []
+depends_on: []
+related_to: []

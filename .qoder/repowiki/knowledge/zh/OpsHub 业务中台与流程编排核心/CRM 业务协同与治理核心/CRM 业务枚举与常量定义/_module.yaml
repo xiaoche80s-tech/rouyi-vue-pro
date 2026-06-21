@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: crm/enums
+title: CRM 业务枚举与常量定义
+scope:
+    - yudao-module-crm/src/main/java/cn/iocoder/yudao/module/crm/enums/
+source_files: []
+depends_on: []
+related_to: []

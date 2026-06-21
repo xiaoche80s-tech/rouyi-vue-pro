@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: crm
+title: CRM 业务协同与治理核心
+scope:
+    - yudao-module-crm/
+source_files: []
+depends_on: []
+related_to: []

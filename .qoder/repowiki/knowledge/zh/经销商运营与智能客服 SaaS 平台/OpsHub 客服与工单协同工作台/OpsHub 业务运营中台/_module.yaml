@@ -1,0 +1,9 @@
+schema_version: 1
+module_path: ui_admin/opshub
+title: OpsHub 业务运营中台
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/opshub/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/opshub/
+source_files: []
+depends_on: []
+related_to: []

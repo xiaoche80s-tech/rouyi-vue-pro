@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: crm/contact
+title: CRM 联系人管理
+scope:
+    - yudao-module-crm/src/main/java/cn/iocoder/yudao/module/crm/controller/admin/contact/
+    - yudao-module-crm/src/main/java/cn/iocoder/yudao/module/crm/service/contact/
+    - yudao-module-crm/src/main/java/cn/iocoder/yudao/module/crm/dal/dataobject/contact/
+    - yudao-module-crm/src/main/java/cn/iocoder/yudao/module/crm/dal/mysql/contact/
+source_files: []
+depends_on: []
+related_to: []

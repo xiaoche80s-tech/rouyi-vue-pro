@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: opshub
+title: 经销商运营与客服 SaaS 平台
+scope:
+    - yudao-module-opshub/
+source_files: []
+depends_on: []
+related_to: []

@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: crm/contract
+title: CRM合同管理
+scope:
+    - yudao-module-crm/src/main/java/cn/iocoder/yudao/module/crm/controller/admin/contract/
+    - yudao-module-crm/src/main/java/cn/iocoder/yudao/module/crm/service/contract/
+    - yudao-module-crm/src/main/java/cn/iocoder/yudao/module/crm/dal/dataobject/contract/
+    - yudao-module-crm/src/main/java/cn/iocoder/yudao/module/crm/dal/mysql/contract/
+source_files: []
+depends_on: []
+related_to: []

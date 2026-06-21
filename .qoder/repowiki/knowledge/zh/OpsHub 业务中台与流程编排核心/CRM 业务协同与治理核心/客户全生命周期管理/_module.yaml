@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: crm/customer
+title: 客户全生命周期管理
+scope:
+    - yudao-module-crm/src/main/java/cn/iocoder/yudao/module/crm/controller/admin/customer/
+    - yudao-module-crm/src/main/java/cn/iocoder/yudao/module/crm/service/customer/
+    - yudao-module-crm/src/main/java/cn/iocoder/yudao/module/crm/dal/dataobject/customer/
+    - yudao-module-crm/src/main/java/cn/iocoder/yudao/module/crm/dal/mysql/customer/
+source_files: []
+depends_on: []
+related_to: []

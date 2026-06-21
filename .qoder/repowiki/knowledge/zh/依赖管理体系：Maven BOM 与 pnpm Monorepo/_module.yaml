@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: dependency_management
+title: 依赖管理体系：Maven BOM 与 pnpm Monorepo
+scope: []
+source_files:
+    - pom.xml
+    - yudao-dependencies/pom.xml
+    - yudao-ui/yudao-ui-admin-vue3/package.json
+    - yudao-ui/yudao-ui-admin-vue3/pnpm-lock.yaml
+depends_on: []
+related_to: []

@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: docs
+title: OpsHub 经销商全生命周期与智能客服模块
+scope:
+    - docs/
+source_files: []
+depends_on: []
+related_to: []
