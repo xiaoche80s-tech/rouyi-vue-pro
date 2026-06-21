@@ -23,4 +23,7 @@ source_files: []
 depends_on: []
 related_to:
     - path: bpm/message_integration
+    - path: opshub/cs
     - path: ui_admin/system_management/sms_notify_mail
+    - path: system/authentication
+    - path: opshub/aftersale

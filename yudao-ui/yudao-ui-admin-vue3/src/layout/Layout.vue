@@ -56,13 +56,34 @@ export default defineComponent({
     const { chatVisible, currentSessionId, openByCategory,
       dealerDialogVisible, myDealerList, onDealerSelected } = useCsConsult()
     const userStore = useUserStore()
+    const route = useRoute()
+
     /** 浮动按钮仅经销商角色可见 */
     const isDealer = computed(() => userStore.getRoles.includes('dealer'))
     /** 执行员角色：全局通知组件可见 */
     const isExecutor = computed(() => userStore.getRoles.includes('service_executor') || userStore.getRoles.includes('brand_admin'))
     const unreadCount = ref(0)
+
+    /** 路由路径前缀 → 咨询类型映射 */
+    const routeConsultTypeMap: Record<string, string> = {
+      '/opshub/signing': 'signing',
+      '/opshub/policy': 'policy',
+      '/opshub/aftersale': 'aftersale',
+      '/opshub/order': 'order',
+      '/opshub/basedata': 'basedata'
+    }
+
+    /** 根据当前路由自动匹配咨询类型 */
+    const consultType = computed(() => {
+      const path = route.path
+      for (const [prefix, type] of Object.entries(routeConsultTypeMap)) {
+        if (path.startsWith(prefix)) return type
+      }
+      return 'other'
+    })
+
     const handleFloatingClick = () => {
-      openByCategory('other')
+      openByCategory(consultType.value)
     }
     return () => (
       <section

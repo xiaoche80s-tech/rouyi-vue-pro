@@ -140,7 +140,6 @@
 
         <!-- 操作按钮栏 -->
         <div class="action-bar">
-          <el-button v-if="canAccept" type="success" @click="handleAccept">接单</el-button>
           <el-button v-if="canSubmitApproval" type="primary" @click="approvalDialogVisible = true">提交审批</el-button>
           <el-button v-if="canTransfer" type="warning" plain @click="transferDialogVisible = true">转单</el-button>
           <el-button v-if="canVerify" type="success" @click="handleVerify">验收通过</el-button>
@@ -299,7 +298,6 @@ const showExecutorOps = computed(() => {
   return detailData.value.assigneeId === currentUserId.value
 })
 
-const canAccept = computed(() => detailData.value.status === 0 && !detailData.value.assigneeId)
 const canSubmitApproval = computed(() => detailData.value.status === 1 && detailData.value.assigneeId === currentUserId.value)
 const canTransfer = computed(() => detailData.value.status === 1 && detailData.value.assigneeId === currentUserId.value)
 const canVerify = computed(() => detailData.value.status === 2 && detailData.value.creatorUserId === currentUserId.value)
@@ -360,14 +358,6 @@ const formatFileSize = (bytes: number) => {
   if (bytes < 1024) return bytes + ' B'
   if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB'
   return (bytes / 1048576).toFixed(1) + ' MB'
-}
-
-// ========== 接单 ==========
-const handleAccept = async () => {
-  await ElMessageBox.confirm('确认接单？', '提示', { type: 'info' })
-  await CsTaskApi.acceptTask(taskId.value)
-  ElMessage.success('接单成功')
-  await getInfo()
 }
 
 // ========== 提交审批 ==========

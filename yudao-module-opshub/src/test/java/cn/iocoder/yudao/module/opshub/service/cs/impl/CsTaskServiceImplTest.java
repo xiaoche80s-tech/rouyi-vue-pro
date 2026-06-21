@@ -5,10 +5,12 @@ import cn.iocoder.yudao.framework.common.biz.system.permission.PermissionCommonA
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.framework.test.core.ut.BaseMockitoUnitTest;
 import cn.iocoder.yudao.module.bpm.api.task.BpmProcessInstanceApi;
+import cn.iocoder.yudao.module.bpm.controller.admin.task.vo.instance.BpmProcessInstanceCancelReqVO;
 import cn.iocoder.yudao.module.bpm.controller.admin.task.vo.task.BpmTaskApproveReqVO;
 import cn.iocoder.yudao.module.bpm.controller.admin.task.vo.task.BpmTaskRejectReqVO;
 import cn.iocoder.yudao.module.bpm.controller.admin.task.vo.task.BpmTaskTransferReqVO;
 import cn.iocoder.yudao.module.bpm.enums.task.BpmProcessInstanceStatusEnum;
+import cn.iocoder.yudao.module.bpm.service.task.BpmProcessInstanceService;
 import cn.iocoder.yudao.module.bpm.service.task.BpmTaskService;
 import cn.iocoder.yudao.module.opshub.controller.admin.cs.vo.CsTaskPageReqVO;
 import cn.iocoder.yudao.module.opshub.controller.admin.cs.vo.CsTaskTransferReqVO;
@@ -39,10 +41,9 @@ import static org.mockito.Mockito.*;
  * <p>
  * 覆盖 Step 11 核心变更：
  * 1. BPM 状态机回调（updateCsTaskStatusByBpm）
- * 2. 混合接单模式（acceptTask）
- * 3. 提交审批（submitForApproval）
- * 4. 验收（verifyTask）
- * 5. 取消/关闭（cancelTask）
+ * 2. 提交审批（submitForApproval）
+ * 3. 验收（verifyTask）
+ * 4. 取消/关闭（cancelTask）
  */
 class CsTaskServiceImplTest extends BaseMockitoUnitTest {
 
@@ -57,6 +58,8 @@ class CsTaskServiceImplTest extends BaseMockitoUnitTest {
     private BpmProcessInstanceApi processInstanceApi;
     @Mock
     private BpmTaskService bpmTaskService;
+    @Mock
+    private BpmProcessInstanceService processInstanceService;
     @Mock
     private NotifyMessageSendApi notifyMessageSendApi;
     @Mock
@@ -193,67 +196,6 @@ class CsTaskServiceImplTest extends BaseMockitoUnitTest {
         }
     }
 
-    // ========== 混合接单模式测试 ==========
-
-    @Nested
-    @DisplayName("acceptTask - 混合接单模式")
-    class AcceptTaskTests {
-
-        @Test
-        @DisplayName("指定模式 - 指定人接单成功")
-        void testDesignatedMode_assigneeAccepts() {
-            CsTaskDO task = buildTask(CsTaskStatusEnum.PENDING);
-            task.setAssigneeId(USER_ID); // 指定模式
-            when(csTaskMapper.selectById(TASK_ID)).thenReturn(task);
-            mockLoginUserId(USER_ID);
-
-            csTaskService.acceptTask(TASK_ID);
-
-            verify(csTaskMapper).updateById(ArgumentMatchers.<CsTaskDO>argThat(update ->
-                    CsTaskStatusEnum.IN_PROGRESS.getCode().equals(update.getStatus())
-                            && USER_ID.equals(update.getAssigneeId())
-                            && update.getAcceptTime() != null));
-        }
-
-        @Test
-        @DisplayName("指定模式 - 非指定人不可接单")
-        void testDesignatedMode_nonAssigneeRejected() {
-            CsTaskDO task = buildTask(CsTaskStatusEnum.PENDING);
-            task.setAssigneeId(USER_ID); // 指定给 USER_ID
-            when(csTaskMapper.selectById(TASK_ID)).thenReturn(task);
-            mockLoginUserId(OTHER_USER_ID); // 但 OTHER_USER_ID 尝试接单
-
-            assertThatThrownBy(() -> csTaskService.acceptTask(TASK_ID))
-                    .message().contains("非当前处理人");
-        }
-
-        @Test
-        @DisplayName("抢单模式 - 任意执行员可接单")
-        void testGrabMode_anyExecutorCanAccept() {
-            CsTaskDO task = buildTask(CsTaskStatusEnum.PENDING);
-            task.setAssigneeId(null); // 抢单模式
-            when(csTaskMapper.selectById(TASK_ID)).thenReturn(task);
-            mockLoginUserId(USER_ID);
-
-            csTaskService.acceptTask(TASK_ID);
-
-            verify(csTaskMapper).updateById(ArgumentMatchers.<CsTaskDO>argThat(update ->
-                    CsTaskStatusEnum.IN_PROGRESS.getCode().equals(update.getStatus())
-                            && USER_ID.equals(update.getAssigneeId())));
-        }
-
-        @Test
-        @DisplayName("非 PENDING 状态不可接单")
-        void testNotPendingCannotAccept() {
-            CsTaskDO task = buildTask(CsTaskStatusEnum.IN_PROGRESS);
-            when(csTaskMapper.selectById(TASK_ID)).thenReturn(task);
-            mockLoginUserId(USER_ID);
-
-            assertThatThrownBy(() -> csTaskService.acceptTask(TASK_ID))
-                    .message().contains("仅待接单");
-        }
-    }
-
     // ========== 提交审批测试 ==========
 
     @Nested
@@ -277,8 +219,8 @@ class CsTaskServiceImplTest extends BaseMockitoUnitTest {
             // 验证：记录交付时间
             verify(csTaskMapper).updateById(ArgumentMatchers.<CsTaskDO>argThat(update ->
                     TASK_ID.equals(update.getId()) && update.getDeliverTime() != null));
-            // 验证：通知创建人验收
-            verify(csWebSocketService).sendTaskNotifyAsync(eq(task.getCreatorUserId()), any());
+            // 通知统一由 BPM 回调发出，此处不再直接发送
+            verify(csWebSocketService, never()).sendTaskNotifyAsync(anyLong(), any());
         }
 
         @Test
@@ -383,16 +325,18 @@ class CsTaskServiceImplTest extends BaseMockitoUnitTest {
 
             csTaskService.cancelTask(TASK_ID, "不需要了");
 
-            verify(csTaskMapper).updateById(ArgumentMatchers.<CsTaskDO>argThat(update ->
-                    CsTaskStatusEnum.CLOSED.getCode().equals(update.getStatus())));
-            // 验证：发布状态变更事件
-            verify(applicationEventPublisher).publishEvent(any(CsTaskStatusChangeEvent.class));
+            // 验证：调用 BPM cancel API（提单人用 startUser 接口）
+            verify(processInstanceService).cancelProcessInstanceByStartUser(
+                    eq(task.getCreatorUserId()), any(BpmProcessInstanceCancelReqVO.class));
+            // BPM 回调会处理状态和事件，此处不再直接调用
+            verify(csTaskMapper, never()).updateById(any(CsTaskDO.class));
+            verify(applicationEventPublisher, never()).publishEvent(any());
         }
 
         @Test
-        @DisplayName("经销商 - 非 PENDING 不可取消")
+        @DisplayName("经销商 - DELIVERED 状态不可取消")
         void testDealerCancelNonPending() {
-            CsTaskDO task = buildTask(CsTaskStatusEnum.IN_PROGRESS);
+            CsTaskDO task = buildTask(CsTaskStatusEnum.DELIVERED);
             when(csTaskMapper.selectById(TASK_ID)).thenReturn(task);
             mockLoginUserId(task.getCreatorUserId());
             when(permissionCommonApi.hasAnyRoles(eq(task.getCreatorUserId()),
@@ -413,14 +357,13 @@ class CsTaskServiceImplTest extends BaseMockitoUnitTest {
             when(permissionCommonApi.hasAnyRoles(eq(USER_ID),
                     eq(OpsRoleCodeConstants.BRAND_ADMIN), eq(OpsRoleCodeConstants.SUPER_ADMIN)))
                     .thenReturn(true);
-            mockBpmTask(PROCESS_INSTANCE_ID, BPM_TASK_ID);
 
             csTaskService.cancelTask(TASK_ID, "管理员关闭");
 
-            verify(csTaskMapper).updateById(ArgumentMatchers.<CsTaskDO>argThat(update ->
-                    CsTaskStatusEnum.CLOSED.getCode().equals(update.getStatus())));
-            // 验证：BPM 流程被退回
-            verify(bpmTaskService).rejectTask(eq(USER_ID), any(BpmTaskRejectReqVO.class));
+            // 验证：调用 BPM cancel API（管理员用 admin 接口）
+            verify(processInstanceService).cancelProcessInstanceByAdmin(
+                    eq(USER_ID), any(BpmProcessInstanceCancelReqVO.class));
+            verify(csTaskMapper, never()).updateById(any(CsTaskDO.class));
         }
 
         @Test

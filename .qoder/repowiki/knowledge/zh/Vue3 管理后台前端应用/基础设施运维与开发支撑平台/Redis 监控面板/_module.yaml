@@ -1,9 +1,0 @@
-schema_version: 1
-module_path: ui_admin/infra_platform/redis_monitor
-title: Redis 监控面板
-scope:
-    - yudao-ui/yudao-ui-admin-vue3/src/api/infra/redis/
-    - yudao-ui/yudao-ui-admin-vue3/src/views/infra/redis/
-source_files: []
-depends_on: []
-related_to: []

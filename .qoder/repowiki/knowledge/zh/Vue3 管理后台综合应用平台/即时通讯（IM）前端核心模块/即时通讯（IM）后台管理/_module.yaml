@@ -1,0 +1,21 @@
+schema_version: 1
+module_path: ui_admin/im_chat/admin_im
+title: 即时通讯（IM）后台管理
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/views/im/manager/
+    - yudao-ui/yudao-ui-admin-vue3/src/api/im/manager/
+source_files: []
+depends_on: []
+related_to:
+    - path: im/sensitiveword
+    - path: im/statistics
+    - path: ui_admin/im_chat/user_im
+    - path: im/message
+    - path: im/channel
+    - path: im/friend
+    - path: im/group
+    - path: opshub/cs
+    - path: ui_admin/im_chat/im_api_views
+    - path: im/rtc
+    - path: im/face
+    - path: im/websocket

@@ -6,4 +6,8 @@ scope:
 source_files: []
 depends_on: []
 related_to:
+    - path: opshub/framework
+    - path: ui_admin/system_management/dict_management
     - path: opshub/excel_import
+    - path: infra/codegen
+    - path: server

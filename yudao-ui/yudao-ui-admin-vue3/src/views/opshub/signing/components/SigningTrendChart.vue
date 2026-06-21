@@ -34,7 +34,7 @@ const renderChart = (data: SigningApi.SigningTrendVO[]) => {
   chart.setOption({
     tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
     legend: { data: ['主合同', '政策合同', '补充协议', '终止协议'], bottom: 0 },
-    grid: { left: '3%', right: '4%', bottom: '12%', containLabel: true },
+    grid: { left: '3%', right: '4%', bottom: '12%', top: '10%' },
     xAxis: { type: 'category', data: data.map(d => d.period) },
     yAxis: { type: 'value' },
     series: [

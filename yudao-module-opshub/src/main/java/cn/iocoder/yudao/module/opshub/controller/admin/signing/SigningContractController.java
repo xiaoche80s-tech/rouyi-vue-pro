@@ -118,23 +118,6 @@ public class SigningContractController {
         return success(true);
     }
 
-    @PostMapping("/sign")
-    @Operation(summary = "经销商发起签署")
-    @Parameter(name = "id", description = "合同ID", required = true)
-    @PreAuthorize("@ss.hasPermission('dealer:signing:sign')")
-    public CommonResult<Boolean> signContract(@RequestParam("id") Long id) {
-        signingContractService.signContract(id);
-        return success(true);
-    }
-
-    @PostMapping("/upload-sign-proof")
-    @Operation(summary = "执行员上传盖章文件")
-    @PreAuthorize("@ss.hasPermission('dealer:signing:upload-proof')")
-    public CommonResult<Boolean> uploadSignProof(@RequestParam("id") Long id,
-                                                  @RequestParam("signProofUrl") String signProofUrl) {
-        signingContractService.uploadSignProof(id, signProofUrl);
-        return success(true);
-    }
 
     @GetMapping("/attachments")
     @Operation(summary = "获取合同附件列表")

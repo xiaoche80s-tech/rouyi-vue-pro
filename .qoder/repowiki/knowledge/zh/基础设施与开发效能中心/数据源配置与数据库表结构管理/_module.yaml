@@ -8,4 +8,7 @@ scope:
     - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/service/db/
 source_files: []
 depends_on: []
-related_to: []
+related_to:
+    - path: infra/codegen
+    - path: framework/starter_mybatis
+    - path: ui_admin/infra_platform/data_source

@@ -1,0 +1,22 @@
+schema_version: 1
+module_path: ui_admin/opshub/order_management
+title: 订单全生命周期管理
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/opshub/order/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/opshub/order/
+source_files: []
+depends_on: []
+related_to:
+    - path: ui_admin/opshub/dealer_management
+    - path: ui_admin/opshub/customer_service
+    - path: ui_admin/opshub/signing_contracts
+    - path: ui_admin/opshub/basedata
+    - path: opshub/aftersale
+    - path: opshub/dashboard
+    - path: opshub/cs
+    - path: ui_admin/report_designer
+    - path: opshub/excel_import
+    - path: ui_admin/infra_platform/monitoring_tools
+    - path: ui_admin/system_management/dict_management
+    - path: ui_admin/system_management/operation_logs
+    - path: ui_admin/system_management/tenant_management

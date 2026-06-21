@@ -71,15 +71,6 @@ public class CsTaskController {
         return success(csTaskService.createCsTask(reqVO));
     }
 
-    @PostMapping("/accept")
-    @Operation(summary = "执行员接单")
-    @Parameter(name = "id", description = "工单ID", required = true)
-    @PreAuthorize("@ss.hasPermission('dealer:cs-task:accept')")
-    public CommonResult<Boolean> acceptTask(@RequestParam("id") Long id) {
-        csTaskService.acceptTask(id);
-        return success(true);
-    }
-
     @PostMapping("/transfer")
     @Operation(summary = "执行员转单")
     @PreAuthorize("@ss.hasPermission('dealer:cs-task:transfer')")

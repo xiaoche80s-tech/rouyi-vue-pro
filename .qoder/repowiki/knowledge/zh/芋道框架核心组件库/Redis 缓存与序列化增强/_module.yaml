@@ -6,4 +6,10 @@ scope:
 source_files: []
 depends_on: []
 related_to:
+    - path: infra/system_config
+    - path: infra/file_storage
     - path: infra/redis_monitor
+    - path: server
+    - path: system/authentication
+    - path: bpm/task_management
+    - path: bpm/process_definition

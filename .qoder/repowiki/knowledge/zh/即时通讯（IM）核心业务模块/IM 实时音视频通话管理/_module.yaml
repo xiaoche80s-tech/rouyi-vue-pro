@@ -15,3 +15,10 @@ source_files: []
 depends_on: []
 related_to:
     - path: im/websocket
+    - path: im/message
+    - path: im/framework
+    - path: im/group
+    - path: im/statistics
+    - path: ui_admin/im_chat/user_im
+    - path: ui_admin/im_chat/admin_im
+    - path: ui_admin/im_chat/im_api_views

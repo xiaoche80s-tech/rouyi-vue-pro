@@ -15,3 +15,10 @@ depends_on: []
 related_to:
     - path: opshub/basedata
     - path: ui_admin/infra_platform/file_management
+    - path: framework/starter_redis
+    - path: ui_admin/ai_assistant/image
+    - path: opshub/cs
+    - path: infra/system_config
+    - path: ui_admin/ai_assistant/knowledge/document
+    - path: framework/starter_protection
+    - path: ui_admin/infra_platform/monitoring_tools

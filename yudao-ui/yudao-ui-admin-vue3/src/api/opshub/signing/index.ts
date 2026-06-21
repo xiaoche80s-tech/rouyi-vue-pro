@@ -102,15 +102,6 @@ export const updateSigningContract = async (data: any) => {
   return await request.put({ url: '/opshub/signing/update', data })
 }
 
-// 经销商发起签署
-export const signContract = async (id: number) => {
-  return await request.post({ url: '/opshub/signing/sign?id=' + id })
-}
-
-// 执行员上传盖章文件
-export const uploadSignProof = async (id: number, signProofUrl: string) => {
-  return await request.post({ url: '/opshub/signing/upload-sign-proof', params: { id, signProofUrl } })
-}
 
 // 获取合同附件列表
 export const getContractAttachments = async (contractId: number): Promise<ContractAttachmentVO[]> => {

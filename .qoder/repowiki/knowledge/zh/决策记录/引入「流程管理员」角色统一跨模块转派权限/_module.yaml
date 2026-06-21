@@ -1,0 +1,7 @@
+schema_version: 1
+module_path: decisions/7451d2e6b9db_35dde485efbe
+title: 引入「流程管理员」角色统一跨模块转派权限
+scope: []
+source_files: []
+depends_on: []
+related_to: []

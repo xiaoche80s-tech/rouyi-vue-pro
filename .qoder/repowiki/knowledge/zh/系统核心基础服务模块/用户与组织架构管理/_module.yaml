@@ -15,5 +15,13 @@ scope:
 source_files: []
 depends_on: []
 related_to:
-    - path: system/access_control
+    - path: system/authentication
+    - path: opshub/dealer
+    - path: bpm/task_management
+    - path: opshub/cs
+    - path: bpm/oa_leave
+    - path: bpm/process_definition
+    - path: ui_admin/bpm_workflow/task_management
     - path: ui_admin/system_management/user_management
+    - path: ui_admin/bpm_workflow/process_instance
+    - path: ui_admin/bpm_workflow/model_design

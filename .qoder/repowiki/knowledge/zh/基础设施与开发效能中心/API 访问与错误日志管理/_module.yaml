@@ -11,4 +11,9 @@ scope:
     - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/service/logger/
 source_files: []
 depends_on: []
-related_to: []
+related_to:
+    - path: infra/job_scheduler
+    - path: framework/starter_web
+    - path: ui_admin/system_management/operation_logs
+    - path: ui_admin/infra_platform/monitoring_tools
+    - path: ui_admin/infra_platform/api_logs

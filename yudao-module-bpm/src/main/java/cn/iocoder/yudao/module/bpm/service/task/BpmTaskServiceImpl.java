@@ -1517,7 +1517,7 @@ public class BpmTaskServiceImpl implements BpmTaskService {
     }
 
     /**
-     * 重要补充说明：该方法目前主要有两个情况会调用到：
+     * 重要补充说明：该方法目前主要有两个情况 会调用到：
      * <p>
      * 1. 或签场景 + 审批通过：一个或签有多个审批时，如果 A 审批通过，其它或签 B、C 等任务会被 Flowable 自动删除，此时需要通过该方法更新状态为已取消
      * 2. 审批不通过：在 {@link #rejectTask(Long, BpmTaskRejectReqVO)} 不通过时，对于加签的任务，不会被 Flowable 删除，此时需要通过该方法更新状态为已取消

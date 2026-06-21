@@ -5,4 +5,7 @@ scope:
     - yudao-framework/yudao-spring-boot-starter-web/
 source_files: []
 depends_on: []
-related_to: []
+related_to:
+    - path: infra/api_logging
+    - path: server
+    - path: infra/codegen

@@ -7,3 +7,4 @@ source_files: []
 depends_on: []
 related_to:
     - path: infra/job_scheduler
+    - path: ui_admin/infra_platform/job_scheduler

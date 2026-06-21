@@ -18,3 +18,4 @@ source_files: []
 depends_on: []
 related_to:
     - path: system/authentication
+    - path: ui_admin/system_management/oauth2_social

@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: ui_admin/opshub/excel_import
+title: OpsHub Excel 批量导入
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/opshub/excelImport/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/opshub/excelImport/
+source_files: []
+depends_on: []
+related_to:
+    - path: opshub/excel_import
+    - path: ui_admin/opshub/dealer_management

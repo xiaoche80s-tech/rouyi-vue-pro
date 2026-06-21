@@ -23,4 +23,6 @@ scope:
     - yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/service/notice/
 source_files: []
 depends_on: []
-related_to: []
+related_to:
+    - path: ui_admin/system_management/dict_management
+    - path: system/authentication

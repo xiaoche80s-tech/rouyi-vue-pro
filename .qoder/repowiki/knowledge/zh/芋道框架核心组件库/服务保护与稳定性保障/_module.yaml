@@ -5,4 +5,9 @@ scope:
     - yudao-framework/yudao-spring-boot-starter-protection/
 source_files: []
 depends_on: []
-related_to: []
+related_to:
+    - path: server
+    - path: infra/file_storage
+    - path: infra/codegen
+    - path: bpm/task_management
+    - path: bpm/process_definition

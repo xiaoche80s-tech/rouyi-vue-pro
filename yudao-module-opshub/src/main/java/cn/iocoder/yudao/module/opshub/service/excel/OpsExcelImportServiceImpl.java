@@ -17,6 +17,12 @@ import cn.iocoder.yudao.module.opshub.dal.mysql.dealer.DealerInfoMapper;
 import cn.iocoder.yudao.module.opshub.dal.mysql.dealer.DealerProductLineMapper;
 import cn.iocoder.yudao.module.opshub.dal.mysql.dealer.DealerProductLineRelationMapper;
 import cn.iocoder.yudao.module.opshub.dal.mysql.order.*;
+import cn.iocoder.yudao.module.opshub.dal.dataobject.policy.DealerPolicyDO;
+import cn.iocoder.yudao.module.opshub.dal.dataobject.policy.DealerPolicyIndicatorDO;
+import cn.iocoder.yudao.module.opshub.dal.dataobject.policy.DealerPolicyAchievementDO;
+import cn.iocoder.yudao.module.opshub.dal.mysql.policy.DealerPolicyMapper;
+import cn.iocoder.yudao.module.opshub.dal.mysql.policy.DealerPolicyIndicatorMapper;
+import cn.iocoder.yudao.module.opshub.dal.mysql.policy.DealerPolicyAchievementMapper;
 import cn.iocoder.yudao.module.opshub.dal.mysql.signing.SigningContractMapper;
 import cn.iocoder.yudao.module.opshub.service.dealer.DealerInfoService;
 import cn.iocoder.yudao.module.opshub.service.excel.OpsExcelImportService;
@@ -47,6 +53,9 @@ public class OpsExcelImportServiceImpl implements OpsExcelImportService {
     @Resource private AfterSaleProgressMapper afterSaleProgressMapper;
     @Resource private BasedataFileMapper basedataFileMapper;
     @Resource private DealerInfoService dealerInfoService;
+    @Resource private DealerPolicyMapper dealerPolicyMapper;
+    @Resource private DealerPolicyIndicatorMapper policyIndicatorMapper;
+    @Resource private DealerPolicyAchievementMapper policyAchievementMapper;
 
     // ========== L0 基础主数据 ==========
 
@@ -658,6 +667,184 @@ public class OpsExcelImportServiceImpl implements OpsExcelImportService {
                             .setStatus(parseInteger(vo.getStatus()) != null ? parseInteger(vo.getStatus()) : 0)
                             .setDescription(vo.getDescription()).setRemark(vo.getRemark());
                     basedataFileMapper.insert(file);
+                    insert++;
+                }
+                success++;
+            } catch (Exception e) {
+                fail++;
+                failureRows.put(rowNo, e.getMessage());
+            }
+        }
+        return ExcelImportRespVO.builder().successCount(success).insertCount(insert).updateCount(update)
+                .failureCount(fail).failureRows(failureRows).build();
+    }
+
+    // ========== 政策看板 ==========
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ExcelImportRespVO importPolicyList(List<PolicyImportExcelVO> list) {
+        Map<String, DealerPolicyDO> existingMap = dealerPolicyMapper.selectList().stream()
+                .collect(Collectors.toMap(DealerPolicyDO::getPolicyCode, d -> d, (a, b) -> a));
+        Map<String, DealerInfoDO> dealerMap = dealerInfoMapper.selectList().stream()
+                .collect(Collectors.toMap(DealerInfoDO::getDealerCode, d -> d, (a, b) -> a));
+        Map<String, SigningContractDO> contractMap = contractMapper.selectList().stream()
+                .filter(c -> StrUtil.isNotBlank(c.getContractCode()))
+                .collect(Collectors.toMap(SigningContractDO::getContractCode, c -> c, (a, b) -> a));
+        int success = 0, insert = 0, update = 0, fail = 0;
+        Map<Integer, String> failureRows = new LinkedHashMap<>();
+        for (int i = 0; i < list.size(); i++) {
+            int rowNo = i + 2;
+            try {
+                PolicyImportExcelVO vo = list.get(i);
+                if (StrUtil.isBlank(vo.getPolicyCode())) throw new IllegalArgumentException("政策编码不能为空");
+                if (StrUtil.isBlank(vo.getPolicyName())) throw new IllegalArgumentException("政策名称不能为空");
+                if (StrUtil.isBlank(vo.getDealerCode())) throw new IllegalArgumentException("经销商编码不能为空");
+                DealerInfoDO dealer = dealerMap.get(vo.getDealerCode());
+                if (dealer == null) throw new IllegalArgumentException("经销商编码不存在: " + vo.getDealerCode());
+                Long sourceContractId = null;
+                if (StrUtil.isNotBlank(vo.getContractCode())) {
+                    SigningContractDO contract = contractMap.get(vo.getContractCode());
+                    if (contract == null) throw new IllegalArgumentException("来源合同编码不存在: " + vo.getContractCode());
+                    sourceContractId = contract.getId();
+                }
+                DealerPolicyDO existing = existingMap.get(vo.getPolicyCode());
+                if (existing != null) {
+                    existing.setDealerId(dealer.getId()).setDealerCode(vo.getDealerCode())
+                            .setProductLineCode(vo.getProductLineCode()).setProductLineName(vo.getProductLineName())
+                            .setPolicyName(vo.getPolicyName()).setPolicyType(vo.getPolicyType())
+                            .setAchievementType(vo.getAchievementType()).setPolicyStatus(vo.getPolicyStatus())
+                            .setContractCode(vo.getContractCode()).setContractName(vo.getContractName())
+                            .setPolicyDesc(vo.getPolicyDesc()).setSourceContractId(sourceContractId);
+                    dealerPolicyMapper.updateById(existing);
+                    update++;
+                } else {
+                    DealerPolicyDO policy = new DealerPolicyDO();
+                    policy.setDealerId(dealer.getId()).setDealerCode(vo.getDealerCode())
+                            .setProductLineCode(vo.getProductLineCode()).setProductLineName(vo.getProductLineName())
+                            .setPolicyCode(vo.getPolicyCode()).setPolicyName(vo.getPolicyName())
+                            .setPolicyType(vo.getPolicyType()).setAchievementType(vo.getAchievementType())
+                            .setPolicyStatus(vo.getPolicyStatus()).setContractCode(vo.getContractCode())
+                            .setContractName(vo.getContractName()).setPolicyDesc(vo.getPolicyDesc())
+                            .setSourceContractId(sourceContractId);
+                    dealerPolicyMapper.insert(policy);
+                    existingMap.put(vo.getPolicyCode(), policy);
+                    insert++;
+                }
+                success++;
+            } catch (Exception e) {
+                fail++;
+                failureRows.put(rowNo, e.getMessage());
+            }
+        }
+        return ExcelImportRespVO.builder().successCount(success).insertCount(insert).updateCount(update)
+                .failureCount(fail).failureRows(failureRows).build();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ExcelImportRespVO importPolicyIndicatorList(List<PolicyIndicatorImportExcelVO> list) {
+        Map<String, DealerPolicyDO> policyMap = dealerPolicyMapper.selectList().stream()
+                .collect(Collectors.toMap(DealerPolicyDO::getPolicyCode, d -> d, (a, b) -> a));
+        Map<String, DealerPolicyIndicatorDO> existingMap = policyIndicatorMapper.selectList().stream()
+                .collect(Collectors.toMap(
+                        ind -> ind.getPolicyCode() + "|" + ind.getIndicatorName() + "|" + ind.getTargetYear() + "|" + ind.getTargetMonth(),
+                        d -> d, (a, b) -> a));
+        int success = 0, insert = 0, update = 0, fail = 0;
+        Map<Integer, String> failureRows = new LinkedHashMap<>();
+        for (int i = 0; i < list.size(); i++) {
+            int rowNo = i + 2;
+            try {
+                PolicyIndicatorImportExcelVO vo = list.get(i);
+                if (StrUtil.isBlank(vo.getPolicyCode())) throw new IllegalArgumentException("政策编码不能为空");
+                if (StrUtil.isBlank(vo.getIndicatorName())) throw new IllegalArgumentException("指标名称不能为空");
+                if (vo.getTargetYear() == null) throw new IllegalArgumentException("年度不能为空");
+                if (vo.getTargetMonth() == null) throw new IllegalArgumentException("月份不能为空");
+                if (vo.getTargetValue() == null) throw new IllegalArgumentException("目标值不能为空");
+                DealerPolicyDO policy = policyMap.get(vo.getPolicyCode());
+                if (policy == null) throw new IllegalArgumentException("政策编码不存在: " + vo.getPolicyCode());
+                String key = vo.getPolicyCode() + "|" + vo.getIndicatorName() + "|" + vo.getTargetYear() + "|" + vo.getTargetMonth();
+                DealerPolicyIndicatorDO existing = existingMap.get(key);
+                if (existing != null) {
+                    existing.setPolicyId(policy.getId()).setPolicyCode(vo.getPolicyCode())
+                            .setIndicatorName(vo.getIndicatorName()).setTargetYear(vo.getTargetYear()).setTargetMonth(vo.getTargetMonth())
+                            .setTargetValue(vo.getTargetValue())
+                            .setAchievedValue(vo.getAchievedValue() != null ? vo.getAchievedValue() : existing.getAchievedValue())
+                            .setUnit(vo.getUnit());
+                    policyIndicatorMapper.updateById(existing);
+                    update++;
+                } else {
+                    DealerPolicyIndicatorDO ind = new DealerPolicyIndicatorDO();
+                    ind.setPolicyId(policy.getId()).setPolicyCode(vo.getPolicyCode())
+                            .setIndicatorName(vo.getIndicatorName()).setTargetYear(vo.getTargetYear()).setTargetMonth(vo.getTargetMonth())
+                            .setTargetValue(vo.getTargetValue())
+                            .setAchievedValue(vo.getAchievedValue() != null ? vo.getAchievedValue() : java.math.BigDecimal.ZERO)
+                            .setUnit(vo.getUnit());
+                    policyIndicatorMapper.insert(ind);
+                    existingMap.put(key, ind);
+                    insert++;
+                }
+                success++;
+            } catch (Exception e) {
+                fail++;
+                failureRows.put(rowNo, e.getMessage());
+            }
+        }
+        return ExcelImportRespVO.builder().successCount(success).insertCount(insert).updateCount(update)
+                .failureCount(fail).failureRows(failureRows).build();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ExcelImportRespVO importPolicyAchievementList(List<PolicyAchievementImportExcelVO> list) {
+        // 预加载指标（按 policyCode+indicatorName+targetYear+targetMonth 定位）
+        Map<String, DealerPolicyIndicatorDO> indicatorMap = policyIndicatorMapper.selectList().stream()
+                .collect(Collectors.toMap(
+                        ind -> ind.getPolicyCode() + "|" + ind.getIndicatorName() + "|" + ind.getTargetYear() + "|" + ind.getTargetMonth(),
+                        d -> d, (a, b) -> a));
+        Map<String, DealerPolicyAchievementDO> existingMap = policyAchievementMapper.selectList().stream()
+                .collect(Collectors.toMap(
+                        a -> a.getTargetYear() + "|" + a.getIndicatorId() + "|" + a.getAchieveLevel() + "|" +
+                                StrUtil.nullToEmpty(a.getProvinceCode()) + "|" +
+                                StrUtil.nullToEmpty(a.getHospitalCode()) + "|" +
+                                StrUtil.nullToEmpty(a.getProductName()),
+                        d -> d, (a, b) -> a));
+        int success = 0, insert = 0, update = 0, fail = 0;
+        Map<Integer, String> failureRows = new LinkedHashMap<>();
+        for (int i = 0; i < list.size(); i++) {
+            int rowNo = i + 2;
+            try {
+                PolicyAchievementImportExcelVO vo = list.get(i);
+                if (StrUtil.isBlank(vo.getPolicyCode())) throw new IllegalArgumentException("政策编码不能为空");
+                if (StrUtil.isBlank(vo.getIndicatorName())) throw new IllegalArgumentException("指标名称不能为空");
+                if (vo.getTargetYear() == null) throw new IllegalArgumentException("年度不能为空");
+                if (vo.getTargetMonth() == null) throw new IllegalArgumentException("月份不能为空");
+                if (StrUtil.isBlank(vo.getAchieveLevel())) throw new IllegalArgumentException("层级不能为空");
+                if (vo.getAchievedValue() == null) throw new IllegalArgumentException("达成值不能为空");
+                String indKey = vo.getPolicyCode() + "|" + vo.getIndicatorName() + "|" + vo.getTargetYear() + "|" + vo.getTargetMonth();
+                DealerPolicyIndicatorDO indicator = indicatorMap.get(indKey);
+                if (indicator == null) throw new IllegalArgumentException("未找到对应指标: " + indKey);
+                String existKey = vo.getTargetYear() + "|" + indicator.getId() + "|" + vo.getAchieveLevel() + "|" +
+                        StrUtil.nullToEmpty(vo.getProvinceCode()) + "|" +
+                        StrUtil.nullToEmpty(vo.getHospitalCode()) + "|" +
+                        StrUtil.nullToEmpty(vo.getProductName());
+                DealerPolicyAchievementDO existing = existingMap.get(existKey);
+                if (existing != null) {
+                    existing.setProvince(vo.getProvince()).setProvinceCode(vo.getProvinceCode())
+                            .setHospital(vo.getHospital()).setHospitalCode(vo.getHospitalCode())
+                            .setProductName(vo.getProductName()).setAchievedValue(vo.getAchievedValue());
+                    policyAchievementMapper.updateById(existing);
+                    update++;
+                } else {
+                    DealerPolicyAchievementDO ach = new DealerPolicyAchievementDO();
+                    ach.setIndicatorId(indicator.getId()).setIndicatorName(vo.getIndicatorName())
+                            .setTargetYear(vo.getTargetYear())
+                            .setAchieveLevel(vo.getAchieveLevel())
+                            .setProvince(vo.getProvince()).setProvinceCode(vo.getProvinceCode())
+                            .setHospital(vo.getHospital()).setHospitalCode(vo.getHospitalCode())
+                            .setProductName(vo.getProductName()).setAchievedValue(vo.getAchievedValue());
+                    policyAchievementMapper.insert(ach);
+                    existingMap.put(existKey, ach);
                     insert++;
                 }
                 success++;

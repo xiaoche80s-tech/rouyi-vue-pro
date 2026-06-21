@@ -1,0 +1,26 @@
+schema_version: 1
+module_path: opshub/aftersale
+title: 售后工单管理
+scope:
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/controller/admin/aftersale/
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/dal/dataobject/aftersale/
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/dal/mysql/aftersale/
+    - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/service/aftersale/
+source_files: []
+depends_on: []
+related_to:
+    - path: opshub/order
+    - path: opshub/dashboard
+    - path: opshub/cs
+    - path: opshub/basedata
+    - path: ui_admin/opshub/customer_service
+    - path: opshub/enums
+    - path: opshub/dealer
+    - path: system/message_center
+    - path: ui_admin/opshub/order_management
+    - path: ui_admin/opshub/dealer_management
+    - path: ui_admin/opshub/basedata
+    - path: ui_admin/report_designer
+    - path: ui_admin/infra_platform/monitoring_tools
+    - path: ui_admin/system_management/dict_management
+    - path: ui_admin/system_management/operation_logs

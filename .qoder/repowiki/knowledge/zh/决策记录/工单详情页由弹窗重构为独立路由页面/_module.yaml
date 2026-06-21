@@ -1,0 +1,7 @@
+schema_version: 1
+module_path: decisions/7451d2e6b9db_58ce0cc403a7
+title: 工单详情页由弹窗重构为独立路由页面
+scope: []
+source_files: []
+depends_on: []
+related_to: []

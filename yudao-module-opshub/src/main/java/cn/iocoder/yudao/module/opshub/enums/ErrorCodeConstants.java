@@ -89,4 +89,15 @@ public interface ErrorCodeConstants {
     ErrorCode CS_SESSION_NOT_INITIATOR   = new ErrorCode(1_050_009_006, "非发起人，无权关闭");
     ErrorCode CS_SESSION_DUPLICATE       = new ErrorCode(1_050_009_007, "已存在相同咨询");
 
+    // ========== 政策看板 1-050-010-xxx ==========
+    ErrorCode POLICY_NOT_EXISTS      = new ErrorCode(1_050_010_000, "政策不存在");
+    ErrorCode POLICY_CODE_EXISTS     = new ErrorCode(1_050_010_001, "政策编码已存在");
+    ErrorCode POLICY_INDICATOR_INVALID = new ErrorCode(1_050_010_002, "指标数据不合法");
+
+    // ========== 操作请求 1-050-011-xxx ==========
+    ErrorCode OP_REQUEST_NOT_EXISTS          = new ErrorCode(1_050_011_000, "操作请求不存在");
+    ErrorCode OP_REQUEST_TYPE_NOT_SUPPORTED  = new ErrorCode(1_050_011_001, "不支持的操作请求类型");
+    ErrorCode OP_REQUEST_STATUS_INVALID      = new ErrorCode(1_050_011_002, "操作请求状态不合法");
+    ErrorCode OP_REQUEST_NOT_ASSIGNEE        = new ErrorCode(1_050_011_003, "非当前处理人，无权操作");
+
 }

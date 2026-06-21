@@ -10,10 +10,10 @@
 <script lang="ts" setup>
 import * as echarts from 'echarts/core'
 import { PieChart } from 'echarts/charts'
-import { TooltipComponent, LegendComponent } from 'echarts/components'
+import { TooltipComponent, LegendComponent, GraphicComponent } from 'echarts/components'
 import { CanvasRenderer } from 'echarts/renderers'
 
-echarts.use([PieChart, TooltipComponent, LegendComponent, CanvasRenderer])
+echarts.use([PieChart, TooltipComponent, LegendComponent, GraphicComponent, CanvasRenderer])
 
 defineOptions({ name: 'AftersaleDonutChart' })
 

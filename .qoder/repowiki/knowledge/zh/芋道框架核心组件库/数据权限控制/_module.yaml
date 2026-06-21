@@ -7,3 +7,5 @@ source_files: []
 depends_on: []
 related_to:
     - path: opshub/framework
+    - path: server
+    - path: bpm/task_management

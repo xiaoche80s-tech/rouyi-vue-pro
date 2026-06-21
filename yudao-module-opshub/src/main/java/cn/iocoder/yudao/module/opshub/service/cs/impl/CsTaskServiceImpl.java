@@ -6,10 +6,12 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.bpm.api.task.BpmProcessInstanceApi;
 import cn.iocoder.yudao.module.bpm.api.task.dto.BpmProcessInstanceCreateReqDTO;
+import cn.iocoder.yudao.module.bpm.controller.admin.task.vo.instance.BpmProcessInstanceCancelReqVO;
 import cn.iocoder.yudao.module.bpm.controller.admin.task.vo.task.BpmTaskApproveReqVO;
 import cn.iocoder.yudao.module.bpm.controller.admin.task.vo.task.BpmTaskRejectReqVO;
 import cn.iocoder.yudao.module.bpm.controller.admin.task.vo.task.BpmTaskTransferReqVO;
 import cn.iocoder.yudao.module.bpm.enums.task.BpmProcessInstanceStatusEnum;
+import cn.iocoder.yudao.module.bpm.service.task.BpmProcessInstanceService;
 import cn.iocoder.yudao.module.bpm.service.task.BpmTaskService;
 import cn.iocoder.yudao.module.opshub.controller.admin.cs.vo.*;
 import cn.iocoder.yudao.module.opshub.dal.dataobject.cs.CsTaskDO;
@@ -61,7 +63,6 @@ public class CsTaskServiceImpl implements CsTaskService {
 
     // ========== 站内信模板编码 ==========
     private static final String NOTIFY_TASK_CREATED = "cs-task-created";
-    private static final String NOTIFY_TASK_ACCEPTED = "cs-task-accepted";
     private static final String NOTIFY_TASK_DELIVERED = "cs-task-delivered";
     private static final String NOTIFY_TASK_VERIFIED = "cs-task-verified";
     private static final String NOTIFY_TASK_REJECTED = "cs-task-rejected";
@@ -79,6 +80,9 @@ public class CsTaskServiceImpl implements CsTaskService {
 
     @Resource
     private BpmTaskService bpmTaskService;
+
+    @Resource
+    private BpmProcessInstanceService processInstanceService;
 
     @Resource
     private NotifyMessageSendApi notifyMessageSendApi;
@@ -144,35 +148,6 @@ public class CsTaskServiceImpl implements CsTaskService {
         // 解析子标签过滤
         applyTabFilter(reqVO, viewScope, currentUserId);
         return csTaskMapper.selectPage(reqVO);
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void acceptTask(Long id) {
-        CsTaskDO task = validateTaskExists(id);
-        Long currentUserId = SecurityFrameworkUtils.getLoginUserId();
-
-        // 校验状态：仅待接单可接单
-        validateStatus(task, CsTaskStatusEnum.PENDING);
-
-        // 混合接单模式校验
-        if (task.getAssigneeId() != null) {
-            // 指定模式：仅指定处理人可接单
-            validateIsAssignee(task, currentUserId);
-        }
-        // 抢单模式（assigneeId=null）：任何执行员可接单
-
-        // 更新状态
-        csTaskMapper.updateById(new CsTaskDO()
-                .setId(id)
-                .setStatus(CsTaskStatusEnum.IN_PROGRESS.getCode())
-                .setAssigneeId(currentUserId)
-                .setAcceptTime(LocalDateTime.now()));
-
-        // 推送给提单人 + 站内信
-        csWebSocketService.sendTaskNotifyAsync(task.getCreatorUserId(),
-                buildNotification(task, CsTaskNotification.TYPE_TASK_ACCEPTED, "工单已被接单"));
-        sendNotify(task.getCreatorUserId(), NOTIFY_TASK_ACCEPTED, buildNotifyParams(task));
     }
 
     @Override
@@ -243,10 +218,7 @@ public class CsTaskServiceImpl implements CsTaskService {
                 .setId(id)
                 .setDeliverTime(LocalDateTime.now()));
 
-        // 推送给提单人（经销商验收）+ 站内信
-        csWebSocketService.sendTaskNotifyAsync(task.getCreatorUserId(),
-                buildNotification(task, CsTaskNotification.TYPE_TASK_DELIVERED, "工单已提交审批，请验收"));
-        sendNotify(task.getCreatorUserId(), NOTIFY_TASK_DELIVERED, buildNotifyParams(task));
+        // 通知统一由 BPM 回调 sendBpmCallbackNotification(DELIVERED) 发出，此处不再重复发送
     }
 
     @Override
@@ -295,7 +267,6 @@ public class CsTaskServiceImpl implements CsTaskService {
         // 推送给提单人（使用正确类型）
         csWebSocketService.sendTaskNotifyAsync(task.getCreatorUserId(),
                 buildNotification(task, CsTaskNotification.TYPE_TASK_REPROCESS, "工单已重新处理"));
-        sendNotify(task.getCreatorUserId(), NOTIFY_TASK_CREATED, buildNotifyParams(task));
     }
 
     @Override
@@ -312,7 +283,6 @@ public class CsTaskServiceImpl implements CsTaskService {
         if (task.getAssigneeId() != null) {
             csWebSocketService.sendTaskNotifyAsync(task.getAssigneeId(),
                     buildNotification(task, CsTaskNotification.TYPE_TASK_URGING, "工单被催办，请尽快处理"));
-            sendNotify(task.getAssigneeId(), NOTIFY_TASK_URGING, buildNotifyParams(task));
         }
     }
 
@@ -342,36 +312,19 @@ public class CsTaskServiceImpl implements CsTaskService {
             }
         }
 
-        // 取消 BPM 流程实例
+        // 使用 BPM cancel API 取消流程实例
         if (task.getProcessInstanceId() != null) {
-            try {
-                String bpmTaskId = findCurrentBpmTaskId(task.getProcessInstanceId());
-                if (bpmTaskId != null) {
-                    BpmTaskRejectReqVO rejectReqVO = new BpmTaskRejectReqVO();
-                    rejectReqVO.setId(bpmTaskId);
-                    rejectReqVO.setReason(reason != null ? reason : "工单取消");
-                    bpmTaskService.rejectTask(currentUserId, rejectReqVO);
-                }
-            } catch (Exception e) {
-                log.warn("[cancelTask][取消 BPM 流程失败 taskId={}]", id, e);
+            BpmProcessInstanceCancelReqVO cancelReqVO = new BpmProcessInstanceCancelReqVO();
+            cancelReqVO.setId(task.getProcessInstanceId());
+            cancelReqVO.setReason(reason != null ? reason : "工单取消");
+            if (isCreator) {
+                processInstanceService.cancelProcessInstanceByStartUser(currentUserId, cancelReqVO);
+            } else {
+                processInstanceService.cancelProcessInstanceByAdmin(currentUserId, cancelReqVO);
             }
         }
-
-        // 直接设置 CLOSED（BPM 回调可能不会再触发）
-        csTaskMapper.updateById(new CsTaskDO()
-                .setId(id)
-                .setStatus(CsTaskStatusEnum.CLOSED.getCode()));
-
-        // 通知相关方
-        csWebSocketService.sendTaskNotifyAsync(task.getCreatorUserId(),
-                buildNotification(task, CsTaskNotification.TYPE_TASK_VERIFIED, "工单已关闭"));
-        if (task.getAssigneeId() != null) {
-            csWebSocketService.sendTaskNotifyAsync(task.getAssigneeId(),
-                    buildNotification(task, CsTaskNotification.TYPE_TASK_VERIFIED, "工单已关闭"));
-        }
-
-        // 发布状态变更事件
-        publishStatusChangeEvent(task, CsTaskStatusEnum.CLOSED);
+        // BPM 回调 updateCsTaskStatusByBpm(CANCEL) 会自动设 CLOSED + 发通知 + 发布事件
+        // 不再手动设状态、发通知、发布事件
     }
 
     // ========== 辅助方法 ==========
@@ -437,29 +390,7 @@ public class CsTaskServiceImpl implements CsTaskService {
                 .setUrgency(task.getUrgency());
     }
 
-    /**
-     * 发送站内信通知
-     */
-    private void sendNotify(Long userId, String templateCode, Map<String, Object> params) {
-        try {
-            notifyMessageSendApi.sendSingleMessageToAdmin(
-                    new NotifySendSingleToUserReqDTO()
-                            .setUserId(userId)
-                            .setTemplateCode(templateCode)
-                            .setTemplateParams(params));
-        } catch (Exception e) {
-            log.warn("[sendNotify][发送站内信失败 templateCode={}, userId={}]", templateCode, userId, e);
-        }
-    }
 
-    /**
-     * 构建站内信模板参数
-     */
-    private Map<String, Object> buildNotifyParams(CsTaskDO task) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("taskNo", task.getTaskNo());
-        return params;
-    }
 
     /**
      * 解析子标签过滤，将 tabFilter 翻译为具体的查询条件。
@@ -705,20 +636,16 @@ public class CsTaskServiceImpl implements CsTaskService {
                 // 审批通过 → 通知经销商验收
                 csWebSocketService.sendTaskNotifyAsync(task.getCreatorUserId(),
                         buildNotification(task, CsTaskNotification.TYPE_TASK_DELIVERED, "工单审批通过，请验收"));
-                sendNotify(task.getCreatorUserId(), NOTIFY_TASK_DELIVERED, buildNotifyParams(task));
             }
             case REJECTED -> {
                 // 退回 → 通知处理人
                 csWebSocketService.sendTaskNotifyAsync(task.getAssigneeId(),
                         buildNotification(task, CsTaskNotification.TYPE_TASK_REJECTED, "工单被退回"));
-                sendNotify(task.getAssigneeId(), NOTIFY_TASK_REJECTED, buildNotifyParams(task));
             }
             case CLOSED -> {
                 // 验收通过/取消 → 通知双方
                 csWebSocketService.sendTaskNotifyAsync(task.getAssigneeId(),
                         buildNotification(task, CsTaskNotification.TYPE_TASK_VERIFIED, "工单已关闭"));
-                sendNotify(task.getAssigneeId(), NOTIFY_TASK_VERIFIED, buildNotifyParams(task));
-                sendNotify(task.getCreatorUserId(), NOTIFY_TASK_VERIFIED, buildNotifyParams(task));
             }
             default -> { /* no-op */ }
         }

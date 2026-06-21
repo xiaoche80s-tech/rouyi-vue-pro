@@ -8,4 +8,5 @@ scope:
     - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/service/demo/
 source_files: []
 depends_on: []
-related_to: []
+related_to:
+    - path: ui_admin/infra_platform/demo_examples

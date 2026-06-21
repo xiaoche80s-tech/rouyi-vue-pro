@@ -5,4 +5,7 @@ scope:
     - yudao-framework/yudao-spring-boot-starter-mq/
 source_files: []
 depends_on: []
-related_to: []
+related_to:
+    - path: server
+    - path: bpm/task_management
+    - path: bpm/process_definition

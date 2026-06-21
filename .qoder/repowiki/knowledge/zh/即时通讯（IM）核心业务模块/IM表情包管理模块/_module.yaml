@@ -9,4 +9,8 @@ scope:
     - yudao-module-im/src/main/java/cn/iocoder/yudao/module/im/dal/mysql/face/
 source_files: []
 depends_on: []
-related_to: []
+related_to:
+    - path: ui_admin/im_chat/user_im
+    - path: im/statistics
+    - path: im/friend
+    - path: ui_admin/im_chat/admin_im

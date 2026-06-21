@@ -107,6 +107,15 @@ public class OpsExcelImportController {
             case "basedata-file" ->
                     writeMultiSheetExcel(response, "基础数据文件导入模板.xlsx",
                             BasedataFileImportExcelVO.class, sampleBasedataFile());
+            case "policy" ->
+                    writeMultiSheetExcel(response, "政策导入模板.xlsx",
+                            PolicyImportExcelVO.class, samplePolicy());
+            case "policy-indicator" ->
+                    writeMultiSheetExcel(response, "政策指标导入模板.xlsx",
+                            PolicyIndicatorImportExcelVO.class, samplePolicyIndicator());
+            case "policy-achievement" ->
+                    writeMultiSheetExcel(response, "政策达成明细导入模板.xlsx",
+                            PolicyAchievementImportExcelVO.class, samplePolicyAchievement());
             default ->
                     writeMultiSheetExcel(response, "未知模板.xlsx",
                             DealerInfoImportExcelVO.class, Collections.emptyList());
@@ -137,6 +146,9 @@ public class OpsExcelImportController {
             writeZipEntry(zos, "L2_售后单导入模板.xlsx", AfterSaleInfoImportExcelVO.class, sampleAfterSale());
             writeZipEntry(zos, "L3_售后进度导入模板.xlsx", AfterSaleProgressImportExcelVO.class, sampleAfterSaleProgress());
             writeZipEntry(zos, "L4_基础数据文件导入模板.xlsx", BasedataFileImportExcelVO.class, sampleBasedataFile());
+            writeZipEntry(zos, "L5_政策导入模板.xlsx", PolicyImportExcelVO.class, samplePolicy());
+            writeZipEntry(zos, "L5_政策指标导入模板.xlsx", PolicyIndicatorImportExcelVO.class, samplePolicyIndicator());
+            writeZipEntry(zos, "L5_政策达成明细导入模板.xlsx", PolicyAchievementImportExcelVO.class, samplePolicyAchievement());
         }
     }
 
@@ -294,6 +306,18 @@ public class OpsExcelImportController {
             case "basedata-file" -> {
                 List<BasedataFileImportExcelVO> list = ExcelUtils.read(file, BasedataFileImportExcelVO.class);
                 yield success(opsExcelImportService.importBasedataFileList(list));
+            }
+            case "policy" -> {
+                List<PolicyImportExcelVO> list = ExcelUtils.read(file, PolicyImportExcelVO.class);
+                yield success(opsExcelImportService.importPolicyList(list));
+            }
+            case "policy-indicator" -> {
+                List<PolicyIndicatorImportExcelVO> list = ExcelUtils.read(file, PolicyIndicatorImportExcelVO.class);
+                yield success(opsExcelImportService.importPolicyIndicatorList(list));
+            }
+            case "policy-achievement" -> {
+                List<PolicyAchievementImportExcelVO> list = ExcelUtils.read(file, PolicyAchievementImportExcelVO.class);
+                yield success(opsExcelImportService.importPolicyAchievementList(list));
             }
             default -> success(ExcelImportRespVO.builder()
                     .failureCount(0).successCount(0).insertCount(0).updateCount(0).build());
@@ -453,6 +477,57 @@ public class OpsExcelImportController {
                         .fileType("PDF").fileUrl("https://example.com/files/license.pdf")
                         .expireDate(LocalDate.of(2025, 12, 31)).status("正常")
                         .description("营业执照副本").remark("示例数据")
+                        .build()
+        );
+    }
+
+    private List<PolicyImportExcelVO> samplePolicy() {
+        return List.of(
+                PolicyImportExcelVO.builder()
+                        .dealerCode("D-001").productLineCode("PL-001").productLineName("示例产品线A")
+                        .policyCode("POL-2024-001").policyName("2024年Q1返利政策")
+                        .policyType("返利").achievementType("季度政策").policyStatus("执行中")
+                        .contractCode("CT-2024-001").contractName("2024年度主合同")
+                        .policyDesc("示例数据")
+                        .build(),
+                PolicyImportExcelVO.builder()
+                        .dealerCode("D-002").productLineCode("PL-002").productLineName("示例产品线B")
+                        .policyCode("POL-2024-002").policyName("2024年月度促销政策")
+                        .policyType("促销").achievementType("月度政策").policyStatus("待执行")
+                        .contractCode("").contractName("")
+                        .policyDesc("示例数据")
+                        .build()
+        );
+    }
+
+    private List<PolicyIndicatorImportExcelVO> samplePolicyIndicator() {
+        return List.of(
+                PolicyIndicatorImportExcelVO.builder()
+                        .policyCode("POL-2024-001").indicatorName("销售额").targetYear(2024).targetMonth(3)
+                        .targetValue(new BigDecimal("100000.00")).achievedValue(new BigDecimal("85000.00"))
+                        .unit("元")
+                        .build(),
+                PolicyIndicatorImportExcelVO.builder()
+                        .policyCode("POL-2024-001").indicatorName("销售量").targetYear(2024).targetMonth(3)
+                        .targetValue(new BigDecimal("500.00")).achievedValue(new BigDecimal("420.00"))
+                        .unit("件")
+                        .build()
+        );
+    }
+
+    private List<PolicyAchievementImportExcelVO> samplePolicyAchievement() {
+        return List.of(
+                PolicyAchievementImportExcelVO.builder()
+                        .policyCode("POL-2024-001").indicatorName("销售额").targetYear(2024).targetMonth(3)
+                        .achieveLevel("省级").province("上海市").provinceCode("310000")
+                        .hospital("").hospitalCode("").productName("")
+                        .achievedValue(new BigDecimal("50000.00"))
+                        .build(),
+                PolicyAchievementImportExcelVO.builder()
+                        .policyCode("POL-2024-001").indicatorName("销售额").targetYear(2024).targetMonth(3)
+                        .achieveLevel("医院级").province("上海市").provinceCode("310000")
+                        .hospital("示例医院A").hospitalCode("H-001").productName("")
+                        .achievedValue(new BigDecimal("30000.00"))
                         .build()
         );
     }

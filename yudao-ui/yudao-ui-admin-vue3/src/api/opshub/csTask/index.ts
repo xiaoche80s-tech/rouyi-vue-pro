@@ -48,11 +48,6 @@ export const createCsTask = async (data: any) => {
   return await request.post({ url: '/opshub/cs-task/create', data })
 }
 
-// 执行员接单
-export const acceptTask = async (id: number) => {
-  return await request.post({ url: '/opshub/cs-task/accept?id=' + id })
-}
-
 // 执行员转单
 export const transferTask = async (data: any) => {
   return await request.post({ url: '/opshub/cs-task/transfer', data })

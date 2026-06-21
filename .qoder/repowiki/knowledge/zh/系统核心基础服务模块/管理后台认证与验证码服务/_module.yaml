@@ -10,4 +10,21 @@ scope:
 source_files: []
 depends_on: []
 related_to:
+    - path: system/access_control
+    - path: system/user_identity
+    - path: framework/starter_security
+    - path: ui_admin/system_management/oauth2_social
     - path: system/oauth_social
+    - path: system/message_center
+    - path: infra/redis_monitor
+    - path: system/system_support
+    - path: ui_admin/system_management/user_management
+    - path: ui_admin/app_shell
+    - path: framework/starter_redis
+    - path: ui_admin/system_management/operation_logs
+    - path: ui_admin/system_management/sms_notify_mail
+    - path: ui_admin/system_management/tenant_management
+    - path: framework/starter_biz_tenant
+    - path: ui_admin/system_management/dict_management
+    - path: ui_admin/system_management/menu_management
+    - path: ui_admin/system_management/role_permission

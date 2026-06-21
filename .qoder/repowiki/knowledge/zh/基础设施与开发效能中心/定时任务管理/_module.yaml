@@ -11,5 +11,6 @@ scope:
 source_files: []
 depends_on: []
 related_to:
+    - path: infra/api_logging
     - path: framework/starter_job
     - path: ui_admin/infra_platform/job_scheduler

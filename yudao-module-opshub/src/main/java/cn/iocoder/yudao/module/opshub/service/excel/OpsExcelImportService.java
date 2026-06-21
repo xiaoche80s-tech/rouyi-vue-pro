@@ -34,4 +34,12 @@ public interface OpsExcelImportService {
     ExcelImportRespVO importAfterSaleProgressList(List<AfterSaleProgressImportExcelVO> list);
 
     ExcelImportRespVO importBasedataFileList(List<BasedataFileImportExcelVO> list);
+
+    // ========== 政策看板 ==========
+
+    ExcelImportRespVO importPolicyList(List<PolicyImportExcelVO> list);
+
+    ExcelImportRespVO importPolicyIndicatorList(List<PolicyIndicatorImportExcelVO> list);
+
+    ExcelImportRespVO importPolicyAchievementList(List<PolicyAchievementImportExcelVO> list);
 }

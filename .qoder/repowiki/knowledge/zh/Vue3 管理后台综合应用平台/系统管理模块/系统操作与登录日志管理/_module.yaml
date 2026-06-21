@@ -1,0 +1,20 @@
+schema_version: 1
+module_path: ui_admin/system_management/operation_logs
+title: 系统操作与登录日志管理
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/system/loginLog/
+    - yudao-ui/yudao-ui-admin-vue3/src/api/system/operatelog/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/system/loginlog/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/system/operatelog/
+source_files: []
+depends_on: []
+related_to:
+    - path: infra/api_logging
+    - path: system/authentication
+    - path: ui_admin/system_management/user_management
+    - path: ui_admin/system_management/menu_management
+    - path: opshub/dashboard
+    - path: ui_admin/opshub/order_management
+    - path: opshub/cs
+    - path: opshub/aftersale
+    - path: ui_admin/system_management/dict_management

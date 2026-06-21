@@ -1,0 +1,17 @@
+schema_version: 1
+module_path: ui_admin/bpm_workflow/task_management
+title: BPM 任务管理与审批中心
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/bpm/task/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/bpm/task/
+source_files: []
+depends_on: []
+related_to:
+    - path: ui_admin/opshub/customer_service
+    - path: ui_admin/bpm_workflow/process_instance
+    - path: bpm/task_management
+    - path: system/user_identity
+    - path: bpm/process_definition
+    - path: ui_admin/bpm_workflow/supporting_features
+    - path: ui_admin/bpm_workflow/form_category_group
+    - path: ui_admin/bpm_workflow/model_design

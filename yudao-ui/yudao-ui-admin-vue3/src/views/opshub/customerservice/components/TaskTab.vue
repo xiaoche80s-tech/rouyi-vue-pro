@@ -99,7 +99,6 @@
       </el-table-column>
       <el-table-column label="操作" fixed="right" min-width="280" align="center">
         <template #default="{ row }">
-          <el-button v-if="canAccept(row)" v-hasPermi="['dealer:cs-task:accept']" link type="primary" @click="handleAccept(row)">接单</el-button>
           <template v-if="row.status === 1">
             <el-button v-if="canSubmitApproval(row)" v-hasPermi="['dealer:cs-task:deliver']" link type="success" @click="handleSubmitApproval(row)">提交审批</el-button>
             <el-button v-if="canTransfer(row)" v-hasPermi="['dealer:cs-task:transfer']" link type="warning" @click="handleTransfer(row)">转单</el-button>
@@ -310,7 +309,6 @@ const handleSubTabChange = (tab: string) => {
 }
 
 // 操作按钮可见性计算
-const canAccept = (row: any) => row.status === 0 && props.side === 'handler' && (row.assigneeId === null || row.assigneeId === currentUserId.value)
 const canSubmitApproval = (row: any) => row.status === 1 && row.assigneeId === currentUserId.value
 const canTransfer = (row: any) => row.status === 1 && (props.side === 'admin' || row.assigneeId === currentUserId.value)
 const canVerify = (row: any) => row.status === 2 && row.creatorUserId === currentUserId.value
@@ -355,12 +353,6 @@ const submitCreate = async () => {
     await CsTaskApi.createCsTask(createForm)
     ElMessage.success('工单创建成功'); createDialogVisible.value = false; getList()
   } finally { createLoading.value = false }
-}
-
-// ========== 接单 ==========
-const handleAccept = async (row: any) => {
-  await ElMessageBox.confirm('确认接单？', '提示', { type: 'info' })
-  await CsTaskApi.acceptTask(row.id); ElMessage.success('接单成功'); getList()
 }
 
 // ========== 提交审批 ==========

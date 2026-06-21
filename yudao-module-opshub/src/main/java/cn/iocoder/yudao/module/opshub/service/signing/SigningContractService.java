@@ -47,14 +47,4 @@ public interface SigningContractService {
      */
     List<SigningContractTrendRespVO> getTrend(String timeDimension);
 
-    /**
-     * 经销商发起签署（sub_status → signing）
-     */
-    void signContract(Long id);
-
-    /**
-     * 执行员上传盖章文件（回填 sign_proof_url，status → signed）
-     */
-    void uploadSignProof(Long id, String signProofUrl);
-
 }

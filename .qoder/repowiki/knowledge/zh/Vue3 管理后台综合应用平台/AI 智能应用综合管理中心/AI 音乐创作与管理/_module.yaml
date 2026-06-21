@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: ui_admin/ai_assistant/music
+title: AI 音乐创作与管理
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/ai/music/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/ai/music/
+source_files: []
+depends_on: []
+related_to:
+    - path: ui_admin/ai_assistant/model_config
+    - path: ui_admin/ai_assistant/chat

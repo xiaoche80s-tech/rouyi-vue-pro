@@ -6,4 +6,5 @@ scope:
     - yudao-module-infra/src/main/java/cn/iocoder/yudao/module/infra/websocket/
 source_files: []
 depends_on: []
-related_to: []
+related_to:
+    - path: framework/starter_websocket

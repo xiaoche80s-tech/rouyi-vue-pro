@@ -187,45 +187,6 @@ public class SigningContractServiceImpl implements SigningContractService {
         return result;
     }
 
-    @Override
-    public void signContract(Long id) {
-        // 1. 校验存在
-        SigningContractDO contract = signingContractMapper.selectById(id);
-        if (contract == null) {
-            throw exception(SIGNING_CONTRACT_NOT_EXISTS);
-        }
-        // 2. 校验状态
-        if (!ContractStatusEnum.UNSIGNED.getCode().equals(contract.getStatus())) {
-            throw exception(SIGNING_CONTRACT_ALREADY_SIGNED);
-        }
-        // 3. 更新 sub_status → signing
-        SigningContractDO updateDO = new SigningContractDO();
-        updateDO.setId(id);
-        updateDO.setSubStatus(ContractSubStatusEnum.SIGNING.getCode());
-        signingContractMapper.updateById(updateDO);
-    }
-
-    @Override
-    public void uploadSignProof(Long id, String signProofUrl) {
-        // 1. 校验存在
-        SigningContractDO contract = signingContractMapper.selectById(id);
-        if (contract == null) {
-            throw exception(SIGNING_CONTRACT_NOT_EXISTS);
-        }
-        // 2. 校验状态
-        if (ContractStatusEnum.SIGNED.getCode().equals(contract.getStatus())) {
-            throw exception(SIGNING_CONTRACT_ALREADY_SIGNED);
-        }
-        // 3. 更新：sign_proof_url + status → signed + sign_date
-        SigningContractDO updateDO = new SigningContractDO();
-        updateDO.setId(id);
-        updateDO.setSignProofUrl(signProofUrl);
-        updateDO.setStatus(ContractStatusEnum.SIGNED.getCode());
-        updateDO.setSignDate(LocalDate.now());
-        updateDO.setSubStatus(null); // 已签署后清空子状态
-        signingContractMapper.updateById(updateDO);
-    }
-
     // ========== 辅助方法 ==========
 
     /**

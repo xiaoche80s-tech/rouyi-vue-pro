@@ -32,12 +32,6 @@ public interface CsTaskService {
     PageResult<CsTaskDO> getCsTaskPage(CsTaskPageReqVO reqVO);
 
     /**
-     * 执行员接单
-     * 状态：待接单(0) → 处理中(1)
-     */
-    void acceptTask(Long id);
-
-    /**
      * 执行员转单
      * 变更处理人，状态保持处理中(1)
      */

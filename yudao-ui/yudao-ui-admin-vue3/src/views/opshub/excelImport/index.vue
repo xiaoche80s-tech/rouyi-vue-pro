@@ -6,14 +6,14 @@
         <div class="header-top">
           <div class="header-left">
             <h2>OpsHub 数据批量导入</h2>
-            <el-tag type="info" size="small" effect="plain">13 张业务表</el-tag>
+            <el-tag type="info" size="small" effect="plain">16 张业务表</el-tag>
           </div>
           <el-button type="warning" :icon="Download" :loading="batchDownloading" @click="handleBatchDownload">
             批量打包下载全部模板
           </el-button>
         </div>
         <el-alert
-          title="请按依赖层级顺序导入：L0 基础主数据 → L1 关联数据 → L2 业务主数据 → L3 业务子表 → L4 补充数据"
+          title="请按依赖层级顺序导入：L0 基础主数据 → L1 关联数据 → L2 业务主数据 → L3 业务子表 → L4 补充数据 → L5 政策看板"
           type="info"
           :closable="false"
           show-icon
@@ -86,6 +86,20 @@
         </h3>
         <el-row :gutter="16">
           <el-col :xs="24" :sm="12" :md="8" v-for="item in l4Cards" :key="item.type">
+            <ImportCard :item="item" />
+          </el-col>
+        </el-row>
+      </div>
+
+      <!-- L5 政策看板 -->
+      <div class="level-group level-l5">
+        <h3 class="level-title">
+          <el-tag size="small" effect="dark" color="#8B5CF6" style="color: #fff; border: none;">L5</el-tag>
+          政策看板
+          <span class="level-desc">政策、政策指标、政策达成明细数据</span>
+        </h3>
+        <el-row :gutter="16">
+          <el-col :xs="24" :sm="12" :md="8" v-for="item in l5Cards" :key="item.type">
             <ImportCard :item="item" />
           </el-col>
         </el-row>
@@ -178,6 +192,19 @@ const l4Cards: ImportCardItem[] = [
     ] }
 ]
 
+const l5Cards: ImportCardItem[] = [
+  { level: 'L5', type: 'policy', name: '政策', nameEn: 'dealer_policy', fieldCount: 11, requiredFields: '经销商编码、政策编码、政策名称', fileName: '政策导入模板.xlsx',
+    enumFields: [
+      { field: '政策类型', values: ['返利', '促销', '其他'], tagType: 'primary' },
+      { field: '达成类型', values: ['季度政策', '月度政策'], tagType: 'info' },
+      { field: '政策状态', values: ['执行中', '待执行', '已完成'], tagType: 'success' }
+    ] },
+  { level: 'L5', type: 'policy-indicator', name: '政策指标', nameEn: 'dealer_policy_indicator', fieldCount: 6, requiredFields: '政策编码、指标名称、月份', fileName: '政策指标导入模板.xlsx',
+    enumFields: [{ field: '单位', values: ['件', '万元', '家', '台'], tagType: 'info' }] },
+  { level: 'L5', type: 'policy-achievement', name: '政策达成明细', nameEn: 'dealer_policy_achievement', fieldCount: 10, requiredFields: '指标政策编码、指标名称、层级', fileName: '政策达成明细导入模板.xlsx',
+    enumFields: [{ field: '层级', values: ['省级', '医院级', '产品级'], tagType: 'warning' }] }
+]
+
 </script>
 
 <style scoped lang="scss">
@@ -217,6 +244,7 @@ const l4Cards: ImportCardItem[] = [
     &.level-l2 { border-left: 3px solid #E6A23C; }
     &.level-l3 { border-left: 3px solid #F56C6C; }
     &.level-l4 { border-left: 3px solid #909399; }
+    &.level-l5 { border-left: 3px solid #8B5CF6; }
 
     .level-title {
       margin: 0 0 16px 0;

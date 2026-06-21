@@ -1,0 +1,16 @@
+schema_version: 1
+module_path: ui_admin/opshub/signing_contracts
+title: 经销商签约合同管理
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/opshub/signing/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/opshub/signing/
+source_files: []
+depends_on: []
+related_to:
+    - path: ui_admin/opshub/basedata
+    - path: opshub/dashboard
+    - path: ui_admin/opshub/order_management
+    - path: ui_admin/opshub/dealer_management
+    - path: opshub/signing
+    - path: opshub/cs
+    - path: opshub/excel_import

@@ -1,0 +1,12 @@
+schema_version: 1
+module_path: ui_admin/system_management/dept_post
+title: 部门与岗位管理
+scope:
+    - yudao-ui/yudao-ui-admin-vue3/src/api/system/dept/
+    - yudao-ui/yudao-ui-admin-vue3/src/api/system/post/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/system/dept/
+    - yudao-ui/yudao-ui-admin-vue3/src/views/system/post/
+source_files: []
+depends_on: []
+related_to:
+    - path: ui_admin/system_management/user_management

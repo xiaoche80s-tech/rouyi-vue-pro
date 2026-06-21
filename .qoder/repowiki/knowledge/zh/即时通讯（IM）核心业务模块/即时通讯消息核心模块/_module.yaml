@@ -13,5 +13,11 @@ source_files: []
 depends_on: []
 related_to:
     - path: im/websocket
-    - path: ui_admin/im_chat/user_im
+    - path: im/statistics
+    - path: im/group
+    - path: im/friend
+    - path: im/channel
+    - path: im/rtc
     - path: im/sensitiveword
+    - path: ui_admin/im_chat/user_im
+    - path: ui_admin/im_chat/admin_im

@@ -8,3 +8,5 @@ source_files: []
 depends_on: []
 related_to:
     - path: framework/starter_redis
+    - path: system/authentication
+    - path: ui_admin/infra_platform/redis_monitor

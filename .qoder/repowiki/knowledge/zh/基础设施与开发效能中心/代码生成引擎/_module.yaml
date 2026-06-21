@@ -13,4 +13,12 @@ scope:
 source_files: []
 depends_on: []
 related_to:
+    - path: infra/db_management
+    - path: framework/starter_mybatis
+    - path: framework/starter_web
     - path: ui_admin/infra_platform/codegen
+    - path: framework/starter_excel
+    - path: ui_admin/infra_platform/demo_examples
+    - path: framework/starter_protection
+    - path: ui_admin/infra_platform/monitoring_tools
+    - path: ui_admin/infra_platform/job_scheduler

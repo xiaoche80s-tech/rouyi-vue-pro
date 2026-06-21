@@ -31,7 +31,7 @@ const renderChart = () => {
   chart.setOption({
     tooltip: { trigger: 'axis' },
     legend: { data: ['主合同', '政策合同', '补充协议', '终止协议', '合计'], bottom: 0 },
-    grid: { left: '3%', right: '4%', bottom: '14%', containLabel: true },
+    grid: { left: '3%', right: '4%', bottom: '14%', top: '10%' },
     xAxis: { type: 'category', data: props.data.map(d => d.period), boundaryGap: false },
     yAxis: { type: 'value' },
     series: [

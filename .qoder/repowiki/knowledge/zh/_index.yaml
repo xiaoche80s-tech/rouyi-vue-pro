@@ -2,35 +2,31 @@
 schema_version: 1
 locale: zh-CN
 branch: feature/step1-权限功能设计
-exported_at: "2026-06-19T15:56:32Z"
+exported_at: "2026-06-20T10:13:31Z"
 modules:
     "":
-        dir_name: 芋道 OpsHub 经销商运营与智能客服中台
-        title: 芋道 OpsHub 经销商运营与智能客服中台
+        dir_name: 经销商运营与智能客服 SaaS 平台
+        title: 经销商运营与智能客服 SaaS 平台
         scope: []
         source_files: []
         children: []
         depends_on: []
         related_to: []
     bpm:
-        dir_name: BPM 工作流引擎核心模块
-        title: BPM 工作流引擎核心模块
+        dir_name: BPM 工作流核心模块
+        title: BPM 工作流核心模块
         scope:
             - yudao-module-bpm/
         source_files: []
         children:
+            - bpm/task_management
+            - bpm/process_definition
             - bpm/message_integration
+            - bpm/oa_leave
             - bpm/flowable_framework
             - bpm/bpm_api
-            - bpm/task_management
-            - bpm/oa_leave
-            - bpm/process_definition
         depends_on: []
-        related_to:
-            - path: opshub/cs
-            - path: opshub/aftersale
-            - path: docs
-            - path: server
+        related_to: []
     bpm/bpm_api:
         dir_name: BPM 模块 API 接口与事件监听
         title: BPM 模块 API 接口与事件监听
@@ -39,7 +35,9 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: bpm/flowable_framework
+            - path: bpm/process_definition
     bpm/flowable_framework:
         dir_name: Flowable 工作流引擎集成与扩展框架
         title: Flowable 工作流引擎集成与扩展框架
@@ -48,7 +46,8 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: bpm/bpm_api
     bpm/message_integration:
         dir_name: BPM 流程消息通知服务
         title: BPM 流程消息通知服务
@@ -59,6 +58,8 @@ modules:
         depends_on: []
         related_to:
             - path: system/message_center
+            - path: bpm/task_management
+            - path: bpm/process_definition
     bpm/oa_leave:
         dir_name: OA请假申请管理
         title: OA请假申请管理
@@ -70,6 +71,8 @@ modules:
         depends_on: []
         related_to:
             - path: bpm/task_management
+            - path: system/user_identity
+            - path: ui_admin/bpm_workflow/supporting_features
     bpm/process_definition:
         dir_name: BPM流程定义与模型管理
         title: BPM流程定义与模型管理
@@ -80,7 +83,17 @@ modules:
         children: []
         depends_on: []
         related_to:
+            - path: bpm/task_management
+            - path: bpm/bpm_api
+            - path: system/user_identity
             - path: ui_admin/bpm_workflow/model_design
+            - path: bpm/message_integration
+            - path: ui_admin/bpm_workflow/task_management
+            - path: ui_admin/bpm_workflow/supporting_features
+            - path: framework/starter_biz_tenant
+            - path: framework/starter_protection
+            - path: framework/starter_mq
+            - path: framework/starter_redis
     bpm/task_management:
         dir_name: BPM 流程实例与任务管理
         title: BPM 流程实例与任务管理
@@ -90,38 +103,40 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to:
-            - path: ui_admin/bpm_workflow/task_management
-            - path: bpm/oa_leave
+        related_to: []
     decisions:
         dir_name: 决策记录
         title: 决策记录
         scope: []
         source_files: []
         children:
-            - decisions/4b587e420296_0fac68b17ba2
-            - decisions/11502cccfbad_300fba8a5da1
-            - decisions/9465c044e6e5_748cf7fc2744
-            - decisions/3722ab296d3b_3531af1c0478
-            - decisions/c750ce25ed88_65034344b961
-            - decisions/c750ce25ed88_f920aa1701c2
-            - decisions/9465c044e6e5_182b3c774d03
-            - decisions/14276d8c8f17_9d2fc86bda6e
-            - decisions/9465c044e6e5_b09b46d4f16b
-            - decisions/49bb62d2fb70_34e07c479aac
-            - decisions/3722ab296d3b_708ca796e6e9
-            - decisions/17684d7dc89b_67c04da90a41
-            - decisions/32a9ec7828ae_f24602610fd1
-            - decisions/ebb1cd2e67fd_b253495bd6d6
-            - decisions/ebb1cd2e67fd_cf7818acd772
-            - decisions/4b587e420296_45096dc77474
-            - decisions/ebb1cd2e67fd_8e722feec56b
-            - decisions/11502cccfbad_aa5cf4b91dcc
-            - decisions/11502cccfbad_6afd995d68d4
-            - decisions/17684d7dc89b_d7231804859e
-            - decisions/3722ab296d3b_e8789d865c53
             - decisions/32a9ec7828ae_1bfdbbef84cf
+            - decisions/14276d8c8f17_9d2fc86bda6e
+            - decisions/9465c044e6e5_182b3c774d03
+            - decisions/4b587e420296_45096dc77474
+            - decisions/7451d2e6b9db_da3d320ff3ca
+            - decisions/32a9ec7828ae_f24602610fd1
+            - decisions/ebb1cd2e67fd_8e722feec56b
+            - decisions/ebb1cd2e67fd_b253495bd6d6
+            - decisions/49bb62d2fb70_34e07c479aac
+            - decisions/17684d7dc89b_d7231804859e
+            - decisions/9465c044e6e5_748cf7fc2744
+            - decisions/7451d2e6b9db_35dde485efbe
+            - decisions/4b587e420296_0fac68b17ba2
+            - decisions/7451d2e6b9db_2ccf565d6fb6
+            - decisions/11502cccfbad_aa5cf4b91dcc
+            - decisions/3722ab296d3b_e8789d865c53
+            - decisions/ebb1cd2e67fd_cf7818acd772
+            - decisions/3722ab296d3b_708ca796e6e9
+            - decisions/3722ab296d3b_3531af1c0478
             - decisions/49bb62d2fb70_41ed096e3fdd
+            - decisions/11502cccfbad_300fba8a5da1
+            - decisions/c750ce25ed88_65034344b961
+            - decisions/11502cccfbad_6afd995d68d4
+            - decisions/9465c044e6e5_b09b46d4f16b
+            - decisions/17684d7dc89b_67c04da90a41
+            - decisions/c750ce25ed88_f920aa1701c2
+            - decisions/7451d2e6b9db_58ce0cc403a7
         depends_on: []
         related_to: []
     decisions/4b587e420296_0fac68b17ba2:
@@ -187,11 +202,42 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to:
-            - path: opshub/cs
+        related_to: []
     decisions/3722ab296d3b_e8789d865c53:
         dir_name: 在 opshub 模块自建客服会话层而非复用 IM 模块_2
         title: 在 opshub 模块自建客服会话层而非复用 IM 模块
+        scope: []
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    decisions/7451d2e6b9db_2ccf565d6fb6:
+        dir_name: 使用 REQUIRES_NEW 事务隔离 OpsHub 与 BPM 的调用
+        title: 使用 REQUIRES_NEW 事务隔离 OpsHub 与 BPM 的调用
+        scope: []
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    decisions/7451d2e6b9db_35dde485efbe:
+        dir_name: 引入「流程管理员」角色统一跨模块转派权限
+        title: 引入「流程管理员」角色统一跨模块转派权限
+        scope: []
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    decisions/7451d2e6b9db_58ce0cc403a7:
+        dir_name: 工单详情页由弹窗重构为独立路由页面
+        title: 工单详情页由弹窗重构为独立路由页面
+        scope: []
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    decisions/7451d2e6b9db_da3d320ff3ca:
+        dir_name: 数据权限规则增加「处理人旁路」机制
+        title: 数据权限规则增加「处理人旁路」机制
         scope: []
         source_files: []
         children: []
@@ -244,8 +290,7 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to:
-            - path: opshub/basedata
+        related_to: []
     decisions/14276d8c8f17_9d2fc86bda6e:
         dir_name: 采用主从表结构实现售后全生命周期管理
         title: 采用主从表结构实现售后全生命周期管理
@@ -269,8 +314,7 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to:
-            - path: opshub/cs
+        related_to: []
     decisions/c750ce25ed88_65034344b961:
         dir_name: 签约进度模块采用管理员手动录入合同而非自动生成
         title: 签约进度模块采用管理员手动录入合同而非自动生成
@@ -327,20 +371,20 @@ modules:
             - yudao-framework/
         source_files: []
         children:
-            - framework/starter_biz_data_permission
             - framework/starter_redis
-            - framework/starter_test
-            - framework/starter_web
-            - framework/starter_biz_tenant
-            - framework/common
-            - framework/starter_monitor
-            - framework/starter_security
-            - framework/starter_mq
-            - framework/starter_biz_ip
-            - framework/starter_websocket
-            - framework/starter_job
-            - framework/starter_protection
             - framework/starter_mybatis
+            - framework/common
+            - framework/starter_websocket
+            - framework/starter_web
+            - framework/starter_job
+            - framework/starter_mq
+            - framework/starter_monitor
+            - framework/starter_biz_tenant
+            - framework/starter_protection
+            - framework/starter_biz_data_permission
+            - framework/starter_security
+            - framework/starter_biz_ip
+            - framework/starter_test
             - framework/starter_excel
         depends_on: []
         related_to: []
@@ -363,6 +407,8 @@ modules:
         depends_on: []
         related_to:
             - path: opshub/framework
+            - path: server
+            - path: bpm/task_management
     framework/starter_biz_ip:
         dir_name: IP与行政区划服务
         title: IP与行政区划服务
@@ -371,7 +417,8 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: server
     framework/starter_biz_tenant:
         dir_name: 多租户业务框架
         title: 多租户业务框架
@@ -380,7 +427,11 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: system/tenant_management
+            - path: server
+            - path: system/authentication
+            - path: bpm/process_definition
     framework/starter_excel:
         dir_name: Excel 导入导出与数据字典集成
         title: Excel 导入导出与数据字典集成
@@ -390,7 +441,11 @@ modules:
         children: []
         depends_on: []
         related_to:
+            - path: opshub/framework
+            - path: ui_admin/system_management/dict_management
             - path: opshub/excel_import
+            - path: infra/codegen
+            - path: server
     framework/starter_job:
         dir_name: 定时任务与异步执行增强
         title: 定时任务与异步执行增强
@@ -401,6 +456,7 @@ modules:
         depends_on: []
         related_to:
             - path: infra/job_scheduler
+            - path: ui_admin/infra_platform/job_scheduler
     framework/starter_monitor:
         dir_name: 链路追踪与监控指标自动配置
         title: 链路追踪与监控指标自动配置
@@ -409,7 +465,8 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: server
     framework/starter_mq:
         dir_name: 消息队列统一接入与 Redis 增强实现
         title: 消息队列统一接入与 Redis 增强实现
@@ -418,7 +475,10 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: server
+            - path: bpm/task_management
+            - path: bpm/process_definition
     framework/starter_mybatis:
         dir_name: MyBatis 增强与数据访问基础组件
         title: MyBatis 增强与数据访问基础组件
@@ -427,7 +487,12 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: infra/codegen
+            - path: infra/db_management
+            - path: server
+            - path: ui_admin/infra_platform/codegen
+            - path: ui_admin/infra_platform/demo_examples
     framework/starter_protection:
         dir_name: 服务保护与稳定性保障
         title: 服务保护与稳定性保障
@@ -436,7 +501,12 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: server
+            - path: infra/file_storage
+            - path: infra/codegen
+            - path: bpm/task_management
+            - path: bpm/process_definition
     framework/starter_redis:
         dir_name: Redis 缓存与序列化增强
         title: Redis 缓存与序列化增强
@@ -446,7 +516,13 @@ modules:
         children: []
         depends_on: []
         related_to:
+            - path: infra/system_config
+            - path: infra/file_storage
             - path: infra/redis_monitor
+            - path: server
+            - path: system/authentication
+            - path: bpm/task_management
+            - path: bpm/process_definition
     framework/starter_security:
         dir_name: 安全认证与操作日志
         title: 安全认证与操作日志
@@ -455,7 +531,9 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: system/authentication
+            - path: server
     framework/starter_test:
         dir_name: 单元测试基础框架
         title: 单元测试基础框架
@@ -473,7 +551,10 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: infra/api_logging
+            - path: server
+            - path: infra/codegen
     framework/starter_websocket:
         dir_name: WebSocket 通信与多节点广播框架
         title: WebSocket 通信与多节点广播框架
@@ -483,7 +564,10 @@ modules:
         children: []
         depends_on: []
         related_to:
+            - path: infra/websocket_push
+            - path: im/framework
             - path: im/websocket
+            - path: server
     im:
         dir_name: 即时通讯（IM）核心业务模块
         title: 即时通讯（IM）核心业务模块
@@ -492,18 +576,17 @@ modules:
         source_files: []
         children:
             - im/statistics
-            - im/channel
-            - im/sensitiveword
+            - im/message
             - im/friend
+            - im/framework
+            - im/sensitiveword
             - im/face
-            - im/group
             - im/websocket
             - im/rtc
-            - im/message
-            - im/framework
+            - im/group
+            - im/channel
         depends_on: []
-        related_to:
-            - path: server
+        related_to: []
     im/channel:
         dir_name: IM频道与素材管理
         title: IM频道与素材管理
@@ -517,7 +600,14 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: im/message
+            - path: im/framework
+            - path: im/statistics
+            - path: ui_admin/im_chat/admin_im
+            - path: ui_admin/im_chat/user_im
+            - path: im/sensitiveword
+            - path: ui_admin/im_chat/im_api_views
     im/face:
         dir_name: IM表情包管理模块
         title: IM表情包管理模块
@@ -530,7 +620,11 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: ui_admin/im_chat/user_im
+            - path: im/statistics
+            - path: im/friend
+            - path: ui_admin/im_chat/admin_im
     im/framework:
         dir_name: IM 模块基础框架与配置
         title: IM 模块基础框架与配置
@@ -543,7 +637,10 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: framework/starter_websocket
+            - path: im/rtc
+            - path: im/channel
     im/friend:
         dir_name: IM 好友关系与申请管理
         title: IM 好友关系与申请管理
@@ -559,6 +656,13 @@ modules:
         children: []
         depends_on: []
         related_to:
+            - path: im/message
+            - path: im/group
+            - path: im/websocket
+            - path: ui_admin/im_chat/user_im
+            - path: im/statistics
+            - path: ui_admin/im_chat/admin_im
+            - path: im/face
             - path: ui_admin/im_chat/im_api_views
     im/group:
         dir_name: IM群组与成员管理
@@ -574,7 +678,13 @@ modules:
         children: []
         depends_on: []
         related_to:
-            - path: ui_admin/im_chat/im_api_views
+            - path: im/message
+            - path: ui_admin/im_chat/user_im
+            - path: im/friend
+            - path: im/statistics
+            - path: im/websocket
+            - path: im/rtc
+            - path: ui_admin/im_chat/admin_im
     im/message:
         dir_name: 即时通讯消息核心模块
         title: 即时通讯消息核心模块
@@ -591,8 +701,14 @@ modules:
         depends_on: []
         related_to:
             - path: im/websocket
-            - path: ui_admin/im_chat/user_im
+            - path: im/statistics
+            - path: im/group
+            - path: im/friend
+            - path: im/channel
+            - path: im/rtc
             - path: im/sensitiveword
+            - path: ui_admin/im_chat/user_im
+            - path: ui_admin/im_chat/admin_im
     im/rtc:
         dir_name: IM 实时音视频通话管理
         title: IM 实时音视频通话管理
@@ -611,6 +727,13 @@ modules:
         depends_on: []
         related_to:
             - path: im/websocket
+            - path: im/message
+            - path: im/framework
+            - path: im/group
+            - path: im/statistics
+            - path: ui_admin/im_chat/user_im
+            - path: ui_admin/im_chat/admin_im
+            - path: ui_admin/im_chat/im_api_views
     im/sensitiveword:
         dir_name: IM敏感词管理
         title: IM敏感词管理
@@ -623,7 +746,10 @@ modules:
         children: []
         depends_on: []
         related_to:
+            - path: ui_admin/im_chat/admin_im
             - path: im/message
+            - path: im/channel
+            - path: im/websocket
     im/statistics:
         dir_name: IM 管理后台数据统计看板
         title: IM 管理后台数据统计看板
@@ -635,7 +761,15 @@ modules:
         children: []
         depends_on: []
         related_to:
+            - path: im/message
             - path: ui_admin/im_chat/admin_im
+            - path: im/group
+            - path: im/channel
+            - path: im/friend
+            - path: im/websocket
+            - path: im/rtc
+            - path: im/face
+            - path: ui_admin/im_chat/user_im
     im/websocket:
         dir_name: IM WebSocket 消息推送与内容处理
         title: IM WebSocket 消息推送与内容处理
@@ -647,9 +781,17 @@ modules:
         depends_on: []
         related_to:
             - path: im/message
+            - path: opshub/cs
             - path: im/rtc
             - path: framework/starter_websocket
-            - path: opshub/cs
+            - path: im/friend
+            - path: im/group
+            - path: im/statistics
+            - path: im/sensitiveword
+            - path: ui_admin/im_chat/user_im
+            - path: ui_admin/app_shell
+            - path: ui_admin/im_chat/im_api_views
+            - path: ui_admin/im_chat/admin_im
     infra:
         dir_name: 基础设施与开发效能中心
         title: 基础设施与开发效能中心
@@ -657,16 +799,16 @@ modules:
             - yudao-module-infra/
         source_files: []
         children:
-            - infra/codegen
-            - infra/demo_examples
-            - infra/db_management
+            - infra/redis_monitor
             - infra/system_config
             - infra/api_logging
-            - infra/job_scheduler
             - infra/infra_framework
+            - infra/demo_examples
             - infra/websocket_push
+            - infra/codegen
             - infra/file_storage
-            - infra/redis_monitor
+            - infra/db_management
+            - infra/job_scheduler
         depends_on: []
         related_to: []
     infra/api_logging:
@@ -683,7 +825,12 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: infra/job_scheduler
+            - path: framework/starter_web
+            - path: ui_admin/system_management/operation_logs
+            - path: ui_admin/infra_platform/monitoring_tools
+            - path: ui_admin/infra_platform/api_logs
     infra/codegen:
         dir_name: 代码生成引擎
         title: 代码生成引擎
@@ -700,7 +847,15 @@ modules:
         children: []
         depends_on: []
         related_to:
+            - path: infra/db_management
+            - path: framework/starter_mybatis
+            - path: framework/starter_web
             - path: ui_admin/infra_platform/codegen
+            - path: framework/starter_excel
+            - path: ui_admin/infra_platform/demo_examples
+            - path: framework/starter_protection
+            - path: ui_admin/infra_platform/monitoring_tools
+            - path: ui_admin/infra_platform/job_scheduler
     infra/db_management:
         dir_name: 数据源配置与数据库表结构管理
         title: 数据源配置与数据库表结构管理
@@ -712,7 +867,10 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: infra/codegen
+            - path: framework/starter_mybatis
+            - path: ui_admin/infra_platform/data_source
     infra/demo_examples:
         dir_name: 示例业务功能演示模块
         title: 示例业务功能演示模块
@@ -724,7 +882,8 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: ui_admin/infra_platform/demo_examples
     infra/file_storage:
         dir_name: 多策略文件存储管理
         title: 多策略文件存储管理
@@ -743,6 +902,13 @@ modules:
         related_to:
             - path: opshub/basedata
             - path: ui_admin/infra_platform/file_management
+            - path: framework/starter_redis
+            - path: ui_admin/ai_assistant/image
+            - path: opshub/cs
+            - path: infra/system_config
+            - path: ui_admin/ai_assistant/knowledge/document
+            - path: framework/starter_protection
+            - path: ui_admin/infra_platform/monitoring_tools
     infra/infra_framework:
         dir_name: 基础设施框架配置
         title: 基础设施框架配置
@@ -768,6 +934,7 @@ modules:
         children: []
         depends_on: []
         related_to:
+            - path: infra/api_logging
             - path: framework/starter_job
             - path: ui_admin/infra_platform/job_scheduler
     infra/redis_monitor:
@@ -781,6 +948,8 @@ modules:
         depends_on: []
         related_to:
             - path: framework/starter_redis
+            - path: system/authentication
+            - path: ui_admin/infra_platform/redis_monitor
     infra/system_config:
         dir_name: 系统参数配置管理
         title: 系统参数配置管理
@@ -795,7 +964,10 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: framework/starter_redis
+            - path: infra/file_storage
+            - path: ui_admin/infra_platform/config_management
     infra/websocket_push:
         dir_name: WebSocket 消息推送与示例
         title: WebSocket 消息推送与示例
@@ -805,24 +977,25 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: framework/starter_websocket
     opshub:
-        dir_name: 经销商运营中心 (OpsHub)
-        title: 经销商运营中心 (OpsHub)
+        dir_name: 经销商运营业务中台
+        title: 经销商运营业务中台
         scope:
             - yudao-module-opshub/
         source_files: []
         children:
-            - opshub/framework
-            - opshub/dashboard
             - opshub/dealer
-            - opshub/aftersale
-            - opshub/signing
-            - opshub/basedata
-            - opshub/cs
             - opshub/enums
+            - opshub/cs
+            - opshub/signing
             - opshub/excel_import
+            - opshub/dashboard
             - opshub/order
+            - opshub/framework
+            - opshub/basedata
+            - opshub/aftersale
         depends_on: []
         related_to: []
     opshub/aftersale:
@@ -837,7 +1010,21 @@ modules:
         children: []
         depends_on: []
         related_to:
-            - path: bpm
+            - path: opshub/order
+            - path: opshub/dashboard
+            - path: opshub/cs
+            - path: opshub/basedata
+            - path: ui_admin/opshub/customer_service
+            - path: opshub/enums
+            - path: opshub/dealer
+            - path: system/message_center
+            - path: ui_admin/opshub/order_management
+            - path: ui_admin/opshub/dealer_management
+            - path: ui_admin/opshub/basedata
+            - path: ui_admin/report_designer
+            - path: ui_admin/infra_platform/monitoring_tools
+            - path: ui_admin/system_management/dict_management
+            - path: ui_admin/system_management/operation_logs
     opshub/basedata:
         dir_name: 基础数据文件管理
         title: 基础数据文件管理
@@ -851,7 +1038,9 @@ modules:
         depends_on: []
         related_to:
             - path: infra/file_storage
-            - path: decisions/11502cccfbad_aa5cf4b91dcc
+            - path: opshub/signing
+            - path: opshub/aftersale
+            - path: opshub/order
     opshub/cs:
         dir_name: 客服工单与咨询会话管理
         title: 客服工单与咨询会话管理
@@ -874,9 +1063,25 @@ modules:
         children: []
         depends_on: []
         related_to:
-            - path: opshub/signing
             - path: opshub/order
+            - path: opshub/signing
+            - path: opshub/aftersale
             - path: opshub/cs
+            - path: ui_admin/opshub/signing_contracts
+            - path: opshub/dealer
+            - path: ui_admin/opshub/customer_service
+            - path: ui_admin/opshub/order_management
+            - path: ui_admin/opshub/dealer_management
+            - path: ui_admin/opshub/basedata
+            - path: ui_admin/report_designer
+            - path: ui_admin/infra_platform/monitoring_tools
+            - path: ui_admin/ai_assistant/chat
+            - path: ui_admin/system_management/user_management
+            - path: ui_admin/infra_platform/job_scheduler
+            - path: ui_admin/system_management/tenant_management
+            - path: ui_admin/system_management/operation_logs
+            - path: ui_admin/system_management/dict_management
+            - path: ui_admin/system_management/sms_notify_mail
     opshub/dealer:
         dir_name: 经销商与产品线授权管理
         title: 经销商与产品线授权管理
@@ -888,9 +1093,7 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to:
-            - path: opshub/signing
-            - path: opshub/order
+        related_to: []
     opshub/enums:
         dir_name: OpsHub 业务状态与错误码定义
         title: OpsHub 业务状态与错误码定义
@@ -900,8 +1103,10 @@ modules:
         children: []
         depends_on: []
         related_to:
-            - path: opshub/order
             - path: opshub/cs
+            - path: opshub/aftersale
+            - path: opshub/signing
+            - path: opshub/order
     opshub/excel_import:
         dir_name: OpsHub Excel 批量导入与模板管理
         title: OpsHub Excel 批量导入与模板管理
@@ -912,10 +1117,18 @@ modules:
         children: []
         depends_on: []
         related_to:
+            - path: opshub/dealer
+            - path: opshub/order
             - path: framework/starter_excel
+            - path: ui_admin/opshub/excel_import
+            - path: ui_admin/opshub/dealer_management
+            - path: ui_admin/opshub/order_management
+            - path: ui_admin/opshub/signing_contracts
+            - path: ui_admin/system_management/dict_management
+            - path: ui_admin/system_management/tenant_management
     opshub/framework:
-        dir_name: OpsHub 模块基础设施配置
-        title: OpsHub 模块基础设施配置
+        dir_name: OpsHub 模块基础框架配置
+        title: OpsHub 模块基础框架配置
         scope:
             - yudao-module-opshub/src/main/java/cn/iocoder/yudao/module/opshub/framework/
         source_files: []
@@ -935,9 +1148,13 @@ modules:
         depends_on: []
         related_to:
             - path: opshub/signing
-            - path: opshub/dealer
+            - path: opshub/aftersale
             - path: opshub/dashboard
+            - path: opshub/excel_import
+            - path: ui_admin/payment_center
+            - path: opshub/basedata
             - path: opshub/enums
+            - path: opshub/cs
     opshub/signing:
         dir_name: 签约合同管理
         title: 签约合同管理
@@ -953,6 +1170,9 @@ modules:
             - path: opshub/order
             - path: opshub/dealer
             - path: opshub/dashboard
+            - path: opshub/basedata
+            - path: opshub/enums
+            - path: ui_admin/opshub/signing_contracts
     report:
         dir_name: 数据可视化报表与大屏集成
         title: 数据可视化报表与大屏集成
@@ -972,9 +1192,18 @@ modules:
         children: []
         depends_on: []
         related_to:
-            - path: opshub
-            - path: im
-            - path: bpm
+            - path: framework/starter_monitor
+            - path: framework/starter_web
+            - path: framework/starter_biz_tenant
+            - path: framework/starter_security
+            - path: framework/starter_mybatis
+            - path: framework/starter_redis
+            - path: framework/starter_websocket
+            - path: framework/starter_protection
+            - path: framework/starter_biz_data_permission
+            - path: framework/starter_mq
+            - path: framework/starter_excel
+            - path: framework/starter_biz_ip
     system:
         dir_name: 系统核心基础服务模块
         title: 系统核心基础服务模块
@@ -982,13 +1211,13 @@ modules:
             - yudao-module-system/
         source_files: []
         children:
-            - system/system_support
-            - system/tenant_management
+            - system/user_identity
             - system/message_center
-            - system/oauth_social
+            - system/tenant_management
             - system/authentication
             - system/access_control
-            - system/user_identity
+            - system/system_support
+            - system/oauth_social
         depends_on: []
         related_to: []
     system/access_control:
@@ -1004,7 +1233,10 @@ modules:
         children: []
         depends_on: []
         related_to:
-            - path: system/user_identity
+            - path: system/authentication
+            - path: system/tenant_management
+            - path: ui_admin/system_management/menu_management
+            - path: ui_admin/system_management/user_management
             - path: ui_admin/system_management/role_permission
     system/authentication:
         dir_name: 管理后台认证与验证码服务
@@ -1019,7 +1251,24 @@ modules:
         children: []
         depends_on: []
         related_to:
+            - path: system/access_control
+            - path: system/user_identity
+            - path: framework/starter_security
+            - path: ui_admin/system_management/oauth2_social
             - path: system/oauth_social
+            - path: system/message_center
+            - path: infra/redis_monitor
+            - path: system/system_support
+            - path: ui_admin/system_management/user_management
+            - path: ui_admin/app_shell
+            - path: framework/starter_redis
+            - path: ui_admin/system_management/operation_logs
+            - path: ui_admin/system_management/sms_notify_mail
+            - path: ui_admin/system_management/tenant_management
+            - path: framework/starter_biz_tenant
+            - path: ui_admin/system_management/dict_management
+            - path: ui_admin/system_management/menu_management
+            - path: ui_admin/system_management/role_permission
     system/message_center:
         dir_name: 系统消息中心
         title: 系统消息中心
@@ -1046,7 +1295,10 @@ modules:
         depends_on: []
         related_to:
             - path: bpm/message_integration
+            - path: opshub/cs
             - path: ui_admin/system_management/sms_notify_mail
+            - path: system/authentication
+            - path: opshub/aftersale
     system/oauth_social:
         dir_name: OAuth2.0 授权与社交登录管理
         title: OAuth2.0 授权与社交登录管理
@@ -1068,6 +1320,7 @@ modules:
         depends_on: []
         related_to:
             - path: system/authentication
+            - path: ui_admin/system_management/oauth2_social
     system/system_support:
         dir_name: 系统基础支撑服务
         title: 系统基础支撑服务
@@ -1094,7 +1347,9 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: ui_admin/system_management/dict_management
+            - path: system/authentication
     system/tenant_management:
         dir_name: 多租户管理与套餐配置
         title: 多租户管理与套餐配置
@@ -1109,7 +1364,10 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: system/access_control
+            - path: framework/starter_biz_tenant
+            - path: ui_admin/system_management/tenant_management
     system/user_identity:
         dir_name: 用户与组织架构管理
         title: 用户与组织架构管理
@@ -1128,24 +1386,32 @@ modules:
         children: []
         depends_on: []
         related_to:
-            - path: system/access_control
+            - path: system/authentication
+            - path: opshub/dealer
+            - path: bpm/task_management
+            - path: opshub/cs
+            - path: bpm/oa_leave
+            - path: bpm/process_definition
+            - path: ui_admin/bpm_workflow/task_management
             - path: ui_admin/system_management/user_management
+            - path: ui_admin/bpm_workflow/process_instance
+            - path: ui_admin/bpm_workflow/model_design
     ui_admin:
-        dir_name: Vue3 管理后台前端应用
-        title: Vue3 管理后台前端应用
+        dir_name: Vue3 管理后台综合应用平台
+        title: Vue3 管理后台综合应用平台
         scope:
             - yudao-ui/
         source_files: []
         children:
-            - ui_admin/bpm_workflow
-            - ui_admin/ai_assistant
-            - ui_admin/payment_center
-            - ui_admin/infra_platform
-            - ui_admin/im_chat
             - ui_admin/system_management
-            - ui_admin/app_shell
-            - ui_admin/opshub
+            - ui_admin/im_chat
+            - ui_admin/infra_platform
             - ui_admin/report_designer
+            - ui_admin/payment_center
+            - ui_admin/bpm_workflow
+            - ui_admin/app_shell
+            - ui_admin/ai_assistant
+            - ui_admin/opshub
         depends_on: []
         related_to: []
     ui_admin/ai_assistant:
@@ -1156,14 +1422,14 @@ modules:
             - yudao-ui/yudao-ui-admin-vue3/src/views/ai/
         source_files: []
         children:
-            - ui_admin/ai_assistant/knowledge
-            - ui_admin/ai_assistant/mindmap
-            - ui_admin/ai_assistant/chat
-            - ui_admin/ai_assistant/image
-            - ui_admin/ai_assistant/music
-            - ui_admin/ai_assistant/workflow
             - ui_admin/ai_assistant/model_config
+            - ui_admin/ai_assistant/workflow
+            - ui_admin/ai_assistant/music
+            - ui_admin/ai_assistant/image
             - ui_admin/ai_assistant/write
+            - ui_admin/ai_assistant/mindmap
+            - ui_admin/ai_assistant/knowledge
+            - ui_admin/ai_assistant/chat
         depends_on: []
         related_to: []
     ui_admin/ai_assistant/chat:
@@ -1181,6 +1447,13 @@ modules:
         related_to:
             - path: ui_admin/ai_assistant/knowledge
             - path: ui_admin/ai_assistant/model_config
+            - path: ui_admin/ai_assistant/workflow
+            - path: ui_admin/ai_assistant/image
+            - path: opshub/dashboard
+            - path: opshub/cs
+            - path: ui_admin/ai_assistant/music
+            - path: ui_admin/ai_assistant/mindmap
+            - path: ui_admin/ai_assistant/write
     ui_admin/ai_assistant/chat/admin_manager:
         dir_name: AI 聊天对话管理
         title: AI 聊天对话管理
@@ -1189,7 +1462,8 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: ui_admin/ai_assistant/chat/user_chat
     ui_admin/ai_assistant/chat/user_chat:
         dir_name: AI 智能对话交互模块
         title: AI 智能对话交互模块
@@ -1200,7 +1474,11 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: ui_admin/ai_assistant/model_config
+            - path: ui_admin/ai_assistant/chat/admin_manager
+            - path: ui_admin/ai_assistant/knowledge/knowledge_base
+            - path: ui_admin/ai_assistant/workflow
     ui_admin/ai_assistant/image:
         dir_name: AI 图像生成与管理
         title: AI 图像生成与管理
@@ -1210,7 +1488,11 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: ui_admin/ai_assistant/model_config
+            - path: infra/file_storage
+            - path: ui_admin/ai_assistant/chat
+            - path: ui_admin/ai_assistant/workflow
     ui_admin/ai_assistant/knowledge:
         dir_name: AI 知识库管理模块
         title: AI 知识库管理模块
@@ -1219,9 +1501,9 @@ modules:
             - yudao-ui/yudao-ui-admin-vue3/src/views/ai/knowledge/
         source_files: []
         children:
-            - ui_admin/ai_assistant/knowledge/knowledge_base
             - ui_admin/ai_assistant/knowledge/segment
             - ui_admin/ai_assistant/knowledge/document
+            - ui_admin/ai_assistant/knowledge/knowledge_base
         depends_on: []
         related_to:
             - path: ui_admin/ai_assistant/chat
@@ -1234,7 +1516,10 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: ui_admin/ai_assistant/knowledge/knowledge_base
+            - path: ui_admin/ai_assistant/knowledge/segment
+            - path: infra/file_storage
     ui_admin/ai_assistant/knowledge/knowledge_base:
         dir_name: AI 知识库管理
         title: AI 知识库管理
@@ -1244,7 +1529,11 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: ui_admin/ai_assistant/knowledge/document
+            - path: ui_admin/ai_assistant/model_config
+            - path: ui_admin/ai_assistant/chat/user_chat
+            - path: ui_admin/ai_assistant/workflow
     ui_admin/ai_assistant/knowledge/segment:
         dir_name: 知识库分段管理
         title: 知识库分段管理
@@ -1254,7 +1543,8 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: ui_admin/ai_assistant/knowledge/document
     ui_admin/ai_assistant/mindmap:
         dir_name: AI 思维导图生成与管理
         title: AI 思维导图生成与管理
@@ -1264,7 +1554,10 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: ui_admin/ai_assistant/model_config
+            - path: ui_admin/ai_assistant/chat
+            - path: ui_admin/ai_assistant/write
     ui_admin/ai_assistant/model_config:
         dir_name: AI模型与密钥配置管理
         title: AI模型与密钥配置管理
@@ -1276,6 +1569,13 @@ modules:
         depends_on: []
         related_to:
             - path: ui_admin/ai_assistant/chat
+            - path: ui_admin/ai_assistant/image
+            - path: ui_admin/ai_assistant/chat/user_chat
+            - path: ui_admin/ai_assistant/workflow
+            - path: ui_admin/ai_assistant/knowledge/knowledge_base
+            - path: ui_admin/ai_assistant/music
+            - path: ui_admin/ai_assistant/mindmap
+            - path: ui_admin/ai_assistant/write
     ui_admin/ai_assistant/music:
         dir_name: AI 音乐创作与管理
         title: AI 音乐创作与管理
@@ -1285,7 +1585,9 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: ui_admin/ai_assistant/model_config
+            - path: ui_admin/ai_assistant/chat
     ui_admin/ai_assistant/workflow:
         dir_name: AI工作流管理
         title: AI工作流管理
@@ -1295,7 +1597,12 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: ui_admin/ai_assistant/chat
+            - path: ui_admin/ai_assistant/model_config
+            - path: ui_admin/ai_assistant/knowledge/knowledge_base
+            - path: ui_admin/ai_assistant/chat/user_chat
+            - path: ui_admin/ai_assistant/image
     ui_admin/ai_assistant/write:
         dir_name: AI 智能写作助手
         title: AI 智能写作助手
@@ -1305,10 +1612,13 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: ui_admin/ai_assistant/model_config
+            - path: ui_admin/ai_assistant/chat
+            - path: ui_admin/ai_assistant/mindmap
     ui_admin/app_shell:
-        dir_name: 管理后台应用壳层与基础设施
-        title: 管理后台应用壳层与基础设施
+        dir_name: 管理后台应用外壳与基础架构
+        title: 管理后台应用外壳与基础架构
         scope:
             - yudao-ui/yudao-ui-admin-vue3/src/components/
             - yudao-ui/yudao-ui-admin-vue3/src/layout/
@@ -1346,11 +1656,11 @@ modules:
             - yudao-ui/yudao-ui-admin-vue3/src/views/bpm/
         source_files: []
         children:
-            - ui_admin/bpm_workflow/task_management
-            - ui_admin/bpm_workflow/model_design
             - ui_admin/bpm_workflow/supporting_features
+            - ui_admin/bpm_workflow/model_design
             - ui_admin/bpm_workflow/process_instance
             - ui_admin/bpm_workflow/form_category_group
+            - ui_admin/bpm_workflow/task_management
         depends_on: []
         related_to: []
     ui_admin/bpm_workflow/form_category_group:
@@ -1366,7 +1676,10 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: ui_admin/bpm_workflow/model_design
+            - path: ui_admin/bpm_workflow/task_management
+            - path: ui_admin/bpm_workflow/process_instance
     ui_admin/bpm_workflow/model_design:
         dir_name: BPM 流程模型设计与定义管理
         title: BPM 流程模型设计与定义管理
@@ -1378,7 +1691,12 @@ modules:
         children: []
         depends_on: []
         related_to:
+            - path: ui_admin/bpm_workflow/form_category_group
+            - path: ui_admin/bpm_workflow/process_instance
+            - path: ui_admin/bpm_workflow/supporting_features
             - path: bpm/process_definition
+            - path: system/user_identity
+            - path: ui_admin/bpm_workflow/task_management
     ui_admin/bpm_workflow/process_instance:
         dir_name: 流程实例管理
         title: 流程实例管理
@@ -1388,7 +1706,13 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: ui_admin/bpm_workflow/model_design
+            - path: ui_admin/bpm_workflow/task_management
+            - path: bpm/task_management
+            - path: system/user_identity
+            - path: ui_admin/bpm_workflow/form_category_group
+            - path: ui_admin/bpm_workflow/supporting_features
     ui_admin/bpm_workflow/supporting_features:
         dir_name: BPM 流程辅助功能与请假业务
         title: BPM 流程辅助功能与请假业务
@@ -1405,7 +1729,13 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: ui_admin/bpm_workflow/model_design
+            - path: bpm/oa_leave
+            - path: ui_admin/bpm_workflow/task_management
+            - path: bpm/task_management
+            - path: bpm/process_definition
+            - path: ui_admin/bpm_workflow/process_instance
     ui_admin/bpm_workflow/task_management:
         dir_name: BPM 任务管理与审批中心
         title: BPM 任务管理与审批中心
@@ -1417,7 +1747,13 @@ modules:
         depends_on: []
         related_to:
             - path: ui_admin/opshub/customer_service
+            - path: ui_admin/bpm_workflow/process_instance
             - path: bpm/task_management
+            - path: system/user_identity
+            - path: bpm/process_definition
+            - path: ui_admin/bpm_workflow/supporting_features
+            - path: ui_admin/bpm_workflow/form_category_group
+            - path: ui_admin/bpm_workflow/model_design
     ui_admin/im_chat:
         dir_name: 即时通讯（IM）前端核心模块
         title: 即时通讯（IM）前端核心模块
@@ -1427,8 +1763,8 @@ modules:
         source_files: []
         children:
             - ui_admin/im_chat/admin_im
-            - ui_admin/im_chat/user_im
             - ui_admin/im_chat/im_api_views
+            - ui_admin/im_chat/user_im
         depends_on: []
         related_to: []
     ui_admin/im_chat/admin_im:
@@ -1441,7 +1777,18 @@ modules:
         children: []
         depends_on: []
         related_to:
+            - path: im/sensitiveword
             - path: im/statistics
+            - path: ui_admin/im_chat/user_im
+            - path: im/message
+            - path: im/channel
+            - path: im/friend
+            - path: im/group
+            - path: opshub/cs
+            - path: ui_admin/im_chat/im_api_views
+            - path: im/rtc
+            - path: im/face
+            - path: im/websocket
     ui_admin/im_chat/im_api_views:
         dir_name: 即时通讯（IM）API 与前端工具层
         title: 即时通讯（IM）API 与前端工具层
@@ -1457,8 +1804,12 @@ modules:
         children: []
         depends_on: []
         related_to:
+            - path: ui_admin/im_chat/user_im
+            - path: ui_admin/im_chat/admin_im
+            - path: im/channel
+            - path: im/websocket
+            - path: im/rtc
             - path: im/friend
-            - path: im/group
     ui_admin/im_chat/user_im:
         dir_name: 即时通讯与会话管理
         title: 即时通讯与会话管理
@@ -1468,7 +1819,18 @@ modules:
         children: []
         depends_on: []
         related_to:
+            - path: ui_admin/app_shell
+            - path: im/face
+            - path: im/group
+            - path: opshub/cs
+            - path: ui_admin/im_chat/admin_im
             - path: im/message
+            - path: im/friend
+            - path: im/channel
+            - path: im/statistics
+            - path: im/rtc
+            - path: ui_admin/im_chat/im_api_views
+            - path: im/websocket
     ui_admin/infra_platform:
         dir_name: 基础设施运维与开发支撑平台
         title: 基础设施运维与开发支撑平台
@@ -1478,14 +1840,14 @@ modules:
         source_files: []
         children:
             - ui_admin/infra_platform/file_management
-            - ui_admin/infra_platform/api_logs
             - ui_admin/infra_platform/codegen
-            - ui_admin/infra_platform/redis_monitor
-            - ui_admin/infra_platform/job_scheduler
             - ui_admin/infra_platform/config_management
+            - ui_admin/infra_platform/redis_monitor
+            - ui_admin/infra_platform/api_logs
+            - ui_admin/infra_platform/demo_examples
+            - ui_admin/infra_platform/job_scheduler
             - ui_admin/infra_platform/monitoring_tools
             - ui_admin/infra_platform/data_source
-            - ui_admin/infra_platform/demo_examples
         depends_on: []
         related_to: []
     ui_admin/infra_platform/api_logs:
@@ -1499,7 +1861,10 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: infra/api_logging
+            - path: ui_admin/infra_platform/monitoring_tools
+            - path: ui_admin/infra_platform/job_scheduler
     ui_admin/infra_platform/codegen:
         dir_name: 代码生成配置与预览
         title: 代码生成配置与预览
@@ -1510,7 +1875,10 @@ modules:
         children: []
         depends_on: []
         related_to:
+            - path: ui_admin/infra_platform/data_source
             - path: infra/codegen
+            - path: framework/starter_mybatis
+            - path: ui_admin/infra_platform/demo_examples
     ui_admin/infra_platform/config_management:
         dir_name: 基础设施参数配置管理
         title: 基础设施参数配置管理
@@ -1520,7 +1888,8 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: infra/system_config
     ui_admin/infra_platform/data_source:
         dir_name: 数据源配置管理
         title: 数据源配置管理
@@ -1530,7 +1899,9 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: ui_admin/infra_platform/codegen
+            - path: infra/db_management
     ui_admin/infra_platform/demo_examples:
         dir_name: 基础设施示例模块
         title: 基础设施示例模块
@@ -1540,7 +1911,12 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: infra/demo_examples
+            - path: infra/codegen
+            - path: framework/starter_mybatis
+            - path: ui_admin/infra_platform/codegen
+            - path: ui_admin/infra_platform/job_scheduler
     ui_admin/infra_platform/file_management:
         dir_name: 文件存储配置与管理
         title: 文件存储配置与管理
@@ -1566,6 +1942,11 @@ modules:
         depends_on: []
         related_to:
             - path: infra/job_scheduler
+            - path: framework/starter_job
+            - path: opshub/dashboard
+            - path: ui_admin/infra_platform/api_logs
+            - path: infra/codegen
+            - path: ui_admin/infra_platform/demo_examples
     ui_admin/infra_platform/monitoring_tools:
         dir_name: 基础设施监控与运维工具集成
         title: 基础设施监控与运维工具集成
@@ -1578,7 +1959,16 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: infra/api_logging
+            - path: opshub/dashboard
+            - path: ui_admin/opshub/order_management
+            - path: opshub/cs
+            - path: ui_admin/opshub/dealer_management
+            - path: opshub/aftersale
+            - path: ui_admin/infra_platform/api_logs
+            - path: infra/file_storage
+            - path: infra/codegen
     ui_admin/infra_platform/redis_monitor:
         dir_name: Redis 监控面板
         title: Redis 监控面板
@@ -1588,22 +1978,23 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: infra/redis_monitor
     ui_admin/opshub:
-        dir_name: OpsHub 运营服务管理
-        title: OpsHub 运营服务管理
+        dir_name: OpsHub 经销商运营协同平台
+        title: OpsHub 经销商运营协同平台
         scope:
             - yudao-ui/yudao-ui-admin-vue3/src/api/opshub/
             - yudao-ui/yudao-ui-admin-vue3/src/views/opshub/
         source_files: []
         children:
             - ui_admin/opshub/dealer_management
-            - ui_admin/opshub/order_management
             - ui_admin/opshub/excel_import
-            - ui_admin/opshub/signing_contracts
             - ui_admin/opshub/product_line
+            - ui_admin/opshub/order_management
             - ui_admin/opshub/basedata
             - ui_admin/opshub/customer_service
+            - ui_admin/opshub/signing_contracts
         depends_on: []
         related_to: []
     ui_admin/opshub/basedata:
@@ -1615,10 +2006,15 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: ui_admin/opshub/signing_contracts
+            - path: ui_admin/opshub/order_management
+            - path: opshub/cs
+            - path: opshub/aftersale
+            - path: opshub/dashboard
     ui_admin/opshub/customer_service:
-        dir_name: OpsHub 客户服务与工单管理
-        title: OpsHub 客户服务与工单管理
+        dir_name: 客户服务与工单管理
+        title: 客户服务与工单管理
         scope:
             - yudao-ui/yudao-ui-admin-vue3/src/api/opshub/csAttachment/
             - yudao-ui/yudao-ui-admin-vue3/src/api/opshub/csOpReq/
@@ -1642,8 +2038,7 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to:
-            - path: ui_admin/opshub/product_line
+        related_to: []
     ui_admin/opshub/excel_import:
         dir_name: OpsHub Excel 批量导入
         title: OpsHub Excel 批量导入
@@ -1653,7 +2048,9 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: opshub/excel_import
+            - path: ui_admin/opshub/dealer_management
     ui_admin/opshub/order_management:
         dir_name: 订单全生命周期管理
         title: 订单全生命周期管理
@@ -1664,7 +2061,19 @@ modules:
         children: []
         depends_on: []
         related_to:
+            - path: ui_admin/opshub/dealer_management
+            - path: ui_admin/opshub/customer_service
             - path: ui_admin/opshub/signing_contracts
+            - path: ui_admin/opshub/basedata
+            - path: opshub/aftersale
+            - path: opshub/dashboard
+            - path: opshub/cs
+            - path: ui_admin/report_designer
+            - path: opshub/excel_import
+            - path: ui_admin/infra_platform/monitoring_tools
+            - path: ui_admin/system_management/dict_management
+            - path: ui_admin/system_management/operation_logs
+            - path: ui_admin/system_management/tenant_management
     ui_admin/opshub/product_line:
         dir_name: 产品线与经销商绑定管理
         title: 产品线与经销商绑定管理
@@ -1686,7 +2095,13 @@ modules:
         children: []
         depends_on: []
         related_to:
+            - path: ui_admin/opshub/basedata
+            - path: opshub/dashboard
             - path: ui_admin/opshub/order_management
+            - path: ui_admin/opshub/dealer_management
+            - path: opshub/signing
+            - path: opshub/cs
+            - path: opshub/excel_import
     ui_admin/payment_center:
         dir_name: 支付中心管理模块
         title: 支付中心管理模块
@@ -1695,7 +2110,8 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: opshub/order
     ui_admin/report_designer:
         dir_name: 报表与大屏设计器集成
         title: 报表与大屏设计器集成
@@ -1706,6 +2122,12 @@ modules:
         depends_on: []
         related_to:
             - path: report
+            - path: ui_admin/app_shell
+            - path: opshub/dashboard
+            - path: ui_admin/opshub/order_management
+            - path: opshub/cs
+            - path: ui_admin/opshub/dealer_management
+            - path: opshub/aftersale
     ui_admin/system_management:
         dir_name: 系统管理模块
         title: 系统管理模块
@@ -1714,19 +2136,18 @@ modules:
             - yudao-ui/yudao-ui-admin-vue3/src/views/system/
         source_files: []
         children:
-            - ui_admin/system_management/menu_management
-            - ui_admin/system_management/user_management
-            - ui_admin/system_management/operation_logs
-            - ui_admin/system_management/tenant_management
             - ui_admin/system_management/dept_post
-            - ui_admin/system_management/dict_management
-            - ui_admin/system_management/role_permission
-            - ui_admin/system_management/sms_notify_mail
-            - ui_admin/system_management/oauth2_social
             - ui_admin/system_management/area_notice
+            - ui_admin/system_management/sms_notify_mail
+            - ui_admin/system_management/menu_management
+            - ui_admin/system_management/operation_logs
+            - ui_admin/system_management/role_permission
+            - ui_admin/system_management/dict_management
+            - ui_admin/system_management/user_management
+            - ui_admin/system_management/tenant_management
+            - ui_admin/system_management/oauth2_social
         depends_on: []
-        related_to:
-            - path: ui_admin/app_shell
+        related_to: []
     ui_admin/system_management/area_notice:
         dir_name: 地区管理与公告通知
         title: 地区管理与公告通知
@@ -1738,7 +2159,8 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: ui_admin/system_management/dict_management
     ui_admin/system_management/dept_post:
         dir_name: 部门与岗位管理
         title: 部门与岗位管理
@@ -1750,7 +2172,8 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: ui_admin/system_management/user_management
     ui_admin/system_management/dict_management:
         dir_name: 字典数据管理
         title: 字典数据管理
@@ -1760,7 +2183,22 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: framework/starter_excel
+            - path: system/system_support
+            - path: ui_admin/system_management/user_management
+            - path: ui_admin/system_management/role_permission
+            - path: ui_admin/system_management/area_notice
+            - path: system/authentication
+            - path: ui_admin/opshub/order_management
+            - path: ui_admin/system_management/sms_notify_mail
+            - path: opshub/cs
+            - path: ui_admin/opshub/dealer_management
+            - path: opshub/aftersale
+            - path: ui_admin/system_management/tenant_management
+            - path: opshub/excel_import
+            - path: opshub/dashboard
+            - path: ui_admin/system_management/operation_logs
     ui_admin/system_management/menu_management:
         dir_name: 系统菜单管理
         title: 系统菜单管理
@@ -1770,7 +2208,15 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: ui_admin/system_management/role_permission
+            - path: system/access_control
+            - path: ui_admin/app_shell
+            - path: ui_admin/system_management/user_management
+            - path: ui_admin/system_management/operation_logs
+            - path: system/authentication
+            - path: ui_admin/system_management/sms_notify_mail
+            - path: ui_admin/system_management/tenant_management
     ui_admin/system_management/oauth2_social:
         dir_name: OAuth2与社交登录管理
         title: OAuth2与社交登录管理
@@ -1782,7 +2228,9 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: system/authentication
+            - path: system/oauth_social
     ui_admin/system_management/operation_logs:
         dir_name: 系统操作与登录日志管理
         title: 系统操作与登录日志管理
@@ -1794,7 +2242,16 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: infra/api_logging
+            - path: system/authentication
+            - path: ui_admin/system_management/user_management
+            - path: ui_admin/system_management/menu_management
+            - path: opshub/dashboard
+            - path: ui_admin/opshub/order_management
+            - path: opshub/cs
+            - path: opshub/aftersale
+            - path: ui_admin/system_management/dict_management
     ui_admin/system_management/role_permission:
         dir_name: 角色与权限管理
         title: 角色与权限管理
@@ -1806,7 +2263,12 @@ modules:
         children: []
         depends_on: []
         related_to:
+            - path: ui_admin/system_management/menu_management
+            - path: ui_admin/app_shell
             - path: system/access_control
+            - path: ui_admin/system_management/user_management
+            - path: ui_admin/system_management/dict_management
+            - path: system/authentication
     ui_admin/system_management/sms_notify_mail:
         dir_name: 消息通知管理（短信_站内信_邮件）
         title: 消息通知管理（短信/站内信/邮件）
@@ -1822,6 +2284,11 @@ modules:
         depends_on: []
         related_to:
             - path: system/message_center
+            - path: system/authentication
+            - path: ui_admin/system_management/dict_management
+            - path: ui_admin/system_management/menu_management
+            - path: opshub/cs
+            - path: opshub/dashboard
     ui_admin/system_management/tenant_management:
         dir_name: 租户与套餐管理
         title: 租户与套餐管理
@@ -1833,7 +2300,16 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: system/tenant_management
+            - path: system/authentication
+            - path: opshub/dashboard
+            - path: opshub/cs
+            - path: ui_admin/system_management/dict_management
+            - path: ui_admin/opshub/dealer_management
+            - path: ui_admin/system_management/menu_management
+            - path: ui_admin/opshub/order_management
+            - path: opshub/excel_import
     ui_admin/system_management/user_management:
         dir_name: 系统用户管理模块
         title: 系统用户管理模块
@@ -1844,4 +2320,15 @@ modules:
         children: []
         depends_on: []
         related_to:
+            - path: ui_admin/system_management/dept_post
+            - path: ui_admin/app_shell
+            - path: ui_admin/opshub/dealer_management
+            - path: system/access_control
             - path: system/user_identity
+            - path: system/authentication
+            - path: ui_admin/system_management/dict_management
+            - path: ui_admin/system_management/role_permission
+            - path: ui_admin/system_management/operation_logs
+            - path: ui_admin/system_management/menu_management
+            - path: opshub/dashboard
+            - path: opshub/cs

@@ -50,6 +50,8 @@
       @edit="handleEdit"
       @sign="handleSign"
       @upload-proof="handleUploadProof"
+      @verify="handleVerify"
+      @view-process="handleViewProcess"
       @view-detail="handleViewDetail"
       @consult="handleConsult"
     />
@@ -68,8 +70,9 @@
   <!-- 弹窗 -->
   <ContractFormModal ref="contractFormModalRef" @success="getList" />
   <ContractPreviewModal ref="previewModalRef" />
-  <SignRequestModal ref="signModalRef" @success="getList" />
-  <UploadSignProofModal ref="uploadProofModalRef" @success="getList" />
+  <CreateOpRequestModal ref="createOpRequestModalRef" @success="getList" />
+  <ProcessOpRequestModal ref="processModalRef" @success="getList" />
+  <VerifyOpRequestModal ref="verifyModalRef" @success="getList" />
 
   <!-- 咨询聊天窗口 -->
   <ChatWindow v-model="chatVisible" :session-id="currentSessionId" mode="dealer" />
@@ -84,10 +87,12 @@ import ContractTable from './components/ContractTable.vue'
 import SigningTrendChart from './components/SigningTrendChart.vue'
 import ContractFormModal from './components/ContractFormModal.vue'
 import ContractPreviewModal from './components/ContractPreviewModal.vue'
-import SignRequestModal from './components/SignRequestModal.vue'
-import UploadSignProofModal from './components/UploadSignProofModal.vue'
+import CreateOpRequestModal from '@/views/opshub/oprequest/components/CreateOpRequestModal.vue'
+import ProcessOpRequestModal from '@/views/opshub/oprequest/components/ProcessOpRequestModal.vue'
+import VerifyOpRequestModal from '@/views/opshub/oprequest/components/VerifyOpRequestModal.vue'
 import ChatWindow from '@/components/CsChatWindow/ChatWindow.vue'
 import { useCsConsult } from '@/hooks/useCsConsult'
+import { useRouter } from 'vue-router'
 
 defineOptions({ name: 'OpshubSigning' })
 
@@ -160,14 +165,26 @@ const handleEdit = (row: SigningApi.SigningContractVO) => {
   contractFormModalRef.value.open('update', row)
 }
 
-const signModalRef = ref()
+const createOpRequestModalRef = ref()
 const handleSign = (row: SigningApi.SigningContractVO) => {
-  signModalRef.value.open(row)
+  createOpRequestModalRef.value.open('signing', row)
 }
 
-const uploadProofModalRef = ref()
+const processModalRef = ref()
 const handleUploadProof = (row: SigningApi.SigningContractVO) => {
-  uploadProofModalRef.value.open(row)
+  processModalRef.value.open(row)
+}
+
+const verifyModalRef = ref()
+const handleVerify = (row: SigningApi.SigningContractVO) => {
+  verifyModalRef.value.open(row)
+}
+
+const router = useRouter()
+const handleViewProcess = (row: any) => {
+  if (row.processInstanceId) {
+    router.push({ name: 'BpmProcessInstanceDetail', query: { id: row.processInstanceId } })
+  }
 }
 
 const previewModalRef = ref()

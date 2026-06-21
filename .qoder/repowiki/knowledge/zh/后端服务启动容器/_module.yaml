@@ -6,6 +6,15 @@ scope:
 source_files: []
 depends_on: []
 related_to:
-    - path: opshub
-    - path: im
-    - path: bpm
+    - path: framework/starter_monitor
+    - path: framework/starter_web
+    - path: framework/starter_biz_tenant
+    - path: framework/starter_security
+    - path: framework/starter_mybatis
+    - path: framework/starter_redis
+    - path: framework/starter_websocket
+    - path: framework/starter_protection
+    - path: framework/starter_biz_data_permission
+    - path: framework/starter_mq
+    - path: framework/starter_excel
+    - path: framework/starter_biz_ip

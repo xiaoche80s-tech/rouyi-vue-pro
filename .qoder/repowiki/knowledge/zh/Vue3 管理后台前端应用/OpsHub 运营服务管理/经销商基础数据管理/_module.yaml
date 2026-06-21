@@ -1,9 +1,0 @@
-schema_version: 1
-module_path: ui_admin/opshub/basedata
-title: 经销商基础数据管理
-scope:
-    - yudao-ui/yudao-ui-admin-vue3/src/api/opshub/basedata/
-    - yudao-ui/yudao-ui-admin-vue3/src/views/opshub/basedata/
-source_files: []
-depends_on: []
-related_to: []

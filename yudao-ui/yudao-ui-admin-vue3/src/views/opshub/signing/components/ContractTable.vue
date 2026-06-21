@@ -52,18 +52,31 @@
         <el-button v-hasPermi="['dealer:signing:update']" link type="primary" @click="emit('edit', row)">编辑</el-button>
         <!-- 经销商：去签署 -->
         <el-button
-          v-hasPermi="['dealer:signing:sign']"
+          v-hasPermi="['dealer:op-request:create']"
           v-if="row.status === 'unsigned' && row.subStatus === 'pending'"
           link type="success"
           @click="emit('sign', row)"
         >去签署</el-button>
         <!-- 执行员：上传盖章文件 -->
         <el-button
-          v-hasPermi="['dealer:signing:upload-proof']"
+          v-hasPermi="['dealer:op-request:process']"
           v-if="row.status === 'unsigned' && row.subStatus === 'signing'"
           link type="warning"
           @click="emit('uploadProof', row)"
         >上传盖章文件</el-button>
+        <!-- 经销商：验收 -->
+        <el-button
+          v-hasPermi="['dealer:op-request:verify']"
+          v-if="row.status === 'unsigned' && row.subStatus === 'signing'"
+          link type="primary"
+          @click="emit('verify', row)"
+        >验收</el-button>
+        <!-- 流程详情 -->
+        <el-button
+          v-if="row.processInstanceId"
+          link type="info"
+          @click="emit('viewProcess', row)"
+        >流程详情</el-button>
         <!-- 附件 -->
         <el-popover trigger="hover" placement="left" :width="320">
           <template #reference>
@@ -95,6 +108,8 @@ const emit = defineEmits<{
   (e: 'edit', row: SigningContractVO): void
   (e: 'sign', row: SigningContractVO): void
   (e: 'uploadProof', row: SigningContractVO): void
+  (e: 'verify', row: SigningContractVO): void
+  (e: 'viewProcess', row: SigningContractVO): void
   (e: 'viewDetail', row: SigningContractVO): void
   (e: 'consult', row: SigningContractVO): void
 }>()

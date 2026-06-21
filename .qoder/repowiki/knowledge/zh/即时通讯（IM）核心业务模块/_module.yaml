@@ -5,5 +5,4 @@ scope:
     - yudao-module-im/
 source_files: []
 depends_on: []
-related_to:
-    - path: server
+related_to: []

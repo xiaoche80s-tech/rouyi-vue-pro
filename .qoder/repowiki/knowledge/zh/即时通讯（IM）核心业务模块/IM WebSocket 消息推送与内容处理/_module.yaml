@@ -8,6 +8,14 @@ source_files: []
 depends_on: []
 related_to:
     - path: im/message
+    - path: opshub/cs
     - path: im/rtc
     - path: framework/starter_websocket
-    - path: opshub/cs
+    - path: im/friend
+    - path: im/group
+    - path: im/statistics
+    - path: im/sensitiveword
+    - path: ui_admin/im_chat/user_im
+    - path: ui_admin/app_shell
+    - path: ui_admin/im_chat/im_api_views
+    - path: ui_admin/im_chat/admin_im
